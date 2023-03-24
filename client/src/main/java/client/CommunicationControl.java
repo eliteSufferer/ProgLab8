@@ -73,7 +73,7 @@ public class CommunicationControl {
         String name;
         while (true) {
             try {
-                Console.writeln("введите имя");
+                System.out.println("введите имя");
                 name = scanner.nextLine().trim();
                 if (name.equals("")) throw new EmptyInputException("имя не может быть пустым");
                 if (!containsOnlyDigitsOrLetters(name, false)) throw new InputException();
@@ -81,7 +81,7 @@ public class CommunicationControl {
                 flagForScr = true;
                 return name;
             } catch (EmptyInputException | InputException e) {
-                Console.err("name is not correct!");
+                System.out.println("name is not correct!");
             } finally {
                 if ((!loop) && (!flagForScr)) {
                     throw new InputException();
@@ -174,9 +174,9 @@ public class CommunicationControl {
                 flagForScr = true;
                 return bd;
             } catch (WrongArgumentsException e) {
-                Console.err(e.getMessage());
+                System.out.println(e.getMessage());
             } catch (DateTimeParseException e) {
-                Console.err("неверный формат даты!");
+                System.out.println("неверный формат даты!");
             } catch (Exception e) {
                 System.out.println("Некорректный ввод. Попробуйте еще раз.");
             } finally {
@@ -218,7 +218,7 @@ public class CommunicationControl {
         String line;
         while (true) {
             try {
-                Console.writeln("Введите координату X: ");
+                System.out.println("Введите координату X: ");
                 line = scanner.nextLine().trim();
                 if (line.equals("")) throw new EmptyInputException("не может быть пустым");
                 coordX = Integer.parseInt(line);
@@ -226,11 +226,11 @@ public class CommunicationControl {
                 flagForScr = true;
                 return coordX;
             } catch (EmptyInputException e) {
-                Console.err(e.getMessage());
+                System.out.println(e.getMessage());
             } catch (InputException e) {
-                Console.err("превышенно значение (max: 468)");
+                System.out.println("превышенно значение (max: 468)");
             } catch (NumberFormatException e) {
-                Console.err("должно быть числом а еще и целым !!!");
+                System.out.println("должно быть числом а еще и целым !!!");
             } finally {
                 if ((!loop) && (!flagForScr)) {
                     throw new InputException();
@@ -254,7 +254,7 @@ public class CommunicationControl {
         String line;
         while (true) {
             try {
-                Console.writeln("Введите координату Y: ");
+                System.out.println("Введите координату Y: ");
                 line = scanner.nextLine().trim();
                 if (line.equals("")) throw new EmptyInputException();
                 coordY = Integer.parseInt(line);
@@ -262,9 +262,9 @@ public class CommunicationControl {
                 flagForScr = true;
                 return coordY;
             } catch (EmptyInputException e) {
-                Console.err("некорректные данные, попробуйте еще раз");
+                System.out.println("некорректные данные, попробуйте еще раз");
             } catch (InputException e) {
-                Console.err("превышенно значение (max: 468)");
+                System.out.println("превышенно значение (max: 468)");
             } finally {
                 if ((!loop) && (!flagForScr)) {
                     throw new InputException();
@@ -288,7 +288,7 @@ public class CommunicationControl {
         double salary;
         while (true) {
             try {
-                Console.writeln("введите з/п: ");
+                System.out.println("введите з/п: ");
                 line = scanner.nextLine().trim();
                 if (line.equals("")) throw new EmptyInputException();
                 salary = Double.parseDouble(line);
@@ -296,9 +296,9 @@ public class CommunicationControl {
                 flagForScr = true;
                 return salary;
             } catch (EmptyInputException e) {
-                Console.err("вы ввели пустое значение!");
+                System.out.println("вы ввели пустое значение!");
             } catch (InputException e) {
-                Console.err("зарплата должна быть больше 0");
+                System.out.println("зарплата должна быть больше 0");
             } finally {
                 if ((!loop) && (!flagForScr)) {
                     throw new InputException();
@@ -349,22 +349,22 @@ public class CommunicationControl {
         while (true) {
             try {
 
-                Console.writeln("Введите координаты x (Float)");
+                System.out.println("Введите координаты x (Float)");
                 line = scanner.nextLine().trim();
                 if (line.equals("")) throw new EmptyInputException();
                 x = Float.parseFloat(line);
 
-                Console.writeln("Введите координаты y (Long)");
+                System.out.println("Введите координаты y (Long)");
                 line = scanner.nextLine().trim();
                 if (line.equals("")) throw new EmptyInputException();
                 y = Long.parseLong(line);
 
-                Console.writeln("Введите координаты z (Integer)");
+                System.out.println("Введите координаты z (Integer)");
                 line = scanner.nextLine().trim();
                 if (line.equals("")) throw new EmptyInputException();
                 z = Integer.parseInt(line);
 
-                Console.writeln("Название локации: ");
+                System.out.println("Название локации: ");
                 name = scanner.nextLine().trim();
                 if (name.equals("")) throw new EmptyInputException();
                 flagForScr = true;
@@ -395,14 +395,14 @@ public class CommunicationControl {
         while (true) {
             try {
 
-                Console.writeln(Position.nameList());
-                Console.writeln("выбирайте");
+                System.out.println(Position.nameList());
+                System.out.println("выбирайте");
                 setPos = scanner.nextLine().trim();
                 position = Position.valueOf(setPos.toUpperCase());
                 flagForScr = true;
                 return position;
             } catch (Exception e) {
-                Console.err("неверные данные");
+                System.out.println("неверные данные");
             } finally {
                 if ((!loop) && (!flagForScr)) {
                     throw new InputException();
@@ -428,16 +428,16 @@ public class CommunicationControl {
         while (true) {
             try {
 
-                Console.writeln(Status.nameList());
-                Console.writeln("какую штуку выберите");
+                System.out.println(Status.nameList());
+                System.out.println("какую штуку выберите");
                 setStat = scanner.nextLine().trim();
                 status = Status.valueOf(setStat.toUpperCase());
                 flagForScr = true;
                 return status;
             } catch (NoSuchElementException e) {
-                Console.err("нет такого элемента");
+                System.out.println("нет такого элемента");
             } catch (Exception e) {
-                Console.err("ошибка данных");
+                System.out.println("ошибка данных");
             } finally {
                 if ((!loop) && (!flagForScr)) {
                     throw new InputException();
@@ -456,7 +456,7 @@ public class CommunicationControl {
     public boolean confirm() {
         if (loop) {
             String line;
-            Console.writeln("y/n");
+            System.out.println("y/n");
             line = scanner.nextLine().trim();
             return line.equals("y");
         } else {
