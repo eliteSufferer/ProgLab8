@@ -127,7 +127,7 @@ public class CollectionControl {
 
         Map<Status, List<Worker>> workersByStatus = workersCollection.stream().collect(Collectors.groupingBy(Worker::getStatus));
         for (Status status : workersByStatus.keySet()) {
-            Console.writeln("Кол-во работников со статусом '" + status + "': " + workersByStatus.get(status).size());
+            System.out.println("Кол-во работников со статусом '" + status + "': " + workersByStatus.get(status).size());
         }
     }
 
@@ -135,7 +135,7 @@ public class CollectionControl {
      * Outputs information about the worker collection, including the type, time of initialization, and number of elements.
      */
     public void getInfo() {
-        Console.writeln("Тип: Worker" + "\n" + "Время инициализации: " + timeInitialization + "\n" + "количество элементов: " + workersCollection.size());
+        System.out.println("Тип: Worker" + "\n" + "Время инициализации: " + timeInitialization + "\n" + "количество элементов: " + workersCollection.size());
 
     }
 
@@ -148,7 +148,7 @@ public class CollectionControl {
             sortedPerson.add(worker.getPerson());
         Collections.sort(sortedPerson);
         for (Person person : sortedPerson) {
-            Console.writeln(person.toString());
+            System.out.println(person.toString());
         }
     }
 
@@ -161,7 +161,7 @@ public class CollectionControl {
         try {
             workersCollection.remove(id);
         } catch (NoSuchElementException e) {
-            Console.err("Элемента с такии id нет в коллекции");
+            System.out.println("Элемента с такии id нет в коллекции");
         }
     }
 
@@ -171,7 +171,7 @@ public class CollectionControl {
 
     public void show() {
         for (Worker worker : workersCollection) {
-            Console.writeln(worker.toString());
+            System.out.println(worker.toString());
         }
     }
 
@@ -210,7 +210,7 @@ public class CollectionControl {
             workersCollection.set(id - 1, ;
 
         } catch (InputException e) {
-            Console.err("такого рабочего нет");
+            System.out.println("такого рабочего нет");
         }
     }
 

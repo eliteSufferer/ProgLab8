@@ -1,12 +1,9 @@
 
 package server.commands;
 
-import data.Worker;
-import exceptions.InputException;
-import exceptions.WrongArgumentsException;
-import support.CollectionControl;
-import support.CommunicationControl;
-import support.Console;
+import common.data.Worker;
+import server.utils.CollectionControl;
+
 /**
  * The {@code AddElement} class represents a command that adds a new worker element to the collection.
  * The command requires instances of {@link CommunicationControl} and {@link CollectionControl} to communicate with the user
