@@ -1,7 +1,5 @@
 package common.exceptions;
 
-import support.Console;
-
 import java.io.IOException;
 
 /**
@@ -22,6 +20,6 @@ public class WrongArgumentsException extends IOException {
      * This constructor also prints an error message to the console using the Console.err() method.
      */
     public WrongArgumentsException() {
-        Console.err("Неверное кол-во аргементов");
+        System.out.println("Неверное кол-во аргементов");
     }
 }

@@ -1,7 +1,7 @@
 
 package server.utils;
 
-import commands.Command;
+import server.commands.*;
 
 import java.util.HashMap;
 /**

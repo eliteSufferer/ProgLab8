@@ -1,11 +1,9 @@
 
 package server.utils;
 
-import commands.Command;
-import data.Person;
-import data.Status;
-import data.Worker;
-import exceptions.InputException;
+import common.data.*;
+import common.exceptions.*;
+import server.commands.Command;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -26,19 +24,15 @@ public class CollectionControl {
     HashMap<String, Command> BufferOfCommandMap;
     protected static LocalDateTime timeInitialization = null;
     FileControl fileControl;
-    CommunicationControl communicationControl;
-
     /**
      * Constructor for the CollectionControl class. It initializes the fileControl and communicationControl objects
      * and sets the BufferOfCommandMap to null.
      *
      * @param fileControl          the FileControl object to use for reading/writing data from/to files
-     * @param communicationControl the CommunicationControl object to use for receiving input from the user
      */
 
-    public CollectionControl(FileControl fileControl, CommunicationControl communicationControl) {
+    public CollectionControl(FileControl fileControl) {
         this.fileControl = fileControl;
-        this.communicationControl = communicationControl;
         this.BufferOfCommandMap = null;
     }
 
@@ -68,7 +62,7 @@ public class CollectionControl {
 
     public void clear() {
         workersCollection.clear();
-        Console.writeln("Коллекция очистилась...");
+        System.out.println("Коллекция очистилась...");
 
     }
 
@@ -92,7 +86,6 @@ public class CollectionControl {
     /**
      * Saves the current workersCollection ArrayList to a file with the specified name.
      *
-     * @param file the name of the file to save the collection to
      */
     public void saveCollection() {
         try {
@@ -214,7 +207,7 @@ public class CollectionControl {
     public void updateByID(int id) {
         try {
             if (id > workersCollection.size()) throw new InputException();
-            workersCollection.set(id - 1, new Worker(id, communicationControl.setName(), communicationControl.setCoordinates(), communicationControl.setSalary(), communicationControl.choosePosition(), communicationControl.chooseStatus(), communicationControl.setPerson()).setID(id));
+            workersCollection.set(id - 1, ;
 
         } catch (InputException e) {
             Console.err("такого рабочего нет");

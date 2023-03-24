@@ -1,5 +1,5 @@
 
-package client;
+package client.utils;
 import common.exceptions.*;
 import common.data.*;
 
