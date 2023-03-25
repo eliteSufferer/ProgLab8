@@ -30,14 +30,13 @@ public class CommandControl {
      * @param show                the {@code Command} object for displaying all elements in the collection
      * @param sort                the {@code Command} object for sorting the collection by salary
      * @param updateByID          the {@code Command} object for updating an element in the collection by ID
-     * @param collectionControl   the {@code CollectionControl} object that manages the collection
      */
 
     public CommandControl(Command addElement, Command addElementIfMin, Command clear,
                           Command executeScript, Command exit, Command filterGreaterStatus,
                           Command groupByStatus, Command help, Command info, Command printFieldOfPerson,
                           Command removeElementByID, Command removeGreater,
-                          Command saveCollection, Command show, Command sort, Command updateByID, CollectionControl collectionControl) {
+                          Command saveCollection, Command show, Command sort, Command updateByID) {
         commandMapping.put(addElement.getName(), addElement);
         commandMapping.put(addElementIfMin.getName(), addElementIfMin);
         commandMapping.put(clear.getName(), clear);
@@ -54,7 +53,6 @@ public class CommandControl {
         commandMapping.put(sort.getName(), sort);
         commandMapping.put(updateByID.getName(), updateByID);
         commandMapping.put(saveCollection.getName(), saveCollection);
-        collectionControl.getMappingOfCommands(commandMapping);
     }
 
     /**

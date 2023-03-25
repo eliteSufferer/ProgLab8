@@ -19,9 +19,10 @@ public class Server {
     private final byte[] BUFFER = new byte[1024];
     private RequestHandler requestHandler;
     private InetAddress host;
-    public Server(int port, RequestHandler requestHandler){
+    public Server(int port, RequestHandler requestHandler) throws SocketException {
         this.port = port;
         this.requestHandler = requestHandler;
+        this.datagramSocket = new DatagramSocket(this.port);
 
     }
 
@@ -32,8 +33,6 @@ public class Server {
         Request userRequest = null;
 
         try {
-            DatagramSocket datagramSocket = new DatagramSocket(port);
-
             DatagramPacket receivedPacket = new DatagramPacket(BUFFER, BUFFER.length);
 
             datagramSocket.receive(receivedPacket);
@@ -74,7 +73,7 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
-    public void connection() {
+    public void receiveRequest() {
         Request request = receiveData();
 
 
@@ -82,5 +81,11 @@ public class Server {
 
         Response res = new Response("dsfdf");
         sendData(res);
+    }
+    public void sendRequest(Request request){
+        sendData(null);
+        //что-то делаем
+        receiveData();
+
     }
 }

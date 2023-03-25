@@ -12,19 +12,14 @@ import server.utils.CollectionControl;
  */
 public class AddElement extends AbstractCommand {
 
-    private CommunicationControl communicationControl;
 
     private CollectionControl collectionControl;
 
     /**
-     * Constructs an {@code AddElement} object with the specified instances of {@link CommunicationControl} and {@link CollectionControl}.
-     *
-     * @param communicationControl the {@link CommunicationControl} instance to be used for communication with the user
      * @param collectionControl the {@link CollectionControl} instance to be used for modifying the collection
      */
-    public AddElement(CommunicationControl communicationControl, CollectionControl collectionControl) {
+    public AddElement(CollectionControl collectionControl) {
         super("addElement", "Добавить элемент в коллекцию");
-        this.communicationControl = communicationControl;
         this.collectionControl = collectionControl;
     }
 

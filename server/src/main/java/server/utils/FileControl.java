@@ -1,11 +1,8 @@
 
 package server.utils;
 
-import data.Worker;
-import exceptions.EmptyInputException;
-import exceptions.InputException;
-import exceptions.PermissionsDeniedException;
-import exceptions.WrongArgumentsException;
+import common.data.*;
+import common.exceptions.*;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -103,9 +100,9 @@ public class FileControl {
             writer.flush();
             writer.close();
         } catch (FileNotFoundException e) {
-            Console.err("сюда сохранить невозможно!");
+            System.out.println("сюда сохранить невозможно!");
         } catch (Exception e){
-            Console.err("неверные данные записи");
+            System.out.println("неверные данные записи");
         }
     }
 
@@ -129,7 +126,7 @@ public class FileControl {
 
 
         } catch (WrongArgumentsException e) {
-            Console.err("В арументы командной сроки было переданно " + this.file.length +
+            System.out.println("В арументы командной сроки было переданно " + this.file.length +
                     " количество аргументов должно быть 1");
             return null;
         }
@@ -160,13 +157,13 @@ public class FileControl {
             }
             return true;
         } catch (EmptyInputException e) {
-            Console.err("в аргумент командной строки было передано null");
+            System.out.println("в аргумент командной строки было передано null");
             return false;
         } catch (FileNotFoundException e) {
-            Console.err("Файл не найден, проверьте Path");
+            System.out.println("Файл не найден, проверьте Path");
             return false;
         } catch (IOException e) {
-            Console.err("Права этого файла не позволяют использовать его, попробуйте изменить права");
+            System.out.println("Права этого файла не позволяют использовать его, попробуйте изменить права");
             return false;
         }
 

@@ -1,8 +1,7 @@
 
 package server.utils;
 
-import exceptions.InputException;
-import exceptions.WrongArgumentsException;
+import common.exceptions.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -17,13 +16,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import static support.CommunicationControl.containsOnlyDigitsOrLetters;
+import common.data.*;
 /**
  * The ParserXml class is responsible for parsing worker data from an XML file.
  * It uses the javax.xml.parsers library to read the XML file and extract the
  * necessary data, and creates Worker objects with the extracted data.
  */
+
+
 public class ParserXml {
     String file;
 
@@ -42,6 +42,14 @@ public class ParserXml {
      *
      * @return a list of Worker objects with the parsed data, or null if there is an error parsing the XML file.
      */
+
+    public static boolean containsOnlyDigitsOrLetters(String str, boolean onlyDigits) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        String regex = onlyDigits ? "^\\d+$" : "^[a-zA-Z]+$";
+        return str.matches(regex);
+    }
     public List<Worker> parseWorkersFromXML() {
         File xmlFile = new File(this.file);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -58,7 +66,7 @@ public class ParserXml {
             }
             return workerList;
         } catch (Exception e) {
-            Console.err("Неверные данные в xml файле!");
+            System.out.println("Неверные данные в xml файле!");
             return null;
         }
 
