@@ -42,7 +42,7 @@ public class ExecuteScript extends AbstractCommand {
      * @param argument the argument for the command
      */
     @Override
-    public void execute(String argument) throws FileNotFoundException {
+    public void execute(String argument, Object commandObjectArgument) throws FileNotFoundException {
         argument = argument.trim();
         stackWithFiles.push(argument);
 
@@ -50,7 +50,7 @@ public class ExecuteScript extends AbstractCommand {
         try (Scanner scanner = new Scanner(new File(argument))) {
             stackWithScanners.push(scanner);
             communicationControl.changeScanner(scanner);
-            if (argument.isEmpty()) throw new WrongArgumentsException();
+            if (argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException(); // ну тут вообще надо подумать
             if (!FileControl.checkFilePermissions(argument)) throw new InputException();
             communicationControl.setUnsetLoop();
             while (scanner.hasNextLine()) {

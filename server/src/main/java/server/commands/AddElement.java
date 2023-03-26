@@ -2,11 +2,12 @@
 package server.commands;
 
 import common.data.Worker;
+import common.functional.WorkerPacket;
 import server.utils.CollectionControl;
+import common.exceptions.*;
 
 /**
  * The {@code AddElement} class represents a command that adds a new worker element to the collection.
- * The command requires instances of {@link CommunicationControl} and {@link CollectionControl} to communicate with the user
  * and modify the collection, respectively.
  * This class extends the {@link AbstractCommand} abstract class.
  */
@@ -28,17 +29,17 @@ public class AddElement extends AbstractCommand {
      *
      * @param argument the command argument
      */
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
-            if (!argument.isEmpty()) throw new WrongArgumentsException();
-            collectionControl.addToCollection(new Worker(communicationControl.setName(),
-                    communicationControl.setCoordinates(),
-                    communicationControl.setSalary(), communicationControl.choosePosition(),
-                    communicationControl.chooseStatus(), communicationControl.setPerson()));
+            if (!argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
+            WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
+
+            collectionControl.addToCollection(new Worker(workerPacket.getName(),
+                    workerPacket.getCoordinates(),
+                    workerPacket.getSalary(), workerPacket.getPosition(),
+                    workerPacket.getStatus(), workerPacket.getPerson()));
         } catch (WrongArgumentsException e) {
-            Console.err(e.getMessage());
-        } catch (InputException e) {
-            Console.err("Некорректный данные в скрипте!");
+            System.out.println(e.getMessage());
         }
     }
 

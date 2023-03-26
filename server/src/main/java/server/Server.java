@@ -73,19 +73,10 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
-    public void receiveRequest() {
+    public void connection() {
         Request request = receiveData();
 
-
-        //действия
-
-        Response res = new Response("dsfdf");
-        sendData(res);
-    }
-    public void sendRequest(Request request){
-        sendData(null);
-        //что-то делаем
-        receiveData();
-
+        Response response = requestHandler.handle(request);
+        sendData(response);
     }
 }

@@ -1,13 +1,12 @@
 
 package server.commands;
 
-import exceptions.WrongArgumentsException;
-import support.CollectionControl;
-import support.Console;
+import common.exceptions.*;
+import server.utils.*;
 /**
  * This command groups the elements of the collection by the value of the status field and displays the number of elements in each group.
  */
-public class GroupByStatus extends AbstractCommand {
+public class GroupByStatus extends AbstractCommand{
     CollectionControl collectionControl;
 
     public GroupByStatus(CollectionControl collectionControl) {
@@ -16,12 +15,12 @@ public class GroupByStatus extends AbstractCommand {
     }
 
     @Override
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
-            if (!argument.isEmpty()) throw new WrongArgumentsException();
+            if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.gropByStatus();
         } catch (WrongArgumentsException e) {
-            Console.err("Неверное кол-во аргементов");
+            System.out.println("Неверное кол-во аргементов");
         }
     }
 }

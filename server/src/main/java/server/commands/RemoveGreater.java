@@ -1,12 +1,11 @@
 
 package server.commands;
 
-import data.Worker;
-import exceptions.InputException;
-import exceptions.WrongArgumentsException;
-import support.CollectionControl;
-import support.CommunicationControl;
-import support.Console;
+import common.data.*;
+import common.exceptions.*;
+import common.functional.WorkerPacket;
+import server.utils.*;
+
 
 /**
  * The RemoveGreater class represents a command to remove all elements from the collection
@@ -14,19 +13,16 @@ import support.Console;
  */
 public class RemoveGreater extends AbstractCommand {
     CollectionControl collectionControl;
-    CommunicationControl communicationControl;
 
     /**
      * Constructs a new RemoveGreater command with the specified CollectionControl and
      * CommunicationControl.
      *
      * @param collectionControl    The CollectionControl instance to use for command execution.
-     * @param communicationControl The CommunicationControl instance to use for user interaction.
      */
-    public RemoveGreater(CollectionControl collectionControl, CommunicationControl communicationControl) {
+    public RemoveGreater(CollectionControl collectionControl) {
         super("remove_greater", "Удалить из коллекции все элементы, превышающие заданный");
         this.collectionControl = collectionControl;
-        this.communicationControl = communicationControl;
     }
 
     /**
@@ -36,18 +32,17 @@ public class RemoveGreater extends AbstractCommand {
      */
 
     @Override
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
-            if (!argument.isEmpty()) throw new WrongArgumentsException();
-            collectionControl.removeGreater(new Worker(communicationControl.setName(),
-                    communicationControl.setCoordinates(), communicationControl.setSalary(),
-                    communicationControl.choosePosition(), communicationControl.chooseStatus(),
-                    communicationControl.setPerson()));
+            if (!argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
+            WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
+            collectionControl.removeGreater(new Worker(workerPacket.getName(),
+                    workerPacket.getCoordinates(), workerPacket.getSalary(),
+                    workerPacket.getPosition(), workerPacket.getStatus(),
+                    workerPacket.getPerson()));
             collectionControl.updateAllIDs();
         } catch (WrongArgumentsException e) {
-            Console.err(e.getMessage());
-        } catch (InputException e) {
-            Console.err("Некорректный данные в скрипте!");
+            System.out.println(e.getMessage());
         }
 
     }

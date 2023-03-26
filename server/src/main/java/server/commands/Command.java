@@ -7,5 +7,5 @@ public interface Command {
 
     String getName();
 
-    void execute(String argument) throws FileNotFoundException;
+    void execute(String argument, Object commandObjectArgument) throws FileNotFoundException;
 }

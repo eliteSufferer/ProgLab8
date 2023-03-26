@@ -28,9 +28,9 @@ public class Clear extends AbstractCommand {
      * @param argument the arguments for the command (not used in this command)
      */
     @Override
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
-            if (!argument.isEmpty()) throw new WrongArgumentsException();
+            if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.clear();
 
         } catch (WrongArgumentsException e) {

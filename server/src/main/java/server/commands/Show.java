@@ -1,9 +1,7 @@
 package server.commands;
 
-import exceptions.WrongArgumentsException;
-import support.CollectionControl;
-import support.Console;
-
+import common.exceptions.*;
+import server.utils.*;
 /**
  * Command
  */
@@ -22,12 +20,12 @@ public class Show extends AbstractCommand {
      * @param argument a string argument for the command
      */
     @Override
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
-            if (!argument.isEmpty()) throw new WrongArgumentsException();
+            if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             this.collectionControl.show();
         } catch (WrongArgumentsException e) {
-            Console.err(e.getMessage());
+            System.out.println(e.getMessage());
         }
 
     }

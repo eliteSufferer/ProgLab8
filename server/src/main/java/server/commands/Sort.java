@@ -1,6 +1,9 @@
 package server.commands;
 
-import support.CollectionControl;
+import common.exceptions.WrongArgumentsException;
+import server.utils.*;
+
+import java.io.CharArrayReader;
 
 /**
  * The Sort class represents a command to sort the collection in natural order.
@@ -24,7 +27,12 @@ public class Sort extends AbstractCommand {
      * @param argument the argument to be passed to the command
      */
     @Override
-    public void execute(String argument) {
-        collectionControl.sort();
+    public void execute(String argument, Object commandObjectArgument) {
+        try {
+            if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
+            collectionControl.sort();
+        } catch (WrongArgumentsException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

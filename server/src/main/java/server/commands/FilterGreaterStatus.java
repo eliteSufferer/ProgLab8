@@ -1,28 +1,23 @@
 
 package server.commands;
 
-import data.Worker;
-import exceptions.WrongArgumentsException;
-import support.CollectionControl;
-import support.CommunicationControl;
-import support.Console;
+import common.data.*;
+import common.exceptions.*;
+import server.utils.*;
 /**
  * The {@code FilterGreaterStatus} class represents a command that filters the elements in the collection by the status field
  * and displays those whose value is greater than the specified one.
  */
 public class FilterGreaterStatus extends AbstractCommand {
     CollectionControl collectionControl;
-    CommunicationControl communicationControl;
 
     /**
      * Constructs a new {@code FilterGreaterStatus} object with the specified {@code CollectionControl} and {@code CommunicationControl}.
      * @param collectionControl the {@code CollectionControl} object to control the collection
-     * @param communicationControl the {@code CommunicationControl} object to interact with user
      */
-    public FilterGreaterStatus(CollectionControl collectionControl, CommunicationControl communicationControl) {
+    public FilterGreaterStatus(CollectionControl collectionControl) {
         super("filter_greater_than_status", "вывести элементы, значение поля status которых больше заданного");
         this.collectionControl = collectionControl;
-        this.communicationControl = communicationControl;
 
 
     }
@@ -32,21 +27,20 @@ public class FilterGreaterStatus extends AbstractCommand {
      * @param argument the command argument (not used)
      */
     @Override
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         String line;
 
         try {
-            if (!argument.isEmpty()) throw new WrongArgumentsException();
-            Console.writeln("Введите значение с которым вы хотите сравнивать");
-            line = communicationControl.setEnotherInfo();
+            if (argument.isEmpty() || commandObjectArgument != null ) throw new WrongArgumentsException();
+            line = argument.trim();
 
             for (Worker worker : collectionControl.filterGreaterThanStatus(line)) {
-                Console.writeln(worker.toString());
+                System.out.println(worker.toString());
             }
         } catch (IllegalArgumentException e) {
-            Console.err("Не является элементом Status");
+            System.out.println("Не является элементом Status");
         } catch (WrongArgumentsException e) {
-            Console.err("Неверное кол-во аргементов...");
+            System.out.println("Неверное кол-во аргементов...");
         }
     }
 }

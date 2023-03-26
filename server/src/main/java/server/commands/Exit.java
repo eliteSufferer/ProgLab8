@@ -1,7 +1,6 @@
 package server.commands;
 
-import exceptions.WrongArgumentsException;
-import support.Console;
+import common.exceptions.*;
 
 /**
 
@@ -25,13 +24,13 @@ public class Exit extends AbstractCommand {
      @throws WrongArgumentsException if the argument is not empty.
      */
     @Override
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
-            if (!argument.isEmpty()) throw new WrongArgumentsException();
-            Console.write("terminating the program");
+            if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
+            System.out.println("terminating the program");
             System.exit(0);
         } catch (WrongArgumentsException e){
-            Console.err("exceeded number of arguments");
+            System.out.println("exceeded number of arguments");
         }
     }
 }

@@ -16,14 +16,15 @@ public class RunServer {
         FileControl fileControl = new FileControl(file);
         CollectionControl collectionControl = new CollectionControl(fileControl);
         Server server = new Server(7777, requestHandler);
-        CommandControl commandControl = new CommandControl(new AddElement(),
+        CommandControl commandControl = new CommandControl(new AddElement(collectionControl),
                 new AddElementIfMin(collectionControl),
-                new Clear(collectionControl, communicationControl),
-                new ExecuteScript(collectionControl, communicationControl), new Exit(), new FilterGreaterStatus(collectionControl, communicationControl),
+                new Clear(collectionControl),
+                new ExecuteScript(collectionControl), new Exit(), new FilterGreaterStatus(collectionControl),
                 new GroupByStatus(collectionControl), new Help(collectionControl), new Info(collectionControl), new PrintFieldOfPerson(collectionControl),
-                new RemoveElementByID(collectionControl, communicationControl), new RemoveGreater(collectionControl, communicationControl), new SaveCollection(fileControl, collectionControl),
+                new RemoveElementByID(collectionControl), new RemoveGreater(collectionControl), new SaveCollection(fileControl, collectionControl),
                 new Show(collectionControl), new Sort(collectionControl), new UpdateByID(collectionControl));
 
+        server.connection();
     }
 }
 

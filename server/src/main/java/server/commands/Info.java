@@ -1,8 +1,7 @@
 package server.commands;
 
-import exceptions.WrongArgumentsException;
-import support.CollectionControl;
-import support.Console;
+import common.exceptions.*;
+import server.utils.*;
 
 /**
  * Command to display information about the collection.
@@ -26,12 +25,12 @@ public class Info extends AbstractCommand {
      * @param argument the command argument (not used in this command)
      */
     @Override
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
             if (!argument.isEmpty()) throw new WrongArgumentsException();
             collectionControl.getInfo();
         } catch (WrongArgumentsException e) {
-            Console.writeln(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 }

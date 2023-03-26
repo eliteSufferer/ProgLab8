@@ -1,8 +1,7 @@
 package server.commands;
 
-import exceptions.WrongArgumentsException;
-import support.CollectionControl;
-import support.Console;
+import common.exceptions.*;
+import server.utils.*;
 
 /**
  * Command to print the Person data in ascending order by their name.
@@ -26,12 +25,12 @@ public class PrintFieldOfPerson extends AbstractCommand {
      * @param argument the arguments passed to the command
      */
     @Override
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
-            if (!argument.isEmpty()) throw new WrongArgumentsException();
+            if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.sortPerson();
         } catch (WrongArgumentsException e) {
-            Console.err(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 }

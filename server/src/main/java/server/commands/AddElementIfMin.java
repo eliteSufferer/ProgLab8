@@ -1,12 +1,10 @@
 
 package server.commands;
 
-import data.Worker;
-import exceptions.InputException;
-import exceptions.WrongArgumentsException;
-import support.CollectionControl;
-import support.CommunicationControl;
-import support.Console;
+import common.data.*;
+import common.exceptions.*;
+import common.functional.WorkerPacket;
+import server.utils.*;
 /**
  * The {@code AddElementIfMin} class represents a command that adds a new worker element to the collection if its salary
  * is less than the salary of all the elements in the collection.
@@ -18,14 +16,11 @@ public class AddElementIfMin extends AbstractCommand {
 
     CollectionControl collectionControl;
 
-    CommunicationControl communicationControl;
 
-
-    public AddElementIfMin(CollectionControl collectionControl, CommunicationControl communicationControl) {
+    public AddElementIfMin(CollectionControl collectionControl) {
         super("add_if_min", "Добавить новым элемент в коллекцю, если меньше" +
                 "минимального в коллекции");
         this.collectionControl = collectionControl;
-        this.communicationControl = communicationControl;
     }
 
     /**
@@ -34,19 +29,17 @@ public class AddElementIfMin extends AbstractCommand {
      *
      * @param argument the arguments passed to the command, not used in this case.
      */
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
-            if (!argument.isEmpty()) throw new WrongArgumentsException();
-            Console.writeln("создайте новый элемент перед тем как сравнивать:");
-            Worker newWorker = new Worker(communicationControl.setName(),
-                    communicationControl.setCoordinates(),
-                    communicationControl.setSalary(), communicationControl.choosePosition(),
-                    communicationControl.chooseStatus(), communicationControl.setPerson());
+            if (!argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
+            WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
+            Worker newWorker = new Worker(workerPacket.getName(),
+                    workerPacket.getCoordinates(),
+                    workerPacket.getSalary(), workerPacket.getPosition(),
+                    workerPacket.getStatus(), workerPacket.getPerson());
             if (!collectionControl.addIfSmallerSalary(newWorker)) newWorker = null;
         } catch (WrongArgumentsException e) {
-            Console.err("Превышенно кол-во аргементов");
-        } catch (InputException e) {
-            Console.err("Некорректный данные в скрипте!");
+            System.out.println("Превышенно кол-во аргементов");
         }
     }
 }

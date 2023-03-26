@@ -1,10 +1,8 @@
 
 package server.commands;
 
-import exceptions.WrongArgumentsException;
-import support.CollectionControl;
-import support.Console;
-import support.FileControl;
+import common.exceptions.*;
+import server.utils.*;
 /**
  * The {@code Show} class represents a command that outputs all elements of the collection in string representation.
  * Implements {@link Command} interface.
@@ -25,13 +23,13 @@ public class SaveCollection extends AbstractCommand {
     }
 
     @Override
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
-            if (!argument.isEmpty()) throw new WrongArgumentsException();
+            if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.saveCollection();
 
         } catch (WrongArgumentsException e) {
-            Console.err(e.getMessage());
+            System.out.println(e.getMessage());
         }catch (Exception e){
             e.printStackTrace();
         }

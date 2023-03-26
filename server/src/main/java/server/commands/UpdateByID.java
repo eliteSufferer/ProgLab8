@@ -1,9 +1,10 @@
 
 package server.commands;
 
-import exceptions.WrongArgumentsException;
-import support.CollectionControl;
-import support.Console;
+import common.data.Worker;
+import common.exceptions.*;
+import common.functional.WorkerPacket;
+import server.utils.*;
 /**
  * This command is used to update the value of a collection element whose id matches the specified one.
  */
@@ -22,17 +23,22 @@ public class UpdateByID extends AbstractCommand {
      * @param argument the id of the element to be updated
      */
     @Override
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
-            if (argument.isEmpty()) throw new WrongArgumentsException();
+            if (argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
+            WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
+            Worker worker = new Worker(workerPacket.getName(),
+                    workerPacket.getCoordinates(),
+                    workerPacket.getSalary(), workerPacket.getPosition(),
+                    workerPacket.getStatus(), workerPacket.getPerson());
 
             int id = Integer.parseInt(argument.trim());
-            collectionControl.updateByID(id);
-            Console.writeln("Замена успешно завершена!");
+            collectionControl.updateByID(id, worker);
+            System.out.println("Замена успешно завершена!");
         } catch (WrongArgumentsException e) {
-            Console.err(e.getMessage());
+            System.out.println(e.getMessage());
         } catch (NumberFormatException e) {
-            Console.err("неправильный тип данных. Должен быть целочисленным");
+            System.out.println("неправильный тип данных. Должен быть целочисленным");
         }
     }
 }

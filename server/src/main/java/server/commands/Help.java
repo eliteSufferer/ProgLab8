@@ -1,8 +1,7 @@
 package server.commands;
 
-import exceptions.WrongArgumentsException;
-import support.CollectionControl;
-import support.Console;
+import common.exceptions.*;
+import server.utils.*;
 
 /**
  * The {@code Help} command displays the list of available commands and their descriptions.
@@ -28,14 +27,14 @@ public class Help extends AbstractCommand {
      * @param argument the argument to be passed to this command
      */
     @Override
-    public void execute(String argument) {
+    public void execute(String argument, Object commandObjectArgument) {
         try {
-            if (!argument.isEmpty()) throw new WrongArgumentsException();
+            if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.sendCommandMap().forEach((key, value) -> {
-                Console.writeln(key + " : " + value.getDescription());
+                System.out.println(key + " : " + value.getDescription());
             });
         } catch (WrongArgumentsException e) {
-            Console.err("у данной команды не должно быть аргементов");
+            System.out.println("у данной команды не должно быть аргементов");
         }
     }
 }
