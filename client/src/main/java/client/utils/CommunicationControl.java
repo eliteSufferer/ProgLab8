@@ -20,7 +20,7 @@ import java.util.Scanner;
 public class CommunicationControl {
     public Scanner scanner;
     private boolean loop = true;
-    private static boolean flagForScr = false;
+    public static boolean flagForScr;
 
     /**
      * Constructs a new CommunicationControl object with the given scanner.
@@ -30,6 +30,18 @@ public class CommunicationControl {
 
     public CommunicationControl(Scanner scanner) {
         this.scanner = scanner;
+        flagForScr = false;
+    }
+
+    public void setFileMode() {
+        flagForScr = true;
+    }
+
+    /**
+     * Sets marine asker mode to 'User Mode'.
+     */
+    public void setUserMode() {
+        flagForScr = false;
     }
 
 

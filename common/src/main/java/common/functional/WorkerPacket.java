@@ -5,21 +5,20 @@ import common.data.Person;
 import common.data.Position;
 import common.data.Status;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
-public class WorkerPacket {
+public class WorkerPacket implements Serializable {
     private String name;
     private Coordinates coordinates;
-    private ZonedDateTime creationDate;
     private Double salary;
     private Position position;
     private Status status;
     private Person person;
 
-    public WorkerPacket(String name, Coordinates coordinates, ZonedDateTime creationDate, Double salary, Position position, Status status, Person person) {
+    public WorkerPacket(String name, Coordinates coordinates, Double salary, Position position, Status status, Person person) {
         this.name = name;
         this.coordinates = coordinates;
-        this.creationDate = creationDate;
         this.salary = salary;
         this.position = position;
         this.status = status;
@@ -32,10 +31,6 @@ public class WorkerPacket {
 
     public Coordinates getCoordinates() {
         return coordinates;
-    }
-
-    public ZonedDateTime getCreationDate() {
-        return creationDate;
     }
 
     public Double getSalary() {
