@@ -3,8 +3,10 @@ import java.io.Serializable;
 
 public class Response implements Serializable{
     private String responseBody;
+    private ServerResponseCode responseCode;
 
-    public Response(String responseBody) {
+    public Response(ServerResponseCode responseCode, String responseBody) {
+        this.responseCode = responseCode;
         this.responseBody = responseBody;
     }
 
@@ -18,5 +20,9 @@ public class Response implements Serializable{
     @Override
     public String toString() {
         return "Response[" + responseBody + "]";
+    }
+
+    public ServerResponseCode getResponseCode() {
+        return responseCode;
     }
 }
