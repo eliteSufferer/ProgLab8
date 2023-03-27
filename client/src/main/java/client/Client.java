@@ -63,7 +63,6 @@ public class Client {
             InetSocketAddress address = new InetSocketAddress(host, port);
             datagramChannel.connect(address);
             Printer.println("Соединение с сервером успешно установлено.");
-            Printer.println("Ожидание разрешения на обмен данными...");
             ByteBuffer buffer = ByteBuffer.allocate(1024);
             int bytesRead = datagramChannel.read(buffer);
             if (bytesRead > 0) {
@@ -74,7 +73,6 @@ public class Client {
                 serverWriter.write(data);
                 serverReader = new ByteArrayInputStream(data);
             }
-            Printer.println("Разрешение на обмен данными получено.");
         } catch (Exception e) {
             e.printStackTrace();
         }

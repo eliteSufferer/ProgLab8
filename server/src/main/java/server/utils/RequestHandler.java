@@ -2,6 +2,7 @@ package server.utils;
 import common.exceptions.WrongArgumentsException;
 import common.functional.Request;
 import common.functional.Response;
+import common.functional.ServerResponseCode;
 import server.commands.Command;
 import server.utils.CommandControl;
 
@@ -36,6 +37,6 @@ public class RequestHandler {
             System.out.println("dd");
             return null;
         }
-        return new Response("Успешно выполнено");
+        return new Response(ServerResponseCode.OK, "OK");
     }
 }
