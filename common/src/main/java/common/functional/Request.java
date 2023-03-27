@@ -1,5 +1,6 @@
 package common.functional;
 
+import java.io.File;
 import java.io.Serializable;
 
 /**
@@ -18,6 +19,9 @@ public class Request implements Serializable {
 
     public Request(String commandName, String commandStringArgument) {
         this(commandName, commandStringArgument, null);
+    }
+    public Request(File file) {
+        this("","", file);
     }
 
     public Request() {

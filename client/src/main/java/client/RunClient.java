@@ -2,7 +2,9 @@ package client;
 
 import client.utils.UserHandler;
 import common.functional.Printer;
+import common.functional.Request;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -13,14 +15,14 @@ public class RunClient {
     private static String host;
     private static int port;
 
-    private static String fileName;
+    private static File file;
 
     private static boolean initializeConnectionAddress(String[] args) {
         try {
             if (args.length != 3) throw new Exception();
             host = args[0];
             port = Integer.parseInt(args[1]);
-            fileName = args[2];
+            file = new File(args[2]);
 
             if (port < 0) throw new Exception();
             return true;
@@ -34,7 +36,8 @@ public class RunClient {
         if (!initializeConnectionAddress(args)) return;
         Scanner userScanner = new Scanner(System.in);
         UserHandler userHandler = new UserHandler(userScanner);
-        Client client = new Client(host, port, userHandler, fileName);
+        Client client = new Client(host, port, userHandler);
+        new Request(file);
         client.run();
         userScanner.close();
     }

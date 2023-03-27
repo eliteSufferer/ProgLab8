@@ -1,4 +1,3 @@
-
 package server.utils;
 
 import common.data.*;
@@ -204,10 +203,10 @@ public class CollectionControl {
      *
      * @param id the ID of the worker to update.
      */
-    public void updateByID(int id) {
+    public void updateByID(int id, Worker worker) {
         try {
             if (id > workersCollection.size()) throw new InputException();
-            workersCollection.set(id - 1, ;
+            workersCollection.set(id - 1, worker);
 
         } catch (InputException e) {
             System.out.println("такого рабочего нет");
