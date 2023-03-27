@@ -14,22 +14,19 @@ import java.nio.channels.SocketChannel;
 public class Client {
     private String host;
     private int port;
-    private String filename;
+
     private UserHandler userHandler;
     private DatagramChannel datagramChannel;
     private ByteArrayInputStream serverReader;
     private ByteArrayOutputStream serverWriter;
 
-    public Client(String host, int port, UserHandler userHandler, String filename) {
+    public Client(String host, int port, UserHandler userHandler) {
         this.host = host;
         this.port = port;
         this.userHandler = userHandler;
-        this.filename = filename;
     }
 
-    public String getFileName(){
-        return filename;
-    }
+
     private boolean processRequestToServer() {
         Request requestToServer = null;
         Response serverResponse = null;

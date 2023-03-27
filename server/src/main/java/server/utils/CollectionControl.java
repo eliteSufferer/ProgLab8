@@ -1,4 +1,3 @@
-
 package server.utils;
 
 import common.data.*;
