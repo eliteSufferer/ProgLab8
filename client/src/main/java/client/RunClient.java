@@ -1,31 +1,41 @@
 package client;
 
+import client.utils.UserHandler;
+import common.functional.Printer;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Scanner;
 
 public class RunClient {
-    public static void main(String[] args) throws IOException {
-        byte[] arr = {0,1,2,3,4,5,6,7,8,9};
-        int len = arr.length;
-        DatagramSocket ds; DatagramPacket dp;
-        InetAddress host; int port;
-        ds = new DatagramSocket();
+    private static String host;
+    private static int port;
 
-        host = InetAddress.getLocalHost();
-        port = 6789;
+    private static String fileName;
 
+    private static boolean initializeConnectionAddress(String[] args) {
+        try {
+            if (args.length != 3) throw new Exception();
+            host = args[0];
+            port = Integer.parseInt(args[1]);
+            fileName = args[2];
 
-        dp = new DatagramPacket(arr,len,host,port);
-        ds.send(dp);
-
-
-        dp = new DatagramPacket(arr,len);
-        ds.receive(dp);
-        for (byte j : arr) {
-            System.out.println(j);
+            if (port < 0) throw new Exception();
+            return true;
+        } catch (Exception exception) {
+            Printer.println("Передайте хост, порт и название файла в качетчве аргументов");
         }
+        return false;
+    }
 
+    public static void main(String[] args) {
+        if (!initializeConnectionAddress(args)) return;
+        Scanner userScanner = new Scanner(System.in);
+        UserHandler userHandler = new UserHandler(userScanner);
+        Client client = new Client(host, port, userHandler, fileName);
+        client.run();
+        userScanner.close();
     }
 }
