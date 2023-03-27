@@ -19,7 +19,7 @@ import java.util.List;
  * The FileControl class provides methods to read and write files related to worker information
  */
 public class FileControl {
-    private final String[] file;
+    private final File file;
 
     /**
      * Constructor for FileControl
@@ -27,7 +27,7 @@ public class FileControl {
      * @param file an array of strings representing the file path
      */
 
-    public FileControl(String[] file) {
+    public FileControl(File file) {
         this.file = file;
         CollectionControl.timeInitialization = LocalDateTime.now();
     }
@@ -42,7 +42,6 @@ public class FileControl {
      */
     public void writeToFile(ArrayList<Worker> workers) throws IOException, XMLStreamException {
         try {
-            String file = this.file[0].trim();
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
             XMLStreamWriter writer = factory.createXMLStreamWriter(new FileOutputStream(file), "UTF-8");
             writer.writeStartDocument("UTF-8", "1.0");
@@ -111,62 +110,9 @@ public class FileControl {
      *
      * @return a List of workers read from the XML file
      */
-    public List<Worker> readXmlFile() throws InputException {
-        try {
-            if (file.length != 1) {
-                // Генерируем WrongArgumentsException, если в массиве не ровно один аргумент
-                throw new WrongArgumentsException();
-            }
-            if (!checkFilePermissions(this.file[0])) {
-                throw new InputException();
-            }
-
-            ParserXml parserXml = new ParserXml(this.file[0]);
-            return parserXml.parseWorkersFromXML();
-
-
-        } catch (WrongArgumentsException e) {
-            System.out.println("В арументы командной сроки было переданно " + this.file.length +
-                    " количество аргументов должно быть 1");
-            return null;
-        }
-
-    }
-    /**
-     * Checks the permissions of the file specified by the argument
-     *
-     * @param arg a string representing the file path to check the permissions of
-     */
-    public static boolean checkFilePermissions (String arg){
-        try {
-
-            // Получаем путь к файлу из первого аргумента
-            if (arg.isEmpty()) {
-                // Генерируем EmptyInputException, если путь к файлу пустой
-                throw new EmptyInputException();
-            }
-            File file = new File(arg);
-            if (!file.exists()) {
-
-                // Генерируем FileNotFoundException, если файл не существует
-                throw new FileNotFoundException();
-            }
-            if (!file.canRead() || !file.canWrite()) {
-                // Генерируем PermissionsDeniedException, если файл не имеет необходимых прав доступа
-                throw new PermissionsDeniedException();
-            }
-            return true;
-        } catch (EmptyInputException e) {
-            System.out.println("в аргумент командной строки было передано null");
-            return false;
-        } catch (FileNotFoundException e) {
-            System.out.println("Файл не найден, проверьте Path");
-            return false;
-        } catch (IOException e) {
-            System.out.println("Права этого файла не позволяют использовать его, попробуйте изменить права");
-            return false;
-        }
-
+    public List<Worker> readXmlFile() {
+        ParserXml parserXml = new ParserXml(this.file);
+        return parserXml.parseWorkersFromXML();
     }
 
 

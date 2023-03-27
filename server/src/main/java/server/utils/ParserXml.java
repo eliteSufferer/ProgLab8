@@ -25,14 +25,14 @@ import common.data.*;
 
 
 public class ParserXml {
-    String file;
+    private File file;
 
     /**
      * Constructs a new ParserXml object with the given file path.
      *
      * @param file the file path of the XML file to be parsed.
      */
-    public ParserXml(String file) {
+    public ParserXml(File file) {
         this.file = file;
     }
 
@@ -51,7 +51,7 @@ public class ParserXml {
         return str.matches(regex);
     }
     public List<Worker> parseWorkersFromXML() {
-        File xmlFile = new File(this.file);
+        File xmlFile = this.file;
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
 
