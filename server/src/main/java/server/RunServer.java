@@ -19,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 
 public class RunServer {
     private static final Logger logger = LogManager.getLogger(RunServer.class);
-    private static Map<String, Boolean> clientsMap = new HashMap<>(); // список адресов клиентов
 //    public static boolean connectionClosed = false;
 //    private static int port = 23332;
     public static void main(String[] args) {

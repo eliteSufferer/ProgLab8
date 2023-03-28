@@ -89,7 +89,7 @@ public class UserHandler {
                     return CheckCode.ERROR;
             }
         } catch (WrongCommandException e) {
-            System.out.println("Неправильное использование команды" + command);
+            System.out.println("Неправильное использование команды " + command);
             return CheckCode.ERROR;
         }
         return CheckCode.OK;
