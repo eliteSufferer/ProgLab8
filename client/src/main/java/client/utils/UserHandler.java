@@ -132,6 +132,7 @@ public class UserHandler {
                         }
                         userCommand = (userInput.trim() + " ").split(" ", 2);
                         userCommand[1] = userCommand[1].trim();
+                        System.out.println(userCommand[1]);
                 } catch (NoSuchElementException | IllegalStateException exception) {
                     Printer.println();
                     Printer.printerror("Произошла ошибка при вводе команды!");
@@ -160,6 +161,7 @@ public class UserHandler {
                         break;
                 }
             } catch (FileNotFoundException e) {
+                System.out.println(userCommand[1]);
                 Printer.printerror("Файл со скриптом не найден!");
             } catch (ScriptRecursionException e) {
                 Printer.printerror("Скрипты не могут вызываться рекурсивно!");
