@@ -26,12 +26,9 @@ public class RunServer {
             InetAddress localHost = InetAddress.getLocalHost();
             //System.out.println("IP-адрес сервера: " + localHost.getHostAddress());
             logger.info("Сервер запущен на порту {}", localHost.getHostAddress());
-            System.out.println("IP-адрес сервера: " + localHost.getHostAddress());
             DatagramPacket receivedPacket = new DatagramPacket(BUFFER, BUFFER.length);
-            System.out.println("Ожидание пакета...");
-            logger.info("Ожидание пакета");
+            logger.info("Ожидание пакета...");
             datagramSocket.receive(receivedPacket);
-            System.out.println("Пакет принят!");
             logger.info("Пакет получен");
             byte[] receivedData = receivedPacket.getData();
             ByteArrayInputStream in = new ByteArrayInputStream(receivedData);
@@ -45,7 +42,7 @@ public class RunServer {
             CommandControl commandControl = new CommandControl(new AddElement(collectionControl),
                     new AddElementIfMin(collectionControl),
                     new Clear(collectionControl),
-                    new ExecuteScript(collectionControl), new Exit(), new FilterGreaterStatus(collectionControl),
+                    new ExecuteScript(collectionControl), /*new Exit(),*/ new FilterGreaterStatus(collectionControl),
                     new GroupByStatus(collectionControl), new Help(collectionControl), new Info(collectionControl), new PrintFieldOfPerson(collectionControl),
                     new RemoveElementByID(collectionControl), new RemoveGreater(collectionControl), new SaveCollection(fileControl, collectionControl),
                     new Show(collectionControl), new Sort(collectionControl), new UpdateByID(collectionControl), collectionControl);

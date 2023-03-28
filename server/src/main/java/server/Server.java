@@ -3,15 +3,14 @@ package server;
 import server.utils.RequestHandler;
 import common.functional.*;
 
-import javax.crypto.spec.PSource;
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Server {
     private int port;
@@ -19,6 +18,7 @@ public class Server {
     private final byte[] BUFFER = new byte[4096];
     private RequestHandler requestHandler;
     private InetAddress host;
+    private static final Logger logger = LogManager.getLogger(RunServer.class);
 
     public Server(int port, RequestHandler requestHandler) throws SocketException, UnknownHostException {
         this.port = port;
@@ -32,9 +32,11 @@ public class Server {
         try {
             DatagramPacket receivedPacket = new DatagramPacket(BUFFER, BUFFER.length);
             datagramSocket.receive(receivedPacket);
+
             byte[] receivedData = receivedPacket.getData();
             ByteArrayInputStream in = new ByteArrayInputStream(receivedData);
             ObjectInputStream ois = new ObjectInputStream(in);
+            logger.info("Запрос получен");
             userRequest = (Request) ois.readObject();
             this.host = receivedPacket.getAddress();
             this.port = receivedPacket.getPort();
@@ -43,7 +45,6 @@ public class Server {
             System.out.println("Ошибка с сокетом");
         } catch (ClassNotFoundException e) {
             System.out.println("Объект не может быть сериализован");
-            e.printStackTrace();
         }
 
         return userRequest;
@@ -58,7 +59,6 @@ public class Server {
             sendByteArray = bos.toByteArray();
         } catch (IOException e) {
             System.out.println("Ошибка с I/O потоками");
-            e.printStackTrace();
         }
 
         assert sendByteArray != null;
@@ -66,9 +66,9 @@ public class Server {
 
         try {
             datagramSocket.send(packet);
+            logger.info("Ответ отправлен");
         } catch (IOException e) {
             System.out.println("ошибка при отправки пакета");
-            throw new RuntimeException(e);
         }
     }
 

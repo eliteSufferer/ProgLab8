@@ -47,9 +47,6 @@ public class UserHandler {
                 case "execute_script":
                     if (commandArgument.isEmpty()) throw new WrongCommandException();
                     return CheckCode.SCRIPT;
-                case "exit":
-                    if (!commandArgument.isEmpty()) throw new WrongCommandException();
-                    break;
                 case "filter_greater_than_status":
                     if (!commandArgument.isEmpty()) throw new WrongCommandException();
                     break;
@@ -83,6 +80,10 @@ public class UserHandler {
                 case "update_by_id":
                     if (commandArgument.isEmpty()) throw new WrongCommandException();
                     return CheckCode.UPDATE_OBJECT;
+                case "exit":
+                    if (!commandArgument.isEmpty()) throw new WrongCommandException();
+                    System.exit(0);
+                    break;
                 default:
                     Printer.println("Команда '" + command + "' не найдена. Наберите 'help' для справки.");
                     return CheckCode.ERROR;

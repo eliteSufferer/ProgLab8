@@ -33,7 +33,7 @@ public class CommandControl {
      */
 
     public CommandControl(Command addElement, Command addElementIfMin, Command clear,
-                          Command executeScript, Command exit, Command filterGreaterStatus,
+                          Command executeScript, /*Command exit,*/ Command filterGreaterStatus,
                           Command groupByStatus, Command help, Command info, Command printFieldOfPerson,
                           Command removeElementByID, Command removeGreater,
                           Command saveCollection, Command show, Command sort, Command updateByID, CollectionControl collectionControl) {
@@ -41,7 +41,7 @@ public class CommandControl {
         commandMapping.put(addElementIfMin.getName(), addElementIfMin);
         commandMapping.put(clear.getName(), clear);
         commandMapping.put(executeScript.getName(), executeScript);
-        commandMapping.put(exit.getName(), exit);
+        /*commandMapping.put(exit.getName(), exit);*/
         commandMapping.put(filterGreaterStatus.getName(), filterGreaterStatus);
         commandMapping.put(groupByStatus.getName(), groupByStatus);
         commandMapping.put(help.getName(), help);

@@ -66,7 +66,7 @@ public class Client {
                 System.out.println("Недопустимый ввод");
             }
             catch (ClassNotFoundException e) {
-                System.out.println("Не найден объект для чтения");
+                System.out.println("Ошибка при чтении пакета");
             }
         } while (!Objects.requireNonNull(requestToServer).getCommandName().equals("exit")) ;
         return false;
@@ -78,7 +78,7 @@ public class Client {
                 try {
                     processingStatus = processRequestToServer();
                 } catch (Exception exception) {
-                    System.out.println("Ошибка при работе клиента");
+                    System.out.println("Фатальная ошибка при работе клиента");
                 }
                 if (datagramChannel != null) datagramChannel.close();
                 Printer.println("Работа клиента завершена.");
