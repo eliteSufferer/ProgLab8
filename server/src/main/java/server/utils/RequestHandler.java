@@ -4,10 +4,8 @@ import common.functional.Request;
 import common.functional.Response;
 import common.functional.ServerResponseCode;
 import server.commands.Command;
-import server.utils.CommandControl;
 
 import java.io.FileNotFoundException;
-import java.net.*;
 import java.util.HashMap;
 
 public class RequestHandler {
@@ -20,6 +18,10 @@ public class RequestHandler {
     public Response handle(Request request) {
         commandName = request.getCommandName().trim();
         commandArgument = request.getCommandStringArgument();
+//        System.out.println("clooo: "+ commandArgument);
+//        if (Objects.equals(commandName, "close")){
+//            return new Response(ServerResponseCode.CLOSE, null);
+//        }
         try {
             HashMap<String, Command> commandHashMap = commandControl.getMapping();
             if (!commandHashMap.containsKey(commandName)) {
@@ -30,6 +32,7 @@ public class RequestHandler {
                     commandHashMap.get(key).execute(commandArgument, request.getCommandObjectArgument());
                 }
             }
+
         }catch (WrongArgumentsException | FileNotFoundException e){
             return null;
         }

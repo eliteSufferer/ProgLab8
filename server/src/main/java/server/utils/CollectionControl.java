@@ -73,6 +73,8 @@ public class CollectionControl {
         Collections.sort(workersCollection);
     }
 
+
+
     /**
      * Removes all elements from the workersCollection ArrayList that are greater than the specified Worker object
      * based on the natural ordering of the elements.
@@ -103,18 +105,12 @@ public class CollectionControl {
      * @throws IllegalArgumentException if the given string is not a valid status.
      */
 
-    public ArrayList<Worker> filterGreaterThanStatus(String line) throws IllegalArgumentException {
-        ArrayList<Worker> workerList = new ArrayList<>();
+    public List<Worker> filterGreaterThanStatus(String line) throws IllegalArgumentException {
         try {
-            Status person = Status.valueOf(line.toUpperCase());
-
-
-            for (Worker worker : workersCollection) {
-                if (person.ordinal() < worker.getStatus().ordinal()) {
-                    workerList.add(worker);
-                }
-            }
-            return workerList;
+            Status status = Status.valueOf(line.toUpperCase());
+            return workersCollection.stream()
+                    .filter(worker -> worker.getStatus().compareTo(status) > 0)
+                    .collect(Collectors.toList());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException();
         }
@@ -143,14 +139,12 @@ public class CollectionControl {
      * Sorts the workers in the collection by their person object and outputs the sorted list.
      */
     public void sortPerson() {
-        ArrayList<Person> sortedPerson = new ArrayList<>();
-        for (Worker worker : workersCollection)
-            sortedPerson.add(worker.getPerson());
-        Collections.sort(sortedPerson);
-        for (Person person : sortedPerson) {
-            ResponseOutputer.appendln(person.toString());
-        }
+        workersCollection.stream()
+                .map(Worker::getPerson)
+                .sorted()
+                .forEach(person -> ResponseOutputer.appendln(person.toString()));
     }
+
 
     /**
      * Removes the worker from the collection with the given ID.
