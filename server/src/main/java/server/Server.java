@@ -2,6 +2,8 @@ package server;
 
 import server.utils.RequestHandler;
 import common.functional.*;
+
+import javax.crypto.spec.PSource;
 import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.DatagramPacket;
@@ -16,7 +18,7 @@ public class Server {
     private final DatagramSocket datagramSocket;
     private final byte[] BUFFER = new byte[4096];
     private RequestHandler requestHandler;
-    private InetAddress host = InetAddress.getByName("localhost");
+    private InetAddress host;
 
     public Server(int port, RequestHandler requestHandler) throws SocketException, UnknownHostException {
         this.port = port;
@@ -38,10 +40,9 @@ public class Server {
             this.port = receivedPacket.getPort();
 
         } catch (IOException e) {
-            // Ошибка ввода/вывода при работе с сокетом
-            e.printStackTrace();
+            System.out.println("Ошибка с сокетом");
         } catch (ClassNotFoundException e) {
-            // Ошибка при десериализации объекта
+            System.out.println("Объект не может быть сериализован");
             e.printStackTrace();
         }
 
@@ -56,7 +57,7 @@ public class Server {
             oos.writeObject(response);
             sendByteArray = bos.toByteArray();
         } catch (IOException e) {
-            // Ошибка ввода/вывода при работе с потоками
+            System.out.println("Ошибка с I/O потоками");
             e.printStackTrace();
         }
 
@@ -66,7 +67,7 @@ public class Server {
         try {
             datagramSocket.send(packet);
         } catch (IOException e) {
-            // Ошибка ввода/вывода при отправке пакета
+            System.out.println("ошибка при отправки пакета");
             throw new RuntimeException(e);
         }
     }
