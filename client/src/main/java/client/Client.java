@@ -60,15 +60,17 @@ public class Client {
                 Object deserializedObject = objectInputStream.readObject();
                 serverResponse = (Response) deserializedObject;
                 Printer.print(serverResponse.getResponseBody(), serverResponse.getResponseCode());
-            } catch (IOException e) {
-                System.out.println("Непредвиденная ошибка при отправке данных");
             } catch (NullPointerException e){
                 System.out.println("Недопустимый ввод");
+                assert serverResponse != null;
+                requestToServer = userHandler.handle(serverResponse.getResponseCode());
             }
             catch (ClassNotFoundException e) {
                 System.out.println("Ошибка при чтении пакета");
+            } catch (IOException e) {
+                System.out.println("Непредвиденная ошибка при отправке данных");
             }
-        } while (!Objects.requireNonNull(requestToServer).getCommandName().equals("exit")) ;
+        } while (requestToServer == null || !requestToServer.getCommandName().equals("exit"));
         return false;
     }
     public void run() {
