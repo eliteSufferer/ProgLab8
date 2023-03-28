@@ -35,28 +35,13 @@ public class UserHandler {
             switch (command) {
                 case "":
                     return CheckCode.ERROR;
-                case "help":
-                    if (!commandArgument.isEmpty()) throw new RuntimeException();
-                    break;
-                case "info":
-                    if (!commandArgument.isEmpty()) throw new RuntimeException();
-                    break;
-                case "show":
-                    if (!commandArgument.isEmpty()) throw new RuntimeException();
-                    break;
                 case "addElement":
                     if (!commandArgument.isEmpty()) throw new RuntimeException();
                     return CheckCode.OBJECT;
-                case "update":
-                    if (commandArgument.isEmpty()) throw new RuntimeException();
-                    return CheckCode.UPDATE_OBJECT;
-                case "remove_by_id":
-                    if (commandArgument.isEmpty()) throw new RuntimeException();
-                    break;
-                case "clear":
+                case "add_if_min":
                     if (!commandArgument.isEmpty()) throw new RuntimeException();
-                    break;
-                case "save":
+                    return CheckCode.OBJECT;
+                case "clear":
                     if (!commandArgument.isEmpty()) throw new RuntimeException();
                     break;
                 case "execute_script":
@@ -65,27 +50,39 @@ public class UserHandler {
                 case "exit":
                     if (!commandArgument.isEmpty()) throw new RuntimeException();
                     break;
-                case "add_if_min":
+                case "filter_greater_than_status":
                     if (!commandArgument.isEmpty()) throw new RuntimeException();
+                    break;
+                case "group_counting_by_status":
+                    if (!commandArgument.isEmpty()) throw new RuntimeException();
+                    break;
+                case "help":
+                    if (!commandArgument.isEmpty()) throw new RuntimeException();
+                    break;
+                case "info":
+                    if (!commandArgument.isEmpty()) throw new RuntimeException();
+                    break;
+                case "print_field_ascending_person":
+                    if (!commandArgument.isEmpty()) throw new RuntimeException();
+                    break;
+                case "remove_element_by_id":
+                    if (commandArgument.isEmpty()) throw new RuntimeException();
                     return CheckCode.OBJECT;
                 case "remove_greater":
                     if (!commandArgument.isEmpty()) throw new RuntimeException();
                     return CheckCode.OBJECT;
-                case "history":
+                case "save":
                     if (!commandArgument.isEmpty()) throw new RuntimeException();
                     break;
-                case "sum_of_health":
+                case "show":
                     if (!commandArgument.isEmpty()) throw new RuntimeException();
                     break;
-                case "max_by_melee_weapon":
+                case "sort":
                     if (!commandArgument.isEmpty()) throw new RuntimeException();
                     break;
-                case "filter_by_weapon_type":
+                case "update_by_id":
                     if (commandArgument.isEmpty()) throw new RuntimeException();
-                    break;
-                case "server_exit":
-                    if (!commandArgument.isEmpty()) throw new RuntimeException();
-                    break;
+                    return CheckCode.UPDATE_OBJECT;
                 default:
                     Printer.println("Команда '" + command + "' не найдена. Наберите 'help' для справки.");
                     return CheckCode.ERROR;
