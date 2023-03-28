@@ -22,6 +22,7 @@ public class CollectionControl {
     private final ArrayList<Worker> workersCollection = new ArrayList<>();
     HashMap<String, Command> BufferOfCommandMap;
     protected static LocalDateTime timeInitialization = null;
+
     FileControl fileControl;
     /**
      * Constructor for the CollectionControl class. It initializes the fileControl and communicationControl objects
@@ -61,7 +62,7 @@ public class CollectionControl {
 
     public void clear() {
         workersCollection.clear();
-        System.out.println("Коллекция очистилась...");
+        ResponseOutputer.appendln("Коллекция очистилась...");
 
     }
 
@@ -126,7 +127,7 @@ public class CollectionControl {
 
         Map<Status, List<Worker>> workersByStatus = workersCollection.stream().collect(Collectors.groupingBy(Worker::getStatus));
         for (Status status : workersByStatus.keySet()) {
-            System.out.println("Кол-во работников со статусом '" + status + "': " + workersByStatus.get(status).size());
+            ResponseOutputer.appendln("Кол-во работников со статусом '" + status + "': " + workersByStatus.get(status).size());
         }
     }
 
@@ -134,7 +135,7 @@ public class CollectionControl {
      * Outputs information about the worker collection, including the type, time of initialization, and number of elements.
      */
     public void getInfo() {
-        System.out.println("Тип: Worker" + "\n" + "Время инициализации: " + timeInitialization + "\n" + "количество элементов: " + workersCollection.size());
+        ResponseOutputer.appendln("Тип: Worker" + "\n" + "Время инициализации: " + timeInitialization + "\n" + "количество элементов: " + workersCollection.size());
 
     }
 
@@ -147,7 +148,7 @@ public class CollectionControl {
             sortedPerson.add(worker.getPerson());
         Collections.sort(sortedPerson);
         for (Person person : sortedPerson) {
-            System.out.println(person.toString());
+            ResponseOutputer.appendln(person.toString());
         }
     }
 
@@ -160,7 +161,7 @@ public class CollectionControl {
         try {
             workersCollection.remove(id);
         } catch (NoSuchElementException e) {
-            System.out.println("Элемента с такии id нет в коллекции");
+            ResponseOutputer.appendln("Элемента с такии id нет в коллекции");
         }
     }
 
@@ -170,7 +171,7 @@ public class CollectionControl {
 
     public void show() {
         for (Worker worker : workersCollection) {
-            System.out.println(worker.toString());
+            ResponseOutputer.appendln(worker.toString());
         }
     }
 
@@ -209,7 +210,7 @@ public class CollectionControl {
             workersCollection.set(id - 1, worker);
 
         } catch (InputException e) {
-            System.out.println("такого рабочего нет");
+            ResponseOutputer.appendln("такого рабочего нет");
         }
     }
 

@@ -1,5 +1,7 @@
 package common.data;
 
+import java.io.Serializable;
+
 /**
  * The {@code Status} enumeration represents the different statuses that
  * an employee can have within a company.
@@ -16,7 +18,7 @@ package common.data;
  * <p>The {@link #nameList()} method returns a comma-separated list of the
  * names of all the available statuses.</p>
  */
-public enum Status {
+public enum Status implements Serializable {
 
     /**
      * The employee is currently hired.

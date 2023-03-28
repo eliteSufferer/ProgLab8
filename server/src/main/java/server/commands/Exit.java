@@ -1,6 +1,7 @@
 package server.commands;
 
 import common.exceptions.*;
+import server.utils.ResponseOutputer;
 
 /**
 
@@ -27,10 +28,10 @@ public class Exit extends AbstractCommand {
     public void execute(String argument, Object commandObjectArgument) {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
-            System.out.println("terminating the program");
+            ResponseOutputer.appendln("terminating the program");
             System.exit(0);
         } catch (WrongArgumentsException e){
-            System.out.println("exceeded number of arguments");
+            ResponseOutputer.appendln("exceeded number of arguments");
         }
     }
 }

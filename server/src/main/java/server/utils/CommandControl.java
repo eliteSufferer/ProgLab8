@@ -36,7 +36,7 @@ public class CommandControl {
                           Command executeScript, Command exit, Command filterGreaterStatus,
                           Command groupByStatus, Command help, Command info, Command printFieldOfPerson,
                           Command removeElementByID, Command removeGreater,
-                          Command saveCollection, Command show, Command sort, Command updateByID) {
+                          Command saveCollection, Command show, Command sort, Command updateByID, CollectionControl collectionControl) {
         commandMapping.put(addElement.getName(), addElement);
         commandMapping.put(addElementIfMin.getName(), addElementIfMin);
         commandMapping.put(clear.getName(), clear);
@@ -53,6 +53,7 @@ public class CommandControl {
         commandMapping.put(sort.getName(), sort);
         commandMapping.put(updateByID.getName(), updateByID);
         commandMapping.put(saveCollection.getName(), saveCollection);
+        collectionControl.getMappingOfCommands(commandMapping);
     }
 
     /**

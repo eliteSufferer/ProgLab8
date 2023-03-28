@@ -5,6 +5,7 @@ package server.commands;
 import common.exceptions.*;
 import server.utils.CollectionControl;
 import server.utils.FileControl;
+import server.utils.ResponseOutputer;
 
 import java.io.Console;
 import java.io.File;
@@ -43,9 +44,9 @@ public class ExecuteScript extends AbstractCommand {
         argument = argument.trim();
         try {
             if (argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
-            System.out.println("Скрипт выполняется");
+            ResponseOutputer.appendln("Скрипт выполняется");
         } catch (WrongArgumentsException e) {
-            System.out.println("неверные аргументы");
+            ResponseOutputer.appendln("неверные аргументы");
         }
 
     }

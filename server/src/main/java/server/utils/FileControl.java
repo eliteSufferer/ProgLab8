@@ -99,9 +99,9 @@ public class FileControl {
             writer.flush();
             writer.close();
         } catch (FileNotFoundException e) {
-            System.out.println("сюда сохранить невозможно!");
+            ResponseOutputer.appendln("сюда сохранить невозможно!");
         } catch (Exception e){
-            System.out.println("неверные данные записи");
+            ResponseOutputer.appendln("неверные данные записи");
         }
     }
 
@@ -111,7 +111,7 @@ public class FileControl {
      * @return a List of workers read from the XML file
      */
     public List<Worker> readXmlFile() {
-        ParserXml parserXml = new ParserXml(this.file);
+        ParserXml parserXml = new ParserXml(file);
         return parserXml.parseWorkersFromXML();
     }
 

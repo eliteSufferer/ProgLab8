@@ -1,12 +1,14 @@
 package common.data;
 
+import java.io.Serializable;
+
 /**
  * The Location class represents the location of a person or worker
  * /
  * public class Location
  * The x coordinate of the location
  */
-public class Location {
+public class Location implements Serializable {
 
     private float x;
     /**

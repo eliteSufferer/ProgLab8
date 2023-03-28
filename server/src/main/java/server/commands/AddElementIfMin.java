@@ -39,7 +39,7 @@ public class AddElementIfMin extends AbstractCommand {
                     workerPacket.getStatus(), workerPacket.getPerson());
             if (!collectionControl.addIfSmallerSalary(newWorker)) newWorker = null;
         } catch (WrongArgumentsException e) {
-            System.out.println("Превышенно кол-во аргементов");
+            ResponseOutputer.appendln("Превышенно кол-во аргементов");
         }
     }
 }

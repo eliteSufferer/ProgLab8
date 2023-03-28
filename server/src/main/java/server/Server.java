@@ -14,12 +14,11 @@ import java.nio.channels.DatagramChannel;
 public class Server {
 
     private int port;
-    private DatagramSocket datagramSocket;
-    private DatagramPacket receivedPacket;
-    private final byte[] BUFFER = new byte[1024];
+    private final DatagramSocket datagramSocket;
+    private final byte[] BUFFER = new byte[4096];
     private RequestHandler requestHandler;
-    private InetAddress host;
-    public Server(int port, RequestHandler requestHandler) throws SocketException {
+    private InetAddress host = InetAddress.getByName("localhost");;
+    public Server(int port, RequestHandler requestHandler) throws SocketException, UnknownHostException {
         this.port = port;
         this.requestHandler = requestHandler;
         this.datagramSocket = new DatagramSocket(this.port);
@@ -40,6 +39,8 @@ public class Server {
             ByteArrayInputStream in = new ByteArrayInputStream(receivedData);
             ObjectInputStream ois = new ObjectInputStream(in);
             userRequest = (Request) ois.readObject();
+            this.host = receivedPacket.getAddress();
+            this.port = receivedPacket.getPort();
 
 
         }catch (IOException | ClassNotFoundException e){
@@ -53,6 +54,7 @@ public class Server {
     private void sendData(Response response){
         byte[] sendByteArray = null;
 
+
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(bos)) {
             oos.writeObject(response);
@@ -62,8 +64,6 @@ public class Server {
         }
 
 
-        host = receivedPacket.getAddress();
-        port = receivedPacket.getPort();
 
         assert sendByteArray != null;
         DatagramPacket packet = new DatagramPacket(sendByteArray, sendByteArray.length, host, port);
@@ -74,9 +74,12 @@ public class Server {
         }
     }
     public void connection() {
-        Request request = receiveData();
+        while (true) {
+            Request request = receiveData();
 
-        Response response = requestHandler.handle(request);
-        sendData(response);
+            Response response = requestHandler.handle(request);
+            System.out.println(response);
+            sendData(response);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package common.data;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 /**
@@ -8,7 +9,7 @@ import java.util.Objects;
 
  Implements the Comparable interface for comparing workers based on salary.
  */
-public class Worker implements Comparable<Worker>{
+public class Worker implements Comparable<Worker>, Serializable {
     private Integer id;
     private String name;
     private Coordinates coordinates;

@@ -34,7 +34,7 @@ public class Clear extends AbstractCommand {
             collectionControl.clear();
 
         } catch (WrongArgumentsException e) {
-            System.out.println("Превышенно кол-во аргументов");
+            ResponseOutputer.appendln("Превышенно кол-во аргументов");
         }
     }
 }

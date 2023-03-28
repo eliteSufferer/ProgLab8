@@ -30,7 +30,7 @@ public class PrintFieldOfPerson extends AbstractCommand {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.sortPerson();
         } catch (WrongArgumentsException e) {
-            System.out.println(e.getMessage());
+            ResponseOutputer.appendln(e.getMessage());
         }
     }
 }

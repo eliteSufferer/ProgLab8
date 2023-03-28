@@ -4,25 +4,27 @@ import client.utils.UserHandler;
 import common.functional.Printer;
 import common.functional.Request;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 import java.util.Scanner;
 
 public class RunClient {
-    private static String host;
-    private static int port;
+    private static String host = "localhost";
+    private static int port = 23332;
 
     private static File file;
 
+
+
     private static boolean initializeConnectionAddress(String[] args) {
         try {
-            if (args.length != 3) throw new Exception();
-            host = args[0];
-            port = Integer.parseInt(args[1]);
-            file = new File(args[2]);
+            if (args.length != 3) System.out.println("hello");
+            file = new File("test.xml");
 
             if (port < 0) throw new Exception();
             return true;
@@ -30,15 +32,39 @@ public class RunClient {
             Printer.println("Передайте хост, порт и название файла в качетчве аргументов");
         }
         return false;
+
     }
 
     public static void main(String[] args) {
-        if (!initializeConnectionAddress(args)) return;
-        Scanner userScanner = new Scanner(System.in);
-        UserHandler userHandler = new UserHandler(userScanner);
-        Client client = new Client(host, port, userHandler);
-        new Request(file);
-        client.run();
-        userScanner.close();
+        try {
+            if (!initializeConnectionAddress(args)) return;
+            Scanner userScanner = new Scanner(System.in);
+            UserHandler userHandler = new UserHandler(userScanner);
+            Client client = new Client(host, port, userHandler);
+            DatagramChannel datagramChannel = DatagramChannel.open();
+            InetSocketAddress address = new InetSocketAddress(host, port);
+            datagramChannel.connect(address);
+            Request initialRequest = new Request(file);
+            byte[] bytes = null;
+            try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                 ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+                oos.writeObject(initialRequest);
+                bytes = bos.toByteArray();
+                ByteBuffer buffer = ByteBuffer.allocate(4096);
+                buffer.put(bytes);
+                buffer.flip();
+                InetSocketAddress isa = new InetSocketAddress(host, port);
+                datagramChannel.send(buffer, address);
+                datagramChannel.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            client.run();
+            userScanner.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
     }
+
 }

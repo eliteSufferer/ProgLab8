@@ -1,13 +1,16 @@
 package common.data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
+
 /**
 
  The Person class represents a person and contains information about their birthday, height, passport ID, and location.
  It implements the Comparable interface, allowing for comparison of two Person objects based on their height.
  */
 
-public class Person implements Comparable<Person> {
+public class Person implements Comparable<Person>, Serializable {
     /**
      * The birthday of the person.
      */

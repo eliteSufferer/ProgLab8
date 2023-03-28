@@ -42,7 +42,7 @@ public class RemoveGreater extends AbstractCommand {
                     workerPacket.getPerson()));
             collectionControl.updateAllIDs();
         } catch (WrongArgumentsException e) {
-            System.out.println(e.getMessage());
+            ResponseOutputer.appendln(e.getMessage());
         }
 
     }

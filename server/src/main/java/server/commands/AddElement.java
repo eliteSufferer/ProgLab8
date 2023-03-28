@@ -5,6 +5,7 @@ import common.data.Worker;
 import common.functional.WorkerPacket;
 import server.utils.CollectionControl;
 import common.exceptions.*;
+import server.utils.ResponseOutputer;
 
 /**
  * The {@code AddElement} class represents a command that adds a new worker element to the collection.
@@ -39,7 +40,9 @@ public class AddElement extends AbstractCommand {
                     workerPacket.getSalary(), workerPacket.getPosition(),
                     workerPacket.getStatus(), workerPacket.getPerson()));
         } catch (WrongArgumentsException e) {
-            System.out.println(e.getMessage());
+            ResponseOutputer.appendln(e.getMessage());
+            System.out.println("ggg");
+            e.printStackTrace();
         }
     }
 

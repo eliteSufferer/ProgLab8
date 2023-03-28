@@ -1,12 +1,13 @@
 package common.data;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * The {@code Coordinates} class represents the coordinates of a location.
  * It contains the x and y values.
  */
-public class Coordinates {
+public class Coordinates implements Serializable {
     private Integer x;
     private int y;
 

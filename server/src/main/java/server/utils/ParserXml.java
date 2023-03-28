@@ -66,7 +66,7 @@ public class ParserXml {
             }
             return workerList;
         } catch (Exception e) {
-            System.out.println("Неверные данные в xml файле!");
+            ResponseOutputer.appendln("Неверные данные в xml файле!");
             return null;
         }
 

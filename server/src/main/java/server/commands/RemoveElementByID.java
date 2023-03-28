@@ -31,11 +31,11 @@ public class RemoveElementByID extends AbstractCommand {
             int id = Integer.parseInt(argument.trim());
             collectionControl.removeElementByID(id);
             collectionControl.updateAllIDs();
-            System.out.println("Successfully removed");
+            ResponseOutputer.appendln("Successfully removed");
         } catch (NumberFormatException e) {
-            System.out.println("Incorrect ID format");
+            ResponseOutputer.appendln("Incorrect ID format");
         } catch (WrongArgumentsException e) {
-            System.out.println(e.getMessage());
+            ResponseOutputer.appendln(e.getMessage());
         }
 
     }

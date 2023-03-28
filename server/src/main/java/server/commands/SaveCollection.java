@@ -29,7 +29,7 @@ public class SaveCollection extends AbstractCommand {
             collectionControl.saveCollection();
 
         } catch (WrongArgumentsException e) {
-            System.out.println(e.getMessage());
+            ResponseOutputer.appendln(e.getMessage());
         }catch (Exception e){
             e.printStackTrace();
         }

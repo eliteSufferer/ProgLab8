@@ -35,12 +35,12 @@ public class FilterGreaterStatus extends AbstractCommand {
             line = argument.trim();
 
             for (Worker worker : collectionControl.filterGreaterThanStatus(line)) {
-                System.out.println(worker.toString());
+                ResponseOutputer.appendln(worker.toString());
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("Не является элементом Status");
+            ResponseOutputer.appendln("Не является элементом Status");
         } catch (WrongArgumentsException e) {
-            System.out.println("Неверное кол-во аргементов...");
+            ResponseOutputer.appendln("Неверное кол-во аргементов...");
         }
     }
 }

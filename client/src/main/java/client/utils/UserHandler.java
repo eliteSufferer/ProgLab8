@@ -44,7 +44,7 @@ public class UserHandler {
                 case "show":
                     if (!commandArgument.isEmpty()) throw new RuntimeException();
                     break;
-                case "add":
+                case "addElement":
                     if (!commandArgument.isEmpty()) throw new RuntimeException();
                     return CheckCode.OBJECT;
                 case "update":

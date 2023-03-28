@@ -20,7 +20,7 @@ public class GroupByStatus extends AbstractCommand{
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.gropByStatus();
         } catch (WrongArgumentsException e) {
-            System.out.println("Неверное кол-во аргементов");
+            ResponseOutputer.appendln("Неверное кол-во аргементов");
         }
     }
 }

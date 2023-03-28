@@ -31,10 +31,10 @@ public class Help extends AbstractCommand {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.sendCommandMap().forEach((key, value) -> {
-                System.out.println(key + " : " + value.getDescription());
+                ResponseOutputer.appendln(key + " : " + value.getDescription());
             });
         } catch (WrongArgumentsException e) {
-            System.out.println("у данной команды не должно быть аргементов");
+            ResponseOutputer.appendln("у данной команды не должно быть аргементов");
         }
     }
 }

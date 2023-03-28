@@ -34,11 +34,11 @@ public class UpdateByID extends AbstractCommand {
 
             int id = Integer.parseInt(argument.trim());
             collectionControl.updateByID(id, worker);
-            System.out.println("Замена успешно завершена!");
+            ResponseOutputer.appendln("Замена успешно завершена!");
         } catch (WrongArgumentsException e) {
-            System.out.println(e.getMessage());
+            ResponseOutputer.appendln(e.getMessage());
         } catch (NumberFormatException e) {
-            System.out.println("неправильный тип данных. Должен быть целочисленным");
+            ResponseOutputer.appendln("неправильный тип данных. Должен быть целочисленным");
         }
     }
 }

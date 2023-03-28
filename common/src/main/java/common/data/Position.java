@@ -1,5 +1,7 @@
 package common.data;
 
+import java.io.Serializable;
+
 /**
  * The {@code Position} enumeration represents the different positions
  * that an employee can hold within a company.
@@ -16,7 +18,7 @@ package common.data;
  * <p>The {@link #nameList()} method returns a comma-separated list of the
  * names of all the available positions.</p>
  */
-public enum Position {
+public enum Position implements Serializable {
 
     /**
      * The director position.
