@@ -30,13 +30,7 @@ public class RequestHandler {
                     commandHashMap.get(key).execute(commandArgument, request.getCommandObjectArgument());
                 }
             }
-        }catch (WrongArgumentsException e){
-            ResponseOutputer.appendln("d");
-            System.out.println("d");
-            return null;
-        }catch ( FileNotFoundException e){
-            ResponseOutputer.appendln("dd");
-            System.out.println("dd");
+        }catch (WrongArgumentsException | FileNotFoundException e){
             return null;
         }
         return new Response(ServerResponseCode.OK, ResponseOutputer.getAndClear());

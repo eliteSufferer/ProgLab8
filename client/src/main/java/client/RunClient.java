@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class RunClient {
@@ -58,15 +59,12 @@ public class RunClient {
                 datagramChannel.send(buffer, address);
                 System.out.println("Отправлено!");
                 datagramChannel.close();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
             client.run();
             userScanner.close();
-        } catch (IOException e){
-            e.printStackTrace();
+        } catch (Exception e){
+            System.out.println("Возникла ошибка");
         }
-
     }
 
 }
