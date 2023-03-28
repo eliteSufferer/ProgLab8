@@ -55,9 +55,8 @@ public class RunClient {
                 ByteBuffer buffer = ByteBuffer.allocate(4096);
                 buffer.put(bytes);
                 buffer.flip();
-                System.out.println("Соединение выполнено, хост  повторно = " + host);
                 datagramChannel.send(buffer, address);
-                System.out.println("Отправлено!");
+                System.out.println("Отправлено! Можете вводить команды");
                 datagramChannel.close();
             }
             client.run();
