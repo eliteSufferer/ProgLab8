@@ -14,13 +14,14 @@ import java.net.*;
 import java.util.List;
 
 public class RunServer {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         try {
             ResponseOutputer.appendln("main запущен");
             DatagramSocket datagramSocket = new DatagramSocket(23332);
             byte[] BUFFER = new byte[4096];
             Request userRequest = null;
-
+            InetAddress localHost = InetAddress.getLocalHost();
+            System.out.println("IP-адрес сервера: " + localHost.getHostAddress());
             DatagramPacket receivedPacket = new DatagramPacket(BUFFER, BUFFER.length);
             System.out.println("ожидание пакета");
             datagramSocket.receive(receivedPacket);
@@ -54,13 +55,13 @@ public class RunServer {
             server.connection();
 
         } catch (IOException e) {
-            // Ошибка ввода/вывода при работе с сокетом
+            System.out.println("Ошибка при работе с сокетом");
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            // Ошибка при десериализации объекта
+            System.out.println("не получается сериализовать объект");
             e.printStackTrace();
         } catch (Exception e) {
-            // Другая необработанная ошибка
+            System.out.println("ошибка");
             e.printStackTrace();
         }
     }
