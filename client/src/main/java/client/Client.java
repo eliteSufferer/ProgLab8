@@ -45,7 +45,9 @@ public class Client {
                 buffer.flip();
                 InetSocketAddress address = new InetSocketAddress(host, port);
                 datagramChannel.send(buffer, address);
-
+                if (requestToServer.getCommandName().equals("exit")){
+                    System.exit(0);
+                }
                 ByteBuffer receiveBuffer = ByteBuffer.allocate(4096);
 
                 datagramChannel.receive(receiveBuffer);
@@ -57,9 +59,7 @@ public class Client {
                 ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
                 Object deserializedObject = objectInputStream.readObject();
                 serverResponse = (Response) deserializedObject;
-                Printer.print(serverResponse.getResponseBody());
-            } catch (InvalidClassException | NotSerializableException exception) {
-                exception.printStackTrace();
+                Printer.print(serverResponse.getResponseBody(), serverResponse.getResponseCode());
             } catch (IOException exception) {
                 exception.printStackTrace();
             } catch (ClassNotFoundException e) {

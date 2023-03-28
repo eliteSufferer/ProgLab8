@@ -44,6 +44,7 @@ public class RunClient {
             DatagramChannel datagramChannel = DatagramChannel.open();
             InetSocketAddress address = new InetSocketAddress(host, port);
             datagramChannel.connect(address);
+            System.out.println("Соединение выполнено, хост = " + host);
             Request initialRequest = new Request(file);
             byte[] bytes = null;
             try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -53,8 +54,9 @@ public class RunClient {
                 ByteBuffer buffer = ByteBuffer.allocate(4096);
                 buffer.put(bytes);
                 buffer.flip();
-                InetSocketAddress isa = new InetSocketAddress(host, port);
+                System.out.println("Соединение выполнено, хост  повторно = " + host);
                 datagramChannel.send(buffer, address);
+                System.out.println("Отправлено!");
                 datagramChannel.close();
             } catch (Exception e) {
                 e.printStackTrace();

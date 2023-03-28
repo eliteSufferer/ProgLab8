@@ -9,15 +9,11 @@ public class Printer {
          *
          * @param toOut Object to print
          */
-        public static void print(Object toOut) {
+        public static void print(Object toOut, ServerResponseCode responseCode) {
             System.out.print(toOut);
-        }
-
-        /**
-         * Prints \n to Console
-         */
-        public static void println() {
-            System.out.println();
+            System.out.println(" ");
+            System.out.print(responseCode);
+            System.out.println(" ");
         }
 
         /**
@@ -35,6 +31,7 @@ public class Printer {
          * @param toOut Error to print
          */
         public static void printerror(Object toOut) {
+            System.out.println(" ");
             System.out.println("error: " + toOut);
         }
 
