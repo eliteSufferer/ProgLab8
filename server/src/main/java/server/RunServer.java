@@ -12,8 +12,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.*;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RunServer {
+    private static final Logger logger = LogManager.getLogger(RunServer.class);
     public static void main(String[] args) {
         try {
             ResponseOutputer.appendln("main запущен");
@@ -21,11 +24,15 @@ public class RunServer {
             byte[] BUFFER = new byte[4096];
             Request userRequest = null;
             InetAddress localHost = InetAddress.getLocalHost();
+            //System.out.println("IP-адрес сервера: " + localHost.getHostAddress());
+            logger.info("Сервер запущен на порту {}", localHost.getHostAddress());
             System.out.println("IP-адрес сервера: " + localHost.getHostAddress());
             DatagramPacket receivedPacket = new DatagramPacket(BUFFER, BUFFER.length);
-            System.out.println("ожидание пакета");
+            System.out.println("Ожидание пакета...");
+            logger.info("Ожидание пакета");
             datagramSocket.receive(receivedPacket);
-            System.out.println("пакет принят!Ё");
+            System.out.println("Пакет принят!");
+            logger.info("Пакет получен");
             byte[] receivedData = receivedPacket.getData();
             ByteArrayInputStream in = new ByteArrayInputStream(receivedData);
             ObjectInputStream ois = new ObjectInputStream(in);
@@ -56,13 +63,16 @@ public class RunServer {
 
         } catch (IOException e) {
             System.out.println("Ошибка при работе с сокетом");
-            e.printStackTrace();
+            logger.error("Ошибка при работе с сокетом");
+            //e.printStackTrace();
         } catch (ClassNotFoundException e) {
             System.out.println("не получается сериализовать объект");
-            e.printStackTrace();
+            logger.error("не удалось сериализовать объект");
+            //e.printStackTrace();
         } catch (Exception e) {
             System.out.println("ошибка");
-            e.printStackTrace();
+            logger.error("Произошла неожиданная ошибка");
+            //e.printStackTrace();
         }
     }
 }

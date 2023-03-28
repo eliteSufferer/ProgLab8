@@ -9,7 +9,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.nio.channels.SocketChannel;
+import java.util.Objects;
 
 public class Client {
     private String host;
@@ -60,12 +60,15 @@ public class Client {
                 Object deserializedObject = objectInputStream.readObject();
                 serverResponse = (Response) deserializedObject;
                 Printer.print(serverResponse.getResponseBody(), serverResponse.getResponseCode());
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+            } catch (IOException e) {
+                System.out.println("Непредвиденная ошибка при отправке данных");
+            } catch (NullPointerException e){
+                System.out.println("Недопустимый ввод");
             }
-        } while (!requestToServer.getCommandName().equals("exit")) ;
+            catch (ClassNotFoundException e) {
+                System.out.println("Не найден объект для чтения");
+            }
+        } while (!Objects.requireNonNull(requestToServer).getCommandName().equals("exit")) ;
         return false;
     }
     public void run() {
@@ -75,13 +78,14 @@ public class Client {
                 try {
                     processingStatus = processRequestToServer();
                 } catch (Exception exception) {
-                    exception.printStackTrace();
+                    System.out.println("Ошибка при работе клиента");
                 }
                 if (datagramChannel != null) datagramChannel.close();
-                Printer.println("Работа клиента успешно завершена.");
+                Printer.println("Работа клиента завершена.");
+                System.exit(0);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Возникла ошибочка!");
         }
 
     }

@@ -12,6 +12,7 @@ import common.functional.WorkerPacket;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -108,8 +109,8 @@ public class UserHandler {
 
     public Request handle(ServerResponseCode responseCode){
         String userInput;
-        String[] userCommand;
-        CheckCode processingCode;
+        String[] userCommand = new String[0];
+        CheckCode processingCode = null;
         try{
             do {
                 try {
@@ -121,20 +122,21 @@ public class UserHandler {
                             chosenScanner = scannerStack.pop();
                             Printer.println("Возвращаюсь к скрипту '" + scriptStack.pop().getName() + "'...");
                         }
-                        if (fileMode()){
-                            userInput = chosenScanner.nextLine();
-                            if (!userInput.isEmpty()){
-                                Printer.println(userInput);
-                            }
-                        } else{
-                            userInput = chosenScanner.nextLine();
+                        if (!chosenScanner.hasNextLine()) {
+                            break; 
                         }
+                        userInput = chosenScanner.nextLine();
+                        if (fileMode() && !userInput.isEmpty()) {
+                            Printer.println(userInput);
+                        }
+
                         userCommand = (userInput.trim() + " ").split(" ", 2);
                         userCommand[1] = userCommand[1].trim();
                         System.out.println(userCommand[1]);
                 } catch (NoSuchElementException | IllegalStateException e) {
                     Printer.printerror("Произошла ошибка при вводе команды!");
                     userCommand = new String[]{"", ""};
+
                 }
                 processingCode = processCommand(userCommand[0], userCommand[1]);
 
@@ -142,7 +144,7 @@ public class UserHandler {
             try {
                 if (fileMode() && (responseCode == ServerResponseCode.ERROR || processingCode == CheckCode.ERROR))
                     throw new IncorrectInputInScriptException();
-                switch (processingCode) {
+                switch (Objects.requireNonNull(processingCode)) {
                     case OBJECT:
                     case UPDATE_OBJECT:
                         WorkerPacket addWorker = generateWorkerAdd();
