@@ -60,20 +60,6 @@ public class Client {
                 Object deserializedObject = objectInputStream.readObject();
                 serverResponse = (Response) deserializedObject;
                 Printer.print(serverResponse.getResponseBody(), serverResponse.getResponseCode());
-                if (requestToServer.getCommandName().equals("exit")) {
-                    // Создаем и отправляем новый Request с командой "close"
-                    Request closeRequest = new Request("close", null, null);
-                    ByteArrayOutputStream closeRequestWriter = new ByteArrayOutputStream();
-                    ObjectOutputStream closeRequestObjectOutputStream = new ObjectOutputStream(closeRequestWriter);
-                    closeRequestObjectOutputStream.writeObject(closeRequest);
-                    byte[] closeRequestBytes = closeRequestWriter.toByteArray();
-                    ByteBuffer closeRequestBuffer = ByteBuffer.allocate(4096);
-                    closeRequestBuffer.put(closeRequestBytes);
-                    closeRequestBuffer.flip();
-                    datagramChannel.send(closeRequestBuffer, new InetSocketAddress(host, port));
-                    // Завершаем работу программы
-                    System.exit(0);
-                }
             } catch (NullPointerException e){
                 System.out.println("Недопустимый ввод");
                 assert serverResponse != null;

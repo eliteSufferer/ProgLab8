@@ -15,7 +15,7 @@ import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class RunClient {
-    private static String host = "localhost";
+    private static String host = "192.168.10.80";
     private static int port = 23332;
 
     private static File file;
@@ -25,12 +25,12 @@ public class RunClient {
     private static boolean initializeConnectionAddress(String[] args) {
         try {
             if (args.length != 3) System.out.println("hello");
-            file = new File("test.xml");
+            file = new File(args[0]);
 
             if (port < 0) throw new Exception();
             return true;
         } catch (Exception exception) {
-            Printer.println("Передайте хост, порт и название файла в качетчве аргументов");
+            Printer.println("Передайте название файла в качетчве аргументов");
         }
         return false;
 

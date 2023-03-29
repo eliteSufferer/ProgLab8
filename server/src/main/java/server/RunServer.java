@@ -72,7 +72,7 @@ public class RunServer {
             } catch (IOException e) {
                 System.out.println("Ошибка при работе с сокетом");
                 logger.error("Ошибка при работе с сокетом");
-//                e.printStackTrace();
+                e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 System.out.println("не получается сериализовать объект");
                 logger.error("не удалось сериализовать объект");

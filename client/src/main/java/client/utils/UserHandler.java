@@ -82,7 +82,7 @@ public class UserHandler {
                     return CheckCode.UPDATE_OBJECT;
                 case "exit":
                     if (!commandArgument.isEmpty()) throw new WrongCommandException();
-                    //System.exit(0);
+                    System.exit(0);
                     break;
                 default:
                     Printer.println("Команда '" + command + "' не найдена. Наберите 'help' для справки.");
