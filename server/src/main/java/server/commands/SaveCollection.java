@@ -27,6 +27,7 @@ public class SaveCollection extends AbstractCommand {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.saveCollection();
+            System.out.println("Сохранено!");
 
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());

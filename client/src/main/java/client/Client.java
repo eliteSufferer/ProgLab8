@@ -18,14 +18,12 @@ public class Client {
     private UserHandler userHandler;
     private DatagramChannel datagramChannel = DatagramChannel.open();
 
-
-
     public Client(String host, int port, UserHandler userHandler) throws IOException {
         this.host = host;
         this.port = port;
         this.userHandler = userHandler;
+        datagramChannel.configureBlocking(false);
     }
-
 
     private boolean processRequestToServer() {
         Request requestToServer = null;
@@ -45,12 +43,24 @@ public class Client {
                 buffer.flip();
                 InetSocketAddress address = new InetSocketAddress(host, port);
                 datagramChannel.send(buffer, address);
-                if (requestToServer.getCommandName().equals("exit")){
+                if (requestToServer.getCommandName().equals("exit")) {
                     System.exit(0);
                 }
                 ByteBuffer receiveBuffer = ByteBuffer.allocate(4096);
 
-                datagramChannel.receive(receiveBuffer);
+                long timeout = 5000;
+                long start = System.currentTimeMillis();
+                while (datagramChannel.receive(receiveBuffer) == null && System.currentTimeMillis() - start < timeout) {
+
+                    Thread.sleep(100);
+                }
+
+
+                if (System.currentTimeMillis() - start >= timeout) {
+                    System.out.println("Превышено время ожидания ответа от сервера");
+                    continue;
+                }
+
                 receiveBuffer.flip();
                 byte[] data = new byte[receiveBuffer.limit()];
                 receiveBuffer.get(data);
@@ -60,20 +70,22 @@ public class Client {
                 Object deserializedObject = objectInputStream.readObject();
                 serverResponse = (Response) deserializedObject;
                 Printer.print(serverResponse.getResponseBody(), serverResponse.getResponseCode());
-            } catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 System.out.println("Недопустимый ввод");
                 assert serverResponse != null;
                 requestToServer = userHandler.handle(serverResponse.getResponseCode());
-            }
-            catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 System.out.println("Ошибка при чтении пакета");
             } catch (IOException e) {
                 System.out.println("Непредвиденная ошибка при отправке данных");
+            } catch (InterruptedException e) {
+                System.out.println("Прервано ожидание ответа от сервера");
             }
         } while (!requestToServer.getCommandName().equals("exit"));
 
         return false;
     }
+
     public void run() {
         try {
             boolean processingStatus = true;
@@ -93,3 +105,7 @@ public class Client {
 
     }
 }
+
+
+
+

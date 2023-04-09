@@ -93,6 +93,7 @@ public class FileControl {
                 writer.writeEndElement();
                 writer.writeEndElement();
                 writer.writeEndElement();
+                writer.writeEndElement();
             }
             writer.writeEndElement();
             writer.writeEndDocument();

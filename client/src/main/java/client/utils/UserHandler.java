@@ -68,9 +68,6 @@ public class UserHandler {
                 case "remove_greater":
                     if (!commandArgument.isEmpty()) throw new WrongCommandException();
                     return CheckCode.OBJECT;
-                case "save":
-                    if (!commandArgument.isEmpty()) throw new WrongCommandException();
-                    break;
                 case "show":
                     if (!commandArgument.isEmpty()) throw new WrongCommandException();
                     break;
