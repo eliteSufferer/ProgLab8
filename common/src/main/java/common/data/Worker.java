@@ -1,5 +1,7 @@
 package common.data;
 
+import common.functional.User;
+
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -18,6 +20,8 @@ public class Worker implements Comparable<Worker>, Serializable {
     private Position position;
     private Status status;
     private Person person;
+
+    private User owner;
     public static int idCounter = 0;
 
     /**
@@ -32,7 +36,7 @@ public class Worker implements Comparable<Worker>, Serializable {
      * @param person the personal information of the worker
      */
     public Worker (String name, Coordinates coordinates,
-                   Double salary, Position position, Status status, Person person){
+                   Double salary, Position position, Status status, Person person, User owner){
         this.id = ++idCounter;
         this.name = name;
         this.coordinates = coordinates;
@@ -41,6 +45,7 @@ public class Worker implements Comparable<Worker>, Serializable {
         this.position = position;
         this.status = status;
         this.person = person;
+        this.owner = owner;
     }
 
     /**
@@ -131,7 +136,9 @@ public class Worker implements Comparable<Worker>, Serializable {
         return person;
     }
 
-
+    public User getOwner() {
+        return owner;
+    }
     /**
      * Overrides the compareTo method of the Comparable interface to compare workers based on their salary.
      *
