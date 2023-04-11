@@ -1,17 +1,18 @@
 package server.utils;
 
 import common.data.*;
+import common.exceptions.DatabaseHandlingException;
+import common.exceptions.UniversalException;
 import common.functional.User;
 import common.functional.WorkerPacket;
 import server.RunServer;
-import server.Server;
-
-import javax.xml.crypto.Data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 
 public class DatabaseManager {
     private final String SELECT_ALL_WORKERS = "SELECT * FROM " + DatabaseHandler.WORKER_TABLE;
@@ -138,12 +139,31 @@ public class DatabaseManager {
                 );
             } else throw new SQLException();
         } catch (SQLException exception) {
-            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_COORDINATES_BY_MARINE_ID!");
+            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_COORDINATES_BY_Worker_ID!");
             throw new SQLException(exception);
         } finally {
             databaseHandler.closePreparedStatement(preparedSelectCoordinatesByWorkerIdStatement);
         }
         return coordinates;
+    }
+    private int getPersonIdByWorkerId(int workerId) throws SQLException{
+        int personId;
+        PreparedStatement preparedSelectWorkerByIdStatement = null;
+        try {
+            preparedSelectWorkerByIdStatement = databaseHandler.getPreparedStatement(SELECT_WORKERS_BY_ID, false);
+            preparedSelectWorkerByIdStatement.setLong(1, workerId);
+            ResultSet resultSet = preparedSelectWorkerByIdStatement.executeQuery();
+            RunServer.logger.info("Выполнен запрос SELECT_MARINE_BY_ID.");
+            if (resultSet.next()) {
+                personId = resultSet.getInt(DatabaseHandler.WORKER_TABLE_PERSON_ID_COLUMN);
+            } else throw new SQLException();
+        } catch (SQLException exception) {
+            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_MARINE_BY_ID!");
+            throw new SQLException(exception);
+        } finally {
+            databaseHandler.closePreparedStatement(preparedSelectWorkerByIdStatement);
+        }
+        return personId;
     }
     private Person getPerson(long workerId) throws SQLException{
         Person person;
@@ -163,7 +183,7 @@ public class DatabaseManager {
                 );
             } else throw new SQLException();
         } catch (SQLException exception) {
-            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_COORDINATES_BY_MARINE_ID!");
+            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_COORDINATES_BY_Worker_ID!");
             throw new SQLException(exception);
         } finally {
             databaseHandler.closePreparedStatement(preparedSelectPersonByWorkerIdStatement);
@@ -188,15 +208,14 @@ public class DatabaseManager {
                 );
             } else throw new SQLException();
         } catch (SQLException exception) {
-            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_COORDINATES_BY_MARINE_ID!");
+            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_COORDINATES_BY_Worker_ID!");
             throw new SQLException(exception);
         } finally {
             databaseHandler.closePreparedStatement(preparedSelectLocationByWorkerIdStatement);
         }
         return location;
     }
-    public Worker insertMarine(WorkerPacket marineRaw, User user) throws DatabaseHandlingException {
-        // TODO: Если делаем орден уникальным, тут че-то много всего менять
+    public Worker insertWorker(WorkerPacket workerPacket, User user) throws DatabaseHandlingException {
         Worker worker;
         PreparedStatement preparedInsertWorkerStatement = null;
         PreparedStatement preparedInsertCoordinatesStatement = null;
@@ -213,62 +232,209 @@ public class DatabaseManager {
             preparedInsertPersonStatement = databaseHandler.getPreparedStatement(INSERT_PERSON, true);
             preparedInsertLocationStatement = databaseHandler.getPreparedStatement(INSERT_LOCATION, true);
 
-            preparedInsertChapterStatement.setString(1, marineRaw.getChapter().getName());
-            preparedInsertChapterStatement.setLong(2, marineRaw.getChapter().getMarinesCount());
-            if (preparedInsertChapterStatement.executeUpdate() == 0) throw new SQLException();
-            ResultSet generatedChapterKeys = preparedInsertChapterStatement.getGeneratedKeys();
-            long chapterId;
-            if (generatedChapterKeys.next()) {
-                chapterId = generatedChapterKeys.getLong(1);
-            } else throw new SQLException();
-            App.logger.info("Выполнен запрос INSERT_CHAPTER.");
+            preparedInsertLocationStatement.setFloat(1, workerPacket.getPerson().getLocation().getX());
+            preparedInsertLocationStatement.setLong(2, workerPacket.getPerson().getLocation().getY());
+            preparedInsertLocationStatement.setInt(3, workerPacket.getPerson().getLocation().getZ());
+            preparedInsertLocationStatement.setString(4, workerPacket.getPerson().getLocation().getName());
 
-            preparedInsertMarineStatement.setString(1, marineRaw.getName());
-            preparedInsertMarineStatement.setTimestamp(2, Timestamp.valueOf(creationTime));
-            preparedInsertMarineStatement.setDouble(3, marineRaw.getHealth());
-            preparedInsertMarineStatement.setString(4, marineRaw.getCategory().toString());
-            preparedInsertMarineStatement.setString(5, marineRaw.getWeaponType().toString());
-            preparedInsertMarineStatement.setString(6, marineRaw.getMeleeWeapon().toString());
-            preparedInsertMarineStatement.setLong(7, chapterId);
-            preparedInsertMarineStatement.setLong(8, databaseUserManager.getUserIdByUsername(user));
-            if (preparedInsertMarineStatement.executeUpdate() == 0) throw new SQLException();
-            ResultSet generatedMarineKeys = preparedInsertMarineStatement.getGeneratedKeys();
-            long spaceMarineId;
-            if (generatedMarineKeys.next()) {
-                spaceMarineId = generatedMarineKeys.getLong(1);
+            if (preparedInsertLocationStatement.executeUpdate() == 0) throw new SQLException();
+            ResultSet generatedLocationKeys = preparedInsertLocationStatement.getGeneratedKeys();
+            int locationId;
+            if (generatedLocationKeys.next()) {
+                locationId = generatedLocationKeys.getInt(1);
             } else throw new SQLException();
-            App.logger.info("Выполнен запрос INSERT_MARINE.");
+            RunServer.logger.info("Выполнен запрос INSERT_LOCATION.");
 
-            preparedInsertCoordinatesStatement.setLong(1, spaceMarineId);
-            preparedInsertCoordinatesStatement.setDouble(2, marineRaw.getCoordinates().getX());
-            preparedInsertCoordinatesStatement.setFloat(3, marineRaw.getCoordinates().getY());
+
+
+            preparedInsertPersonStatement.setTimestamp(1, Timestamp.valueOf(workerPacket.getPerson().getBirthday()));
+            preparedInsertPersonStatement.setLong(2, workerPacket.getPerson().getHeight());
+            preparedInsertPersonStatement.setString(3, workerPacket.getPerson().getPassportID());
+            preparedInsertPersonStatement.setLong(4, locationId);
+            if (preparedInsertPersonStatement.executeUpdate() == 0) throw new SQLException();
+            ResultSet generatedPersonKeys = preparedInsertPersonStatement.getGeneratedKeys();
+            int personId;
+            if (generatedPersonKeys.next()) {
+                personId = generatedPersonKeys.getInt(1);
+            } else throw new SQLException();
+            RunServer.logger.info("Выполнен запрос INSERT_PERSON.");
+
+            preparedInsertWorkerStatement.setString(1, workerPacket.getName());
+            preparedInsertWorkerStatement.setTimestamp(2, Timestamp.valueOf(creationTime.toLocalDateTime()));
+            preparedInsertWorkerStatement.setDouble(3, workerPacket.getSalary());
+            preparedInsertWorkerStatement.setString(4, workerPacket.getPosition().toString());
+            preparedInsertWorkerStatement.setString(5, workerPacket.getStatus().toString());
+            preparedInsertWorkerStatement.setLong(6, personId);
+            preparedInsertWorkerStatement.setLong(7, databaseUser.getUserIdByUsername(user));
+            if (preparedInsertWorkerStatement.executeUpdate() == 0) throw new SQLException();
+            ResultSet generatedWorkerKeys = preparedInsertWorkerStatement.getGeneratedKeys();
+            int workerId;
+            if (generatedWorkerKeys.next()) {
+                workerId = generatedWorkerKeys.getInt(1);
+            } else throw new SQLException();
+            RunServer.logger.info("Выполнен запрос INSERT_WORKER.");
+
+            preparedInsertCoordinatesStatement.setInt(1, workerId);
+            preparedInsertCoordinatesStatement.setDouble(2, workerPacket.getCoordinates().getX());
+            preparedInsertCoordinatesStatement.setFloat(3, workerPacket.getCoordinates().getY());
             if (preparedInsertCoordinatesStatement.executeUpdate() == 0) throw new SQLException();
-            App.logger.info("Выполнен запрос INSERT_COORDINATES.");
+            RunServer.logger.info("Выполнен запрос INSERT_COORDINATES.");
 
-            marine = new SpaceMarine(
-                    spaceMarineId,
-                    marineRaw.getName(),
-                    marineRaw.getCoordinates(),
+            worker = new Worker(
+                    workerId,
+                    workerPacket.getName(),
+                    workerPacket.getCoordinates(),
                     creationTime,
-                    marineRaw.getHealth(),
-                    marineRaw.getCategory(),
-                    marineRaw.getWeaponType(),
-                    marineRaw.getMeleeWeapon(),
-                    marineRaw.getChapter(),
+                    workerPacket.getSalary(),
+                    workerPacket.getPosition(),
+                    workerPacket.getStatus(),
+                    workerPacket.getPerson(),
                     user
             );
 
             databaseHandler.commit();
-            return marine;
-        } catch (SQLException exception) {
-            App.logger.error("Произошла ошибка при выполнении группы запросов на добавление нового объекта!");
+            return worker;
+        } catch (SQLException | UniversalException exception) {
+            RunServer.logger.error("Произошла ошибка при выполнении группы запросов на добавление нового объекта!");
             databaseHandler.rollback();
             throw new DatabaseHandlingException();
         } finally {
-            databaseHandler.closePreparedStatement(preparedInsertMarineStatement);
+            databaseHandler.closePreparedStatement(preparedInsertWorkerStatement);
             databaseHandler.closePreparedStatement(preparedInsertCoordinatesStatement);
-            databaseHandler.closePreparedStatement(preparedInsertChapterStatement);
+            databaseHandler.closePreparedStatement(preparedInsertPersonStatement);
+            databaseHandler.closePreparedStatement(preparedInsertLocationStatement);
             databaseHandler.setNormalMode();
+        }
+    }
+    public void updateWorkerById(int workerId,  WorkerPacket workerPacket) throws DatabaseHandlingException {
+        // TODO: Если делаем орден уникальным, тут че-то много всего менять
+        PreparedStatement preparedUpdateWorkerNameByIdStatement = null;
+        PreparedStatement preparedUpdateWorkerHealthByIdStatement = null;
+        PreparedStatement preparedUpdateWorkerSalaryByIdStatement = null;
+        PreparedStatement preparedUpdateWorkerPositionByIdStatement = null;
+        PreparedStatement preparedUpdateWorkerStatusByIdStatement = null;
+        PreparedStatement preparedUpdateCoordinatesByWorkerIdStatement = null;
+        PreparedStatement preparedUpdatePersonByIdStatement = null;
+        try {
+            databaseHandler.setCommitMode();
+            databaseHandler.setSavepoint();
+
+            preparedUpdateWorkerNameByIdStatement = databaseHandler.getPreparedStatement(UPDATE_WORKER_NAME_BY_ID, false);
+            preparedUpdateCoordinatesByWorkerIdStatement = databaseHandler.getPreparedStatement(UPDATE_COORDINATES_BY_WORKER_ID, false);
+            preparedUpdateWorkerSalaryByIdStatement = databaseHandler.getPreparedStatement(UPDATE_WORKER_SALARY_BY_ID, false);
+            preparedUpdateWorkerPositionByIdStatement = databaseHandler.getPreparedStatement(UPDATE_WORKER_POSITION_BY_ID, false);
+            preparedUpdateWorkerStatusByIdStatement = databaseHandler.getPreparedStatement(UPDATE_WORKER_STATUS_BY_ID, false);
+            preparedUpdatePersonByIdStatement = databaseHandler.getPreparedStatement(UPDATE_PERSON_BY_ID, false);
+
+            if (workerPacket.getName() != null) {
+                preparedUpdateWorkerNameByIdStatement.setString(1, workerPacket.getName());
+                preparedUpdateWorkerNameByIdStatement.setInt(2, workerId);
+                if (preparedUpdateWorkerNameByIdStatement.executeUpdate() == 0) throw new SQLException();
+                RunServer.logger.info("Выполнен запрос UPDATE_WORKER_NAME_BY_ID.");
+            }
+            if (workerPacket.getCoordinates() != null) {
+                preparedUpdateCoordinatesByWorkerIdStatement.setDouble(1, workerPacket.getCoordinates().getX());
+                preparedUpdateCoordinatesByWorkerIdStatement.setFloat(2, workerPacket.getCoordinates().getY());
+                preparedUpdateCoordinatesByWorkerIdStatement.setLong(3, workerId);
+                if (preparedUpdateCoordinatesByWorkerIdStatement.executeUpdate() == 0) throw new SQLException();
+                RunServer.logger.info("Выполнен запрос UPDATE_COORDINATES_BY_Worker_ID.");
+            }
+            if (workerPacket.getSalary() != null) {
+                preparedUpdateWorkerSalaryByIdStatement.setDouble(1, workerPacket.getSalary());
+                preparedUpdateWorkerHealthByIdStatement.setInt(2, workerId);
+                if (preparedUpdateWorkerHealthByIdStatement.executeUpdate() == 0) throw new SQLException();
+                RunServer.logger.info("Выполнен запрос UPDATE_WORKER_SALARY_BY_ID.");
+            }
+            if (workerPacket.getPosition() != null) {
+                preparedUpdateWorkerPositionByIdStatement.setString(1, workerPacket.getPosition().toString());
+                preparedUpdateWorkerPositionByIdStatement.setLong(2, workerId);
+                if (preparedUpdateWorkerPositionByIdStatement.executeUpdate() == 0) throw new SQLException();
+                RunServer.logger.info("Выполнен запрос UPDATE_WORKER_POSITION_BY_ID.");
+            }
+            if (workerPacket.getStatus() != null) {
+                preparedUpdateWorkerStatusByIdStatement.setString(1, workerPacket.getStatus().toString());
+                preparedUpdateWorkerStatusByIdStatement.setLong(2, workerId);
+                if (preparedUpdateWorkerStatusByIdStatement.executeUpdate() == 0) throw new SQLException();
+                RunServer.logger.info("Выполнен запрос UPDATE_WORKER_STATUS_BY_ID.");
+            }
+            if (workerPacket.getPerson() != null) {
+                preparedUpdatePersonByIdStatement.setTimestamp(1, Timestamp.valueOf(workerPacket.getPerson().getBirthday()));
+                preparedUpdatePersonByIdStatement.setLong(2, workerPacket.getPerson().getHeight());
+                preparedUpdatePersonByIdStatement.setInt(3, getPersonIdByWorkerId(workerId));
+                if (preparedUpdatePersonByIdStatement.executeUpdate() == 0) throw new SQLException();
+                RunServer.logger.info("Выполнен запрос UPDATE_CHAPTER_BY_ID.");
+            }
+
+            databaseHandler.commit();
+        } catch (SQLException exception) {
+            RunServer.logger.error("Произошла ошибка при выполнении группы запросов на обновление объекта!");
+            databaseHandler.rollback();
+            throw new DatabaseHandlingException();
+        } finally {
+            databaseHandler.closePreparedStatement(preparedUpdateWorkerNameByIdStatement);
+            databaseHandler.closePreparedStatement(preparedUpdateWorkerHealthByIdStatement);
+            databaseHandler.closePreparedStatement(preparedUpdateWorkerSalaryByIdStatement);
+            databaseHandler.closePreparedStatement(preparedUpdateWorkerPositionByIdStatement);
+            databaseHandler.closePreparedStatement(preparedUpdateWorkerStatusByIdStatement);
+            databaseHandler.closePreparedStatement(preparedUpdateCoordinatesByWorkerIdStatement);
+            databaseHandler.closePreparedStatement(preparedUpdatePersonByIdStatement);
+            databaseHandler.setNormalMode();
+        }
+    }
+    public void deleteWorkerById(int workerId) throws DatabaseHandlingException {
+        PreparedStatement preparedDeleteWorkerByIdStatement = null;
+        try {
+            preparedDeleteWorkerByIdStatement = databaseHandler.getPreparedStatement(DELETE_WORKER_BY_ID, false);
+            preparedDeleteWorkerByIdStatement.setLong(1, workerId);
+            if (preparedDeleteWorkerByIdStatement.executeUpdate() == 0) throw  new DatabaseHandlingException();
+            RunServer.logger.info("Выполнен запрос DELETE_WORKER_BY_ID.");
+        } catch (SQLException exception) {
+            RunServer.logger.error("Произошла ошибка при выполнении запроса DELETE_WORKER_BY_ID!");
+            throw new DatabaseHandlingException();
+        } finally {
+            databaseHandler.closePreparedStatement(preparedDeleteWorkerByIdStatement);
+        }
+    }
+
+    public boolean checkWorkerUserId(int workerId, User user) throws DatabaseHandlingException {
+        PreparedStatement preparedSelectWorkerByIdAndUserIdStatement = null;
+        try {
+            preparedSelectWorkerByIdAndUserIdStatement = databaseHandler.getPreparedStatement(SELECT_WORKERS_BY_ID_AND_USER_ID, false);
+            preparedSelectWorkerByIdAndUserIdStatement.setLong(1, workerId);
+            preparedSelectWorkerByIdAndUserIdStatement.setLong(2, databaseUser.getUserIdByUsername(user));
+            ResultSet resultSet = preparedSelectWorkerByIdAndUserIdStatement.executeQuery();
+            RunServer.logger.info("Выполнен запрос SELECT_MARINE_BY_ID_AND_USER_ID.");
+            return resultSet.next();
+        } catch (SQLException exception) {
+            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_MARINE_BY_ID_AND_USER_ID!");
+            throw new DatabaseHandlingException();
+        } catch (UniversalException e) {
+            throw new RuntimeException(e);
+        } finally {
+            databaseHandler.closePreparedStatement(preparedSelectWorkerByIdAndUserIdStatement);
+        }
+    }
+    public ArrayList<Worker> getCollection() throws DatabaseHandlingException {
+        ArrayList<Worker> workersList = new ArrayList<>();
+        PreparedStatement preparedSelectAllStatement = null;
+        try {
+            preparedSelectAllStatement = databaseHandler.getPreparedStatement(SELECT_ALL_WORKERS, false);
+            ResultSet resultSet = preparedSelectAllStatement.executeQuery();
+            while (resultSet.next()) {
+                workersList.add(createWorker(resultSet));
+            }
+        } catch (SQLException exception) {
+            throw new DatabaseHandlingException();
+        } finally {
+            databaseHandler.closePreparedStatement(preparedSelectAllStatement);
+        }
+        return workersList;
+    }
+
+    public void clearCollection() throws DatabaseHandlingException {
+        ArrayList<Worker> workerList = getCollection();
+        for (Worker worker : workerList) {
+            deleteWorkerById(worker.getId());
         }
     }
 

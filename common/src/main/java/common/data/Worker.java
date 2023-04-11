@@ -135,6 +135,9 @@ public class Worker implements Comparable<Worker>, Serializable {
     public Person getPerson() {
         return person;
     }
+    public int getId(){
+        return this.id;
+    }
 
     public User getOwner() {
         return owner;
