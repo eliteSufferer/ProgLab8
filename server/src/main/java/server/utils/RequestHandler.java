@@ -3,12 +3,15 @@ import common.exceptions.WrongArgumentsException;
 import common.functional.Request;
 import common.functional.Response;
 import common.functional.ServerResponseCode;
+import server.Server;
 import server.commands.Command;
 
 import java.io.FileNotFoundException;
+import java.net.Socket;
 import java.util.HashMap;
 
 public class RequestHandler {
+    private Server server;
     private String commandName;
     private String commandArgument;
     private CommandControl commandControl;

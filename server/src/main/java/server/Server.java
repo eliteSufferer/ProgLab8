@@ -1,6 +1,8 @@
 package server;
 
+import common.exceptions.UniversalException;
 import server.utils.CollectionControl;
+import server.utils.CommandControl;
 import server.utils.RequestHandler;
 import common.functional.*;
 
@@ -11,88 +13,111 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Server {
     private int port;
-    private final BufferedReader serverReader = new BufferedReader(new InputStreamReader(System.in));
-    private final byte[] BUFFER = new byte[4096];
-    private Selector selector;
-    private DatagramChannel datagramChannel;
-    private RequestHandler requestHandler;
-    private InetAddress host;
-    private CollectionControl collectionControl;
-    private static final Logger logger = LogManager.getLogger(RunServer.class);
+    private DatagramSocket datagramSocket;
+    private CommandControl commandControl;
+    private boolean isStopped;
+    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
+    private Semaphore semaphore;
 
-    public Server(int port, RequestHandler requestHandler, CollectionControl collectionControl) throws IOException {
+    public Server(int port, int maxClients, CommandControl commandControl) {
         this.port = port;
-        this.collectionControl = collectionControl;
-        this.requestHandler = requestHandler;
-        this.selector = Selector.open();
-        this.datagramChannel = DatagramChannel.open();
-        this.datagramChannel.configureBlocking(false);
-        this.datagramChannel.bind(new InetSocketAddress(this.port));
-        this.datagramChannel.register(selector, SelectionKey.OP_READ);
+        this.semaphore = new Semaphore(maxClients);
+        this.commandControl = commandControl;
     }
 
-
-    public void connection() {
-        while (true) {
-            try {
-                if (selector.selectNow() > 0) {
-                    Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-                    while (iterator.hasNext()) {
-                        SelectionKey key = iterator.next();
-                        iterator.remove();
-                        if (key.isReadable()) {
-                            handleClientRequest(key);
-                        }
-                    }
-                }
-
-            } catch (IOException e) {
-                System.out.println("Error during I/O operations: " + e.getMessage());
-            }
-        }
+    private synchronized boolean isStopped() {
+        return isStopped;
     }
 
-    private void handleClientRequest(SelectionKey key) {
-        DatagramChannel clientChannel = (DatagramChannel) key.channel();
-        ByteBuffer buffer = ByteBuffer.allocate(4096);
-
+    public void run() {
         try {
-            // Receive data from client
-            SocketAddress clientAddress = clientChannel.receive(buffer);
-            buffer.flip();
-
-            // Deserialize the request
-            ByteArrayInputStream in = new ByteArrayInputStream(buffer.array());
-            ObjectInputStream ois = new ObjectInputStream(in);
-            Request userRequest = (Request) ois.readObject();
-            logger.info("Запрос получен");
-
-            // Handle the request and get the response
-            Response response = requestHandler.handle(userRequest);
-
-            // Serialize the response
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            oos.writeObject(response);
-            byte[] responseData = bos.toByteArray();
-
-            // Send the response back to the client
-            buffer.clear();
-            buffer.put(responseData);
-            buffer.flip();
-            clientChannel.send(buffer, clientAddress);
-            logger.info("Ответ отправлен");
-
-        } catch (IOException e) {
-            System.out.println("Ошибка с I/O потоками");
-        } catch (ClassNotFoundException e) {
-            System.out.println("Объект не может быть сериализован");
+            openServerSocket();
+            while (!isStopped()) {
+                try {
+                    acquireConnection();
+                    if (isStopped()) throw new UniversalException();
+                    fixedThreadPool.submit(() -> {
+                        try {
+                            DatagramPacket packet = receiveFromClient();
+                            RequestHandler requestHandler = new RequestHandler(this, packet, commandControl);
+                            requestHandler.handleConnection();
+                        } catch (IOException e) {
+                            System.out.println("Ошибка при обработке соединения с клиентом: " + e.getMessage());
+                        }
+                    });
+                } catch (UniversalException e) {
+                    if (!isStopped()) {
+                        RunServer.logger.error("Произошла ошибка при соединении с клиентом!");
+                    } else break;
+                }
+            }
+            fixedThreadPool.shutdown();
+            fixedThreadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            Printer.println("Работа сервера завершена.");
+        } catch (UniversalException | InterruptedException exception) {
+            RunServer.logger.fatal("Сервер не может быть запущен!");
         }
+    }
+
+
+    public void acquireConnection() {
+        try {
+            semaphore.acquire();
+            RunServer.logger.info("Разрешение на новое соединение получено.");
+        } catch (InterruptedException exception) {
+            RunServer.logger.error("Произошла ошибка при получении разрешения на новое соединение!");
+        }
+    }
+
+
+    public void releaseConnection() {
+        semaphore.release();
+        RunServer.logger.info("Разрыв соединения зарегистрирован.");
+    }
+
+
+    public synchronized void stop() {
+        try {
+            RunServer.logger.info("Завершение работы сервера...");
+            if (datagramSocket == null) throw new UniversalException();
+            isStopped = true;
+            datagramSocket.close();
+            RunServer.logger.info("Работа сервера завершена.");
+        } catch (UniversalException exception) {
+            RunServer.logger.error("Невозможно завершить работу еще не запущенного сервера!");
+        }
+    }
+
+
+    private void openServerSocket() throws UniversalException {
+        try {
+            RunServer.logger.info("Запуск сервера...");
+            datagramSocket = new DatagramSocket(port);
+            RunServer.logger.info("Сервер запущен.");
+        } catch (IllegalArgumentException exception) {
+            RunServer.logger.fatal("Порт '" + port + "' находится за пределами возможных значений!");
+            throw new UniversalException();
+        } catch (IOException exception) {
+            RunServer.logger.fatal("Произошла ошибка при попытке использовать порт '" + port + "'!");
+            throw new UniversalException();
+        }
+    }
+
+    private DatagramPacket receiveFromClient() throws IOException {
+        byte[] buffer = new byte[4096];
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        datagramSocket.receive(packet);
+        RunServer.logger.info("Получен запрос от клиента.");
+        return packet;
     }
 }

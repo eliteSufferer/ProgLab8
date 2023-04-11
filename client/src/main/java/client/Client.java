@@ -1,9 +1,8 @@
 package client;
 
+import client.utils.AufHandler;
 import client.utils.UserHandler;
-import common.functional.Printer;
-import common.functional.Request;
-import common.functional.Response;
+import common.functional.*;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -18,11 +17,15 @@ public class Client {
     private UserHandler userHandler;
     private DatagramChannel datagramChannel = DatagramChannel.open();
 
-    public Client(String host, int port, UserHandler userHandler) throws IOException {
+    private AufHandler authHandler;
+    private User user;
+
+    public Client(String host, int port, UserHandler userHandler, AufHandler authHandler) throws IOException {
         this.host = host;
         this.port = port;
         this.userHandler = userHandler;
         datagramChannel.configureBlocking(false);
+        this.authHandler = authHandler;
     }
 
     private boolean processRequestToServer() {
@@ -30,8 +33,8 @@ public class Client {
         Response serverResponse = null;
         do {
             try {
-                requestToServer = serverResponse != null ? userHandler.handle(serverResponse.getResponseCode()) :
-                        userHandler.handle(null);
+                requestToServer = serverResponse != null ? userHandler.handle(serverResponse.getResponseCode(), user) :
+                        userHandler.handle(null, user);
                 if (requestToServer.isEmpty()) continue;
                 ByteArrayOutputStream serverWriter = new ByteArrayOutputStream();
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(serverWriter);
@@ -54,8 +57,6 @@ public class Client {
 
                     Thread.sleep(100);
                 }
-
-
                 if (System.currentTimeMillis() - start >= timeout) {
                     System.out.println("Превышено время ожидания ответа от сервера");
                     continue;
@@ -73,7 +74,7 @@ public class Client {
             } catch (NullPointerException e) {
                 System.out.println("Недопустимый ввод");
                 assert serverResponse != null;
-                requestToServer = userHandler.handle(serverResponse.getResponseCode());
+                requestToServer = userHandler.handle(serverResponse.getResponseCode(), user);
             } catch (ClassNotFoundException e) {
                 System.out.println("Ошибка при чтении пакета");
             } catch (IOException e) {
@@ -91,6 +92,7 @@ public class Client {
             boolean processingStatus = true;
             while (processingStatus) {
                 try {
+                    processAuthentication();
                     processingStatus = processRequestToServer();
                 } catch (Exception exception) {
                     System.out.println("Фатальная ошибка при работе клиента");
@@ -104,6 +106,49 @@ public class Client {
         }
 
     }
+
+    private void processAuthentication() {
+        Request requestToServer = null;
+        Response serverResponse = null;
+        do {
+            try {
+                requestToServer = authHandler.handle();
+                if (requestToServer.isEmpty()) continue;
+
+                // Serialize request to byte array
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+                oos.writeObject(requestToServer);
+                byte[] requestData = bos.toByteArray();
+
+                // Send request to the server
+                ByteBuffer requestBuffer = ByteBuffer.wrap(requestData);
+                InetSocketAddress address = new InetSocketAddress(host, port);
+                datagramChannel.send(requestBuffer, address);
+
+                // Receive response from the server
+                ByteBuffer responseBuffer = ByteBuffer.allocate(4096);
+                datagramChannel.receive(responseBuffer);
+                byte[] responseData = responseBuffer.array();
+
+                // Deserialize response
+                ByteArrayInputStream bis = new ByteArrayInputStream(responseData);
+                ObjectInputStream ois = new ObjectInputStream(bis);
+                serverResponse = (Response) ois.readObject();
+                Printer.print(serverResponse.getResponseBody(), serverResponse.getResponseCode());
+
+            } catch (InvalidClassException | NotSerializableException exception) {
+                Printer.printerror("Произошла ошибка при отправке данных на сервер!");
+            } catch (ClassNotFoundException exception) {
+                Printer.printerror("Произошла ошибка при чтении полученных данных!");
+            } catch (IOException exception) {
+                Printer.printerror("Соединение с сервером разорвано!");
+            }
+        } while (serverResponse == null || !serverResponse.getResponseCode().equals(ServerResponseCode.OK));
+        user = requestToServer.getUser();
+    }
+
+
 }
 
 

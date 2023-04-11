@@ -4,10 +4,7 @@ import common.exceptions.InputException;
 import common.exceptions.ScriptRecursionException;
 import common.exceptions.IncorrectInputInScriptException;
 import common.exceptions.WrongCommandException;
-import common.functional.Printer;
-import common.functional.Request;
-import common.functional.ServerResponseCode;
-import common.functional.WorkerPacket;
+import common.functional.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -105,7 +102,7 @@ public class UserHandler {
         );
     }
 
-    public Request handle(ServerResponseCode responseCode){
+    public Request handle(ServerResponseCode responseCode, User user){
         String userInput;
         String[] userCommand = new String[0];
         CheckCode processingCode = null;
@@ -146,7 +143,7 @@ public class UserHandler {
                     case OBJECT:
                     case UPDATE_OBJECT:
                         WorkerPacket addWorker = generateWorkerAdd();
-                        return new Request(userCommand[0], userCommand[1], addWorker);
+                        return new Request(userCommand[0], userCommand[1], addWorker, user);
                     case SCRIPT:
                         File scriptFile = new File(userCommand[1]);
                         if (!scriptFile.exists()) throw new FileNotFoundException();
@@ -172,9 +169,9 @@ public class UserHandler {
                 chosenScanner = scannerStack.pop();
             }
             scriptStack.clear();
-            return new Request();
+            return new Request(user);
         }
-        return new Request(userCommand[0], userCommand[1]);
+        return new Request(userCommand[0], userCommand[1], user);
     }
 
 

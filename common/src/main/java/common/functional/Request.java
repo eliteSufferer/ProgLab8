@@ -12,22 +12,25 @@ public class Request implements Serializable {
     private String commandStringArgument;
     private Serializable commandObjectArgument;
 
-    public Request(String commandName, String commandStringArgument, Serializable commandObjectArgument) {
+    private User user;
+
+    public Request(String commandName, String commandStringArgument, Serializable commandObjectArgument, User user) {
         this.commandName = commandName;
         this.commandStringArgument = commandStringArgument;
         this.commandObjectArgument = commandObjectArgument;
+        this.user = user;
     }
 
-    public Request(String commandName, String commandStringArgument) {
-        this(commandName, commandStringArgument, null);
+    public Request(String commandName, String commandStringArgument, User user) {
+        this(commandName, commandStringArgument, null, user);
     }
-    public Request(File file) {
-        this("","", file);
+    public Request(User user) {
+        this("","", user);
     }
 
-    public Request() {
-        this("", "");
-    }
+//    public Request(){
+//        this("", "", null);
+//    }
 
     /**
      * @return Command name.
@@ -41,6 +44,10 @@ public class Request implements Serializable {
      */
     public String getCommandStringArgument() {
         return commandStringArgument;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     /**

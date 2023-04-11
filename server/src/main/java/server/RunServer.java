@@ -54,7 +54,4 @@ public class RunServer {
 
     }
 
-    public static Logger getLogger(){
-        return logger;
-    }
 }

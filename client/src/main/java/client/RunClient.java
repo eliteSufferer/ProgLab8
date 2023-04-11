@@ -1,5 +1,6 @@
 package client;
 
+import client.utils.AufHandler;
 import client.utils.UserHandler;
 import common.functional.Printer;
 import common.functional.Request;
@@ -20,13 +21,12 @@ public class RunClient {
 
 
 
-
-
     public static void main(String[] args) {
         try {
             Scanner userScanner = new Scanner(System.in);
             UserHandler userHandler = new UserHandler(userScanner);
-            Client client = new Client(host, Integer.parseInt(args[0]), userHandler);
+            AufHandler authHandler = new AufHandler(userScanner);
+            Client client = new Client(host, Integer.parseInt(args[0]), userHandler, authHandler);
             DatagramChannel datagramChannel = DatagramChannel.open();
             InetSocketAddress address = new InetSocketAddress(host, Integer.parseInt(args[0]));
             datagramChannel.connect(address);
