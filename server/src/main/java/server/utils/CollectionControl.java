@@ -31,6 +31,9 @@ public class CollectionControl {
     public void getMappingOfCommands(HashMap<String, Command> map) {
         this.BufferOfCommandMap = map;
     }
+    public ArrayList<Worker> getCollection(){
+        return workersCollection;
+    }
 
 
     /**
@@ -50,6 +53,15 @@ public class CollectionControl {
         workersCollection.clear();
         ResponseOutputer.appendln("Коллекция очистилась...");
 
+    }
+    public int collectionSize(){
+        return workersCollection.size();
+    }
+    public Worker getById(int id){
+        return workersCollection.get(id);
+    }
+    public void removeFromCollection(Worker worker){
+        workersCollection.remove(worker);
     }
 
     /**

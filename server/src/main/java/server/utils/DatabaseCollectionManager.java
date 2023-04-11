@@ -14,7 +14,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
-public class DatabaseManager {
+public class DatabaseCollectionManager {
     private final String SELECT_ALL_WORKERS = "SELECT * FROM " + DatabaseHandler.WORKER_TABLE;
     private final String SELECT_WORKERS_BY_ID = SELECT_ALL_WORKERS + " WHERE " +
             DatabaseHandler.WORKER_TABLE_ID_COLUMN + " = ?";
@@ -98,7 +98,7 @@ public class DatabaseManager {
     private DatabaseHandler databaseHandler;
     private DatabaseUser databaseUser;
 
-    public DatabaseManager(DatabaseHandler databaseHandler, DatabaseUser databaseUser) {
+    public DatabaseCollectionManager(DatabaseHandler databaseHandler, DatabaseUser databaseUser) {
         this.databaseHandler = databaseHandler;
         this.databaseUser = databaseUser;
     }

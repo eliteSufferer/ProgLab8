@@ -1,6 +1,7 @@
 package server.commands;
 
 import common.exceptions.*;
+import common.functional.User;
 import server.utils.ResponseOutputer;
 
 /**
@@ -25,7 +26,7 @@ public class Exit extends AbstractCommand {
      @throws WrongArgumentsException if the argument is not empty.
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument) {
+    public void execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             ResponseOutputer.appendln("terminating the program");

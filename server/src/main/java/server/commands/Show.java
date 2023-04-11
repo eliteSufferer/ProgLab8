@@ -1,6 +1,7 @@
 package server.commands;
 
 import common.exceptions.*;
+import common.functional.User;
 import server.utils.*;
 /**
  * Command
@@ -20,7 +21,7 @@ public class Show extends AbstractCommand {
      * @param argument a string argument for the command
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument) {
+    public void execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             this.collectionControl.show();

@@ -3,6 +3,7 @@ package server.commands;
 
 import common.data.*;
 import common.exceptions.*;
+import common.functional.User;
 import common.functional.WorkerPacket;
 import server.utils.*;
 /**
@@ -15,12 +16,14 @@ import server.utils.*;
 public class AddElementIfMin extends AbstractCommand {
 
     CollectionControl collectionControl;
+    DatabaseCollectionManager databaseCollectionManager;
 
 
-    public AddElementIfMin(CollectionControl collectionControl) {
+    public AddElementIfMin(CollectionControl collectionControl, DatabaseCollectionManager databaseCollectionManager) {
         super("add_if_min", "Добавить новым элемент в коллекцю, если меньше" +
                 "минимального в коллекции");
         this.collectionControl = collectionControl;
+        this.databaseCollectionManager = databaseCollectionManager;
     }
 
     /**
@@ -29,17 +32,16 @@ public class AddElementIfMin extends AbstractCommand {
      *
      * @param argument the arguments passed to the command, not used in this case.
      */
-    public void execute(String argument, Object commandObjectArgument) {
+    public void execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
             WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
-            Worker newWorker = new Worker(workerPacket.getName(),
-                    workerPacket.getCoordinates(),
-                    workerPacket.getSalary(), workerPacket.getPosition(),
-                    workerPacket.getStatus(), workerPacket.getPerson());
+            Worker newWorker = databaseCollectionManager.insertWorker(workerPacket, user);
             if (!collectionControl.addIfSmallerSalary(newWorker)) newWorker = null;
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln("Превышенно кол-во аргементов");
+        } catch (DatabaseHandlingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

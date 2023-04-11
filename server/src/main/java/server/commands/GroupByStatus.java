@@ -2,6 +2,7 @@
 package server.commands;
 
 import common.exceptions.*;
+import common.functional.User;
 import server.utils.*;
 /**
  * This command groups the elements of the collection by the value of the status field and displays the number of elements in each group.
@@ -15,7 +16,7 @@ public class GroupByStatus extends AbstractCommand{
     }
 
     @Override
-    public void execute(String argument, Object commandObjectArgument) {
+    public void execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.gropByStatus();

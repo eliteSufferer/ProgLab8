@@ -1,6 +1,7 @@
 package server.commands;
 
 import common.exceptions.*;
+import common.functional.User;
 import server.utils.*;
 
 /**
@@ -27,7 +28,7 @@ public class Help extends AbstractCommand {
      * @param argument the argument to be passed to this command
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument) {
+    public void execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.sendCommandMap().forEach((key, value) -> {

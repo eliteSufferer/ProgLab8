@@ -90,6 +90,9 @@ public class Worker implements Comparable<Worker>, Serializable {
         this.id = id;
         return this;
     }
+    public ZonedDateTime getCreationDate(){
+        return creationDate;
+    }
 
     /**
      * Returns the coordinates of the worker.

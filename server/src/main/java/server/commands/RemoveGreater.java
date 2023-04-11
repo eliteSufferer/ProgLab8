@@ -3,7 +3,9 @@ package server.commands;
 
 import common.data.*;
 import common.exceptions.*;
+import common.functional.User;
 import common.functional.WorkerPacket;
+import server.RunServer;
 import server.utils.*;
 
 
@@ -13,6 +15,7 @@ import server.utils.*;
  */
 public class RemoveGreater extends AbstractCommand {
     CollectionControl collectionControl;
+    DatabaseCollectionManager databaseCollectionManager;
 
     /**
      * Constructs a new RemoveGreater command with the specified CollectionControl and
@@ -20,9 +23,10 @@ public class RemoveGreater extends AbstractCommand {
      *
      * @param collectionControl    The CollectionControl instance to use for command execution.
      */
-    public RemoveGreater(CollectionControl collectionControl) {
+    public RemoveGreater(CollectionControl collectionControl, DatabaseCollectionManager databaseCollectionManager) {
         super("remove_greater", "Удалить из коллекции все элементы, превышающие заданный");
         this.collectionControl = collectionControl;
+        this.databaseCollectionManager = databaseCollectionManager;
     }
 
     /**
@@ -32,17 +36,16 @@ public class RemoveGreater extends AbstractCommand {
      */
 
     @Override
-    public void execute(String argument, Object commandObjectArgument) {
+    public void execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
             WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
-            collectionControl.removeGreater(new Worker(workerPacket.getName(),
-                    workerPacket.getCoordinates(), workerPacket.getSalary(),
-                    workerPacket.getPosition(), workerPacket.getStatus(),
-                    workerPacket.getPerson()));
+            collectionControl.removeGreater(databaseCollectionManager.insertWorker(workerPacket, user));
             collectionControl.updateAllIDs();
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
+        } catch (DatabaseHandlingException e) {
+            RunServer.logger.error("DatabaseHandlingException ----");
         }
 
     }

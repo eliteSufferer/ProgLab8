@@ -3,6 +3,7 @@ package server.commands;
 
 import common.data.*;
 import common.exceptions.*;
+import common.functional.User;
 import server.utils.*;
 /**
  * The {@code FilterGreaterStatus} class represents a command that filters the elements in the collection by the status field
@@ -27,13 +28,12 @@ public class FilterGreaterStatus extends AbstractCommand {
      * @param argument the command argument (not used)
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument) {
+    public void execute(String argument, Object commandObjectArgument, User user) {
         String line;
 
         try {
             if (argument.isEmpty() || commandObjectArgument != null ) throw new WrongArgumentsException();
             line = argument.trim();
-
             for (Worker worker : collectionControl.filterGreaterThanStatus(line)) {
                 ResponseOutputer.appendln(worker.toString());
             }

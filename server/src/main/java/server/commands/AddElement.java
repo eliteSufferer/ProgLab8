@@ -2,9 +2,11 @@
 package server.commands;
 
 import common.data.Worker;
+import common.functional.User;
 import common.functional.WorkerPacket;
 import server.utils.CollectionControl;
 import common.exceptions.*;
+import server.utils.DatabaseCollectionManager;
 import server.utils.ResponseOutputer;
 
 /**
@@ -16,13 +18,15 @@ public class AddElement extends AbstractCommand {
 
 
     private CollectionControl collectionControl;
+    private DatabaseCollectionManager databaseCollectionManager;
 
     /**
      * @param collectionControl the {@link CollectionControl} instance to be used for modifying the collection
      */
-    public AddElement(CollectionControl collectionControl) {
+    public AddElement(CollectionControl collectionControl, DatabaseCollectionManager databaseCollectionManager) {
         super("addElement", "Добавить элемент в коллекцию");
         this.collectionControl = collectionControl;
+        this.databaseCollectionManager = databaseCollectionManager;
     }
 
     /**
@@ -30,19 +34,18 @@ public class AddElement extends AbstractCommand {
      *
      * @param argument the command argument
      */
-    public void execute(String argument, Object commandObjectArgument) {
+    public void execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
             WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
 
-            collectionControl.addToCollection(new Worker(workerPacket.getName(),
-                    workerPacket.getCoordinates(),
-                    workerPacket.getSalary(), workerPacket.getPosition(),
-                    workerPacket.getStatus(), workerPacket.getPerson()));
+            collectionControl.addToCollection(databaseCollectionManager.insertWorker(workerPacket, user));
+            ResponseOutputer.appendln("Рабочий успешно добавлен!");
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
-            System.out.println("ggg");
             e.printStackTrace();
+        } catch (DatabaseHandlingException e) {
+            ResponseOutputer.appendln(e.getMessage());
         }
     }
 

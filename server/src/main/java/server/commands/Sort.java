@@ -1,6 +1,7 @@
 package server.commands;
 
 import common.exceptions.WrongArgumentsException;
+import common.functional.User;
 import server.utils.*;
 
 import java.io.CharArrayReader;
@@ -27,7 +28,7 @@ public class Sort extends AbstractCommand {
      * @param argument the argument to be passed to the command
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument) {
+    public void execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.sort();

@@ -10,7 +10,6 @@ import java.util.HashMap;
  */
 public class CommandControl {
     private final HashMap<String, Command> commandMapping = new HashMap<>();
-
     /**
      * Constructs a {@code CommandControl} object with the given commands and {@code CollectionControl} object.
      *

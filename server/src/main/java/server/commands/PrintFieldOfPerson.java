@@ -1,6 +1,7 @@
 package server.commands;
 
 import common.exceptions.*;
+import common.functional.User;
 import server.utils.*;
 
 /**
@@ -25,7 +26,7 @@ public class PrintFieldOfPerson extends AbstractCommand {
      * @param argument the arguments passed to the command
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument) {
+    public void execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.sortPerson();

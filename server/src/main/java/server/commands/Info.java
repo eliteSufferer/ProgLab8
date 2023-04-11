@@ -1,6 +1,7 @@
 package server.commands;
 
 import common.exceptions.*;
+import common.functional.User;
 import server.utils.*;
 
 /**
@@ -25,7 +26,7 @@ public class Info extends AbstractCommand {
      * @param argument the command argument (not used in this command)
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument) {
+    public void execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty()) throw new WrongArgumentsException();
             collectionControl.getInfo();
