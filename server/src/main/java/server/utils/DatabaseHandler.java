@@ -6,7 +6,7 @@ import server.RunServer;
 import java.sql.*;
 
 public class DatabaseHandler {
-    private static final String WORKER_TABLE = "worker";
+    public static final String WORKER_TABLE = "worker";
     public static final String USER_TABLE = "my_user";
     public static final String COORDINATES_TABLE = "coordinates";
     public static final String LOCATION_TABLE = "location";
@@ -47,7 +47,7 @@ public class DatabaseHandler {
     //Person columns
     public static final String PERSON_TABLE_ID_COLUMN = "id";
     public static final String PERSON_TABLE_BIRTHDAY_COLUMN = "birthday";
-    public static final String PERSON_TABLE_height_COLUMN = "height";
+    public static final String PERSON_TABLE_HEIGHT_COLUMN = "height";
     public static final String PERSON_TABLE_PASSPORT_COLUMN = "passport";
     public static final String PERSON_TABLE_LOCATION_ID_COLUMN = "location_id";
 

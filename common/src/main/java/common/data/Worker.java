@@ -35,12 +35,12 @@ public class Worker implements Comparable<Worker>, Serializable {
      * @param status the status of the worker
      * @param person the personal information of the worker
      */
-    public Worker (String name, Coordinates coordinates,
+    public Worker (int id, String name, Coordinates coordinates, ZonedDateTime creationDate,
                    Double salary, Position position, Status status, Person person, User owner){
-        this.id = ++idCounter;
+        this.id = id;
         this.name = name;
         this.coordinates = coordinates;
-        this.creationDate = ZonedDateTime.now();
+        this.creationDate = creationDate;
         this.salary = salary;
         this.position = position;
         this.status = status;

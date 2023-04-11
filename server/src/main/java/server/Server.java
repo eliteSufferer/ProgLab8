@@ -1,8 +1,6 @@
 package server;
 
-import server.commands.SaveCollection;
 import server.utils.CollectionControl;
-import server.utils.FileControl;
 import server.utils.RequestHandler;
 import common.functional.*;
 
@@ -25,15 +23,13 @@ public class Server {
     private DatagramChannel datagramChannel;
     private RequestHandler requestHandler;
     private InetAddress host;
-    private FileControl fileControl;
     private CollectionControl collectionControl;
     private static final Logger logger = LogManager.getLogger(RunServer.class);
 
-    public Server(int port, RequestHandler requestHandler, FileControl fileControl, CollectionControl collectionControl) throws IOException {
+    public Server(int port, RequestHandler requestHandler, CollectionControl collectionControl) throws IOException {
         this.port = port;
         this.collectionControl = collectionControl;
         this.requestHandler = requestHandler;
-        this.fileControl = fileControl;
         this.selector = Selector.open();
         this.datagramChannel = DatagramChannel.open();
         this.datagramChannel.configureBlocking(false);
@@ -56,20 +52,8 @@ public class Server {
                     }
                 }
 
-                if (System.in.available() > 0) {
-                    String line = serverReader.readLine();
-                    if (line.trim().equals("save")) {
-                        SaveCollection save = new SaveCollection(fileControl, collectionControl);
-                        System.out.println("Saving the collection...");
-                        save.execute("", null);
-                    }
-                } else {
-                    Thread.sleep(100); // Delay between checking server input availability
-                }
             } catch (IOException e) {
                 System.out.println("Error during I/O operations: " + e.getMessage());
-            } catch (InterruptedException e) {
-                System.out.println("Sleep interrupted: " + e.getMessage());
             }
         }
     }

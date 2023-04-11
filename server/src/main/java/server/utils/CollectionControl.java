@@ -4,8 +4,6 @@ import common.data.*;
 import common.exceptions.*;
 import server.commands.Command;
 
-import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,18 +21,6 @@ public class CollectionControl {
     HashMap<String, Command> BufferOfCommandMap;
     protected static LocalDateTime timeInitialization = null;
 
-    FileControl fileControl;
-    /**
-     * Constructor for the CollectionControl class. It initializes the fileControl and communicationControl objects
-     * and sets the BufferOfCommandMap to null.
-     *
-     * @param fileControl          the FileControl object to use for reading/writing data from/to files
-     */
-
-    public CollectionControl(FileControl fileControl) {
-        this.fileControl = fileControl;
-        this.BufferOfCommandMap = null;
-    }
 
     /**
      * Sets the BufferOfCommandMap to the specified HashMap.
@@ -89,13 +75,6 @@ public class CollectionControl {
      * Saves the current workersCollection ArrayList to a file with the specified name.
      *
      */
-    public void saveCollection() {
-        try {
-            fileControl.writeToFile(workersCollection);
-        } catch (IOException | XMLStreamException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Filters workers with a status greater than the given string and returns an ArrayList of the filtered workers.

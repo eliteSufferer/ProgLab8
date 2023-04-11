@@ -1,5 +1,7 @@
 package server.commands;
 
+import common.functional.User;
+
 import java.io.FileNotFoundException;
 
 public interface Command {
@@ -7,5 +9,5 @@ public interface Command {
 
     String getName();
 
-    void execute(String argument, Object commandObjectArgument) throws FileNotFoundException;
+    void execute(String argument, Object commandObjectArgument, User user) throws FileNotFoundException;
 }

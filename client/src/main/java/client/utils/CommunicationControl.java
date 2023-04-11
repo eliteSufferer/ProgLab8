@@ -38,7 +38,7 @@ public class CommunicationControl {
     }
 
     /**
-     * Sets marine asker mode to 'User Mode'.
+     * Sets WORKER asker mode to 'User Mode'.
      */
     public void setUserMode() {
         flagForScr = false;
