@@ -22,13 +22,13 @@ public class RequestHandler implements Runnable {
     private DatagramSocket clientSocket;
     private CommandControl commandManager;
 
-    private DatagramPacket packet;
+    private DatagramPacket receivePacket;
     private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(1);
 
     public RequestHandler(Server server, DatagramSocket clientSocket, DatagramPacket packet, CommandControl commandManager) {
         this.server = server;
         this.clientSocket = clientSocket;
-        this.packet = packet;
+        this.receivePacket = packet;
         this.commandManager = commandManager;
     }
 
@@ -44,18 +44,22 @@ public class RequestHandler implements Runnable {
         try {
             byte[] receiveData = new byte[1024];
             AtomicReference<byte[]> sendData = new AtomicReference<>();
-            InetAddress clientAddress = null;
-            int clientPort = -1;
+            InetAddress clientAddress;
+            int clientPort;
 
             do {
                 // Receiving data from client
-                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                clientSocket.receive(receivePacket);
                 clientAddress = receivePacket.getAddress();
                 clientPort = receivePacket.getPort();
                 ByteArrayInputStream bais = new ByteArrayInputStream(receiveData);
                 ObjectInputStream ois = new ObjectInputStream(bais);
                 userRequest = (Request) ois.readObject();
+                System.out.println(userRequest.getCommandName());
+
+                System.out.println(userRequest.getCommandObjectArgument());
+                System.out.println(userRequest.getCommandStringArgument());
+                System.out.println(userRequest.getUser());
+
                 ois.close();
                 bais.close();
 
@@ -66,6 +70,8 @@ public class RequestHandler implements Runnable {
 
                 // Sending response to client
                 Response finalResponseToUser = responseToUser;
+                System.out.println(finalResponseToUser.getResponseBody());
+                System.out.println(finalResponseToUser.getResponseCode());
                 InetAddress finalClientAddress = clientAddress;
                 int finalClientPort = clientPort;
                 Callable<Boolean> sendResponseTask = () -> {
@@ -86,6 +92,7 @@ public class RequestHandler implements Runnable {
                     return false;
                 };
                 if (!fixedThreadPool.submit(sendResponseTask).get()) break;
+                
             } while (responseToUser.getResponseCode() != ServerResponseCode.SERVER_EXIT &&
                     responseToUser.getResponseCode() != ServerResponseCode.CLIENT_EXIT);
 
@@ -98,6 +105,7 @@ public class RequestHandler implements Runnable {
             RunServer.logger.warn("При обработке запроса произошла ошибка многопоточности!");
         } catch (IOException exception) {
             RunServer.logger.warn("Непредвиденный разрыв соединения с клиентом!");
+            exception.printStackTrace();
         } finally {
             fixedThreadPool.shutdown();
             clientSocket.close();
