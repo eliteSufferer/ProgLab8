@@ -28,7 +28,7 @@ public class FilterGreaterStatus extends AbstractCommand {
      * @param argument the command argument (not used)
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument, User user) {
+    public boolean execute(String argument, Object commandObjectArgument, User user) {
         String line;
 
         try {
@@ -42,5 +42,6 @@ public class FilterGreaterStatus extends AbstractCommand {
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln("Неверное кол-во аргементов...");
         }
+        return false;
     }
 }

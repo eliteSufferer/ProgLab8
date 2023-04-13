@@ -2,5 +2,7 @@ package common.functional;
 
 public enum ServerResponseCode {
     OK,
-    ERROR
+    ERROR,
+    CLIENT_EXIT,
+    SERVER_EXIT
 }

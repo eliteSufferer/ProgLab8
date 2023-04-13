@@ -32,7 +32,7 @@ public class AddElementIfMin extends AbstractCommand {
      *
      * @param argument the arguments passed to the command, not used in this case.
      */
-    public void execute(String argument, Object commandObjectArgument, User user) {
+    public boolean execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
             WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
@@ -43,5 +43,6 @@ public class AddElementIfMin extends AbstractCommand {
         } catch (DatabaseHandlingException e) {
             throw new RuntimeException(e);
         }
+        return false;
     }
 }

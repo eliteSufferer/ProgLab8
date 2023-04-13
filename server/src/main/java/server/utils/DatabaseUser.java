@@ -88,6 +88,7 @@ public class DatabaseUser {
             return userId;
         } catch (SQLException exception) {
             RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_USER_BY_USERNAME!");
+            exception.printStackTrace();
             throw new UniversalException();
         } finally {
             databaseHandler.closePreparedStatement(preparedSelectUserByUsernameStatement);

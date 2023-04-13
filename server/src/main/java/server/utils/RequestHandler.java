@@ -3,42 +3,108 @@ import common.exceptions.WrongArgumentsException;
 import common.functional.Request;
 import common.functional.Response;
 import common.functional.ServerResponseCode;
+import common.functional.User;
+import server.RunServer;
 import server.Server;
 import server.commands.Command;
 
-import java.io.FileNotFoundException;
-import java.net.Socket;
+import javax.xml.crypto.Data;
+import java.io.*;
+import java.net.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 import java.util.HashMap;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class RequestHandler {
+public class RequestHandler implements Runnable {
     private Server server;
-    private String commandName;
-    private String commandArgument;
-    private CommandControl commandControl;
-    public RequestHandler(CommandControl commandControl){
-        this.commandControl = commandControl;
-    }
-    public Response handle(Request request) {
-        commandName = request.getCommandName().trim();
-        commandArgument = request.getCommandStringArgument();
-//        System.out.println("clooo: "+ commandArgument);
-//        if (Objects.equals(commandName, "close")){
-//            return new Response(ServerResponseCode.CLOSE, null);
-//        }
-        try {
-            HashMap<String, Command> commandHashMap = commandControl.getMapping();
-            if (!commandHashMap.containsKey(commandName)) {
-                throw new WrongArgumentsException();
-            }
-            for (String key : commandHashMap.keySet()) {
-                if (key.equalsIgnoreCase(commandName)) {
-                    commandHashMap.get(key).execute(commandArgument, request.getCommandObjectArgument());
-                }
-            }
+    private DatagramSocket clientSocket;
+    private CommandControl commandManager;
 
-        }catch (WrongArgumentsException | FileNotFoundException e){
-            return null;
+    private DatagramPacket packet;
+    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(1);
+
+    public RequestHandler(Server server, DatagramSocket clientSocket, DatagramPacket packet, CommandControl commandManager) {
+        this.server = server;
+        this.clientSocket = clientSocket;
+        this.packet = packet;
+        this.commandManager = commandManager;
+    }
+
+    /**
+     * Main handling cycle.
+     */
+    @Override
+    public void run() {
+        Request userRequest = null;
+        Response responseToUser = null;
+        boolean stopFlag = false;
+
+        try {
+            byte[] receiveData = new byte[1024];
+            AtomicReference<byte[]> sendData = new AtomicReference<>();
+            InetAddress clientAddress = null;
+            int clientPort = -1;
+
+            do {
+                // Receiving data from client
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                clientSocket.receive(receivePacket);
+                clientAddress = receivePacket.getAddress();
+                clientPort = receivePacket.getPort();
+                ByteArrayInputStream bais = new ByteArrayInputStream(receiveData);
+                ObjectInputStream ois = new ObjectInputStream(bais);
+                userRequest = (Request) ois.readObject();
+                ois.close();
+                bais.close();
+
+                // Processing request
+                Callable<Response> handleRequestTask = new HandleRequestTask(userRequest, commandManager);
+                responseToUser = fixedThreadPool.submit(handleRequestTask).get();
+                RunServer.logger.info("Запрос '" + userRequest.getCommandName() + "' обработан.");
+
+                // Sending response to client
+                Response finalResponseToUser = responseToUser;
+                InetAddress finalClientAddress = clientAddress;
+                int finalClientPort = clientPort;
+                Callable<Boolean> sendResponseTask = () -> {
+                    try {
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        ObjectOutputStream oos = new ObjectOutputStream(baos);
+                        oos.writeObject(finalResponseToUser);
+                        oos.flush();
+                        sendData.set(baos.toByteArray());
+                        DatagramPacket sendPacket = new DatagramPacket(sendData.get(), sendData.get().length, finalClientAddress, finalClientPort);
+                        clientSocket.send(sendPacket);
+                        oos.close();
+                        baos.close();
+                        return true;
+                    } catch (IOException exception) {
+                        RunServer.logger.error("Произошла ошибка при отправке данных на клиент!");
+                    }
+                    return false;
+                };
+                if (!fixedThreadPool.submit(sendResponseTask).get()) break;
+            } while (responseToUser.getResponseCode() != ServerResponseCode.SERVER_EXIT &&
+                    responseToUser.getResponseCode() != ServerResponseCode.CLIENT_EXIT);
+
+            if (responseToUser.getResponseCode() == ServerResponseCode.SERVER_EXIT)
+                stopFlag = true;
+
+        } catch (ClassNotFoundException exception) {
+            RunServer.logger.error("Произошла ошибка при чтении полученных данных!");
+        } catch (CancellationException | ExecutionException | InterruptedException exception) {
+            RunServer.logger.warn("При обработке запроса произошла ошибка многопоточности!");
+        } catch (IOException exception) {
+            RunServer.logger.warn("Непредвиденный разрыв соединения с клиентом!");
+        } finally {
+            fixedThreadPool.shutdown();
+            clientSocket.close();
+            RunServer.logger.info("Клиент отключен от сервера.");
+            if (stopFlag) server.stop();
+            server.releaseConnection();
         }
-        return new Response(ServerResponseCode.OK, ResponseOutputer.getAndClear());
     }
 }
+

@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Client {
@@ -143,6 +144,7 @@ public class Client {
                 Printer.printerror("Произошла ошибка при чтении полученных данных!");
             } catch (IOException exception) {
                 Printer.printerror("Соединение с сервером разорвано!");
+                exception.printStackTrace();
             }
         } while (serverResponse == null || !serverResponse.getResponseCode().equals(ServerResponseCode.OK));
         user = requestToServer.getUser();

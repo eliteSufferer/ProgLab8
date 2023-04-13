@@ -36,7 +36,7 @@ public class ExecuteScript extends AbstractCommand {
      * @param argument the argument for the command
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument, User user) throws FileNotFoundException {
+    public boolean execute(String argument, Object commandObjectArgument, User user) throws FileNotFoundException {
         argument = argument.trim();
         try {
             if (argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
@@ -45,6 +45,7 @@ public class ExecuteScript extends AbstractCommand {
             ResponseOutputer.appendln("неверные аргументы");
         }
 
+        return false;
     }
 }
 

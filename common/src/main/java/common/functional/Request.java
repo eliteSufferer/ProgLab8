@@ -28,10 +28,9 @@ public class Request implements Serializable {
         this("","", user);
     }
 
-//    public Request(){
-//        this("", "", null);
-//    }
-
+    public Request() {
+        this("", "", null);
+    }
     /**
      * @return Command name.
      */

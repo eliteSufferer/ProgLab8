@@ -16,12 +16,13 @@ public class GroupByStatus extends AbstractCommand{
     }
 
     @Override
-    public void execute(String argument, Object commandObjectArgument, User user) {
+    public boolean execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.gropByStatus();
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln("Неверное кол-во аргементов");
         }
+        return false;
     }
 }

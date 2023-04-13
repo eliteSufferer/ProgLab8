@@ -26,12 +26,13 @@ public class Info extends AbstractCommand {
      * @param argument the command argument (not used in this command)
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument, User user) {
+    public boolean execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty()) throw new WrongArgumentsException();
             collectionControl.getInfo();
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
         }
+        return false;
     }
 }

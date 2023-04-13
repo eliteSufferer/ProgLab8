@@ -30,7 +30,7 @@ public class RemoveElementByID extends AbstractCommand {
      * @param argument the argument to be passed to the command
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument, User user) {
+    public boolean execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             if (collectionControl.collectionSize() == 0) throw new CollectionIsEmptyException();
@@ -60,5 +60,6 @@ public class RemoveElementByID extends AbstractCommand {
             RunServer.logger.error("Произошла ошибка при обращении к базе данных!");
         }
 
+        return false;
     }
 }

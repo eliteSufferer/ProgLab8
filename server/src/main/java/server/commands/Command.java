@@ -9,5 +9,5 @@ public interface Command {
 
     String getName();
 
-    void execute(String argument, Object commandObjectArgument, User user) throws FileNotFoundException;
+    boolean execute(String argument, Object commandObjectArgument, User user) throws FileNotFoundException;
 }

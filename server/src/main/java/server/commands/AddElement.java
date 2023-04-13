@@ -29,12 +29,8 @@ public class AddElement extends AbstractCommand {
         this.databaseCollectionManager = databaseCollectionManager;
     }
 
-    /**
-     * Executes the command by adding a new worker element to the collection.
-     *
-     * @param argument the command argument
-     */
-    public void execute(String argument, Object commandObjectArgument, User user) {
+
+    public boolean execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
             WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
@@ -47,6 +43,7 @@ public class AddElement extends AbstractCommand {
         } catch (DatabaseHandlingException e) {
             ResponseOutputer.appendln(e.getMessage());
         }
+        return false;
     }
 
 }

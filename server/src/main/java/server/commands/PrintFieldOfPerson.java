@@ -26,13 +26,14 @@ public class PrintFieldOfPerson extends AbstractCommand {
      * @param argument the arguments passed to the command
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument, User user) {
+    public boolean execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.sortPerson();
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
         }
+        return false;
     }
 }
 

@@ -29,7 +29,7 @@ public class UpdateByID extends AbstractCommand {
      * @param argument the id of the element to be updated
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument, User user) {
+    public boolean execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
             if (collectionControl.collectionSize() == 0) throw new CollectionIsEmptyException();
@@ -76,5 +76,6 @@ public class UpdateByID extends AbstractCommand {
         } catch (DatabaseHandlingException e) {
             throw new RuntimeException(e);
         }
+        return false;
     }
 }

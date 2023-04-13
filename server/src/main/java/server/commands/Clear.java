@@ -32,7 +32,7 @@ public class Clear extends AbstractCommand {
      * @param argument the arguments for the command (not used in this command)
      */
     @Override
-    public void execute(String argument, Object commandObjectArgument, User user) {
+    public boolean execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             for (Worker worker : collectionControl.getCollection()) {
@@ -50,5 +50,6 @@ public class Clear extends AbstractCommand {
         } catch (ManualDatabaseEditException | DatabaseHandlingException e) {
             RunServer.logger.error("Произошло прямое изменение базы данных!");
         }
+        return false;
     }
 }

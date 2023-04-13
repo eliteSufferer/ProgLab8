@@ -36,7 +36,7 @@ public class RemoveGreater extends AbstractCommand {
      */
 
     @Override
-    public void execute(String argument, Object commandObjectArgument, User user) {
+    public boolean execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
             WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
@@ -48,5 +48,6 @@ public class RemoveGreater extends AbstractCommand {
             RunServer.logger.error("DatabaseHandlingException ----");
         }
 
+        return false;
     }
 }

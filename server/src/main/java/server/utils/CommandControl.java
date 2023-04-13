@@ -1,33 +1,42 @@
 
 package server.utils;
 
+import common.functional.User;
 import server.commands.*;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
-/**
- * The {@code CommandControl} class is responsible for mapping commands and storing them in a HashMap for easy access.
- * It also provides a reference to the {@code CollectionControl} object that manages the collection.
- */
+import java.util.concurrent.locks.ReentrantLock;
+
 public class CommandControl {
     private final HashMap<String, Command> commandMapping = new HashMap<>();
-    /**
-     * Constructs a {@code CommandControl} object with the given commands and {@code CollectionControl} object.
-     *
-     * @param addElement          the {@code Command} object for adding a new element to the collection
-     * @param addElementIfMin     the {@code Command} object for adding a new element to the collection if its salary is less than the minimum salary of all elements in the collection
-     * @param clear               the {@code Command} object for clearing the collection
-     * @param executeScript       the {@code Command} object for executing a script file
-     * @param filterGreaterStatus the {@code Command} object for filtering the collection by status greater than a given status
-     * @param groupByStatus       the {@code Command} object for grouping the collection by status
-     * @param help                the {@code Command} object for displaying help information
-     * @param info                the {@code Command} object for displaying information about the collection
-     * @param printFieldOfPerson  the {@code Command} object for printing the value of the person field of all elements in the collection
-     * @param removeElementByID   the {@code Command} object for removing an element from the collection by ID
-     * @param removeGreater       the {@code Command} object for removing all elements from the collection greater than a given element
-     * @param show                the {@code Command} object for displaying all elements in the collection
-     * @param sort                the {@code Command} object for sorting the collection by salary
-     * @param updateByID          the {@code Command} object for updating an element in the collection by ID
-     */
+
+    private ReentrantLock locker = new ReentrantLock();
+
+    private Command addElement;
+    private Command addElementIfMin;
+    private Command clear;
+
+    private Command executeScript;
+    private Command filterGreaterStatus;
+
+    private Command groupByStatus;
+    private Command help;
+    private Command info;
+    private Command printFieldOfPerson;
+
+    private Command removeElementByID;
+    private Command removeGreater;
+
+    private Command show;
+    private Command sort;
+    private Command updateByID;
+    CollectionControl collectionControl;
+
+    private Command login;
+
+    private Command register;
+
 
     public CommandControl(Command addElement, Command addElementIfMin, Command clear,
                           Command executeScript, /*Command exit,*/ Command filterGreaterStatus,
@@ -52,13 +61,181 @@ public class CommandControl {
         collectionControl.getMappingOfCommands(commandMapping);
     }
 
-    /**
-     * Returns the mapping of command names to Command objects in this CommandControl.
-     *
-     * @return a HashMap containing the mapping of command names to Command objects
-     */
+
     public HashMap<String, Command> getMapping() {
         return commandMapping;
+    }
+
+
+    public boolean add(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return addElement.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean addElementIfMin(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return addElementIfMin.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean clear(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return clear.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean executeScript(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return executeScript.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+
+    public boolean filterGreaterStatus(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return filterGreaterStatus.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean groupByStatus(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return groupByStatus.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean help(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return help.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean info(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return info.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean printField(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return printFieldOfPerson.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean removeById(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return removeElementByID.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean removeGreater(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return removeGreater.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean show(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return clear.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean sort(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return sort.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean updateById(String stringArgument, Object objectArgument, User user) {
+        locker.lock();
+        try {
+            return updateByID.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            locker.unlock();
+        }
+    }
+
+    public boolean login(String stringArgument, Object objectArgument, User user) {
+        try {
+            return login.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean register(String stringArgument, Object objectArgument, User user) {
+        try {
+            return register.execute(stringArgument, objectArgument, user);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
