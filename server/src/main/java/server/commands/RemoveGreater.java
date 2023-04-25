@@ -41,7 +41,7 @@ public class RemoveGreater extends AbstractCommand {
             if (!argument.isEmpty() || commandObjectArgument == null) throw new WrongArgumentsException();
             WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
             collectionControl.removeGreater(databaseCollectionManager.insertWorker(workerPacket, user));
-            collectionControl.updateAllIDs();
+            return true;
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
         } catch (DatabaseHandlingException e) {

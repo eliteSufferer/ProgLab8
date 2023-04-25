@@ -4,6 +4,7 @@ package server.commands;
 import common.data.Worker;
 import common.functional.User;
 import common.functional.WorkerPacket;
+import server.RunServer;
 import server.utils.CollectionControl;
 import common.exceptions.*;
 import server.utils.DatabaseCollectionManager;
@@ -37,7 +38,9 @@ public class AddElement extends AbstractCommand {
 
             collectionControl.addToCollection(databaseCollectionManager.insertWorker(workerPacket, user));
             ResponseOutputer.appendln("Рабочий успешно добавлен!");
-        } catch (WrongArgumentsException e) {
+            RunServer.logger.info("Рабочий создан");
+            return true;
+        } catch (WrongArgumentsException | DatabaseHandlingException e) {
             ResponseOutputer.appendln(e.getMessage());
         }
         return false;

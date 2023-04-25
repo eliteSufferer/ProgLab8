@@ -34,6 +34,7 @@ public class Help extends AbstractCommand {
             collectionControl.sendCommandMap().forEach((key, value) -> {
                 ResponseOutputer.appendln(key + " : " + value.getDescription());
             });
+            return true;
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln("у данной команды не должно быть аргементов");
         }

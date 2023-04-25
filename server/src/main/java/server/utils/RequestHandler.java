@@ -21,18 +21,20 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RequestHandler implements Runnable {
-    private Server server;
-    private DatagramSocket clientSocket;
-    private CommandControl commandManager;
-
+    private DatagramSocket serverSocket;
     private DatagramPacket receivePacket;
-    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(1);
+    private InetAddress clientAddress;
+    private int clientPort;
+    private CommandControl commandControl;
+    private ExecutorService fixedThreadPool1 = Executors.newFixedThreadPool(4);
+    private ExecutorService fixedThreadPool2 = Executors.newFixedThreadPool(4);
 
-    public RequestHandler(Server server, DatagramSocket clientSocket, DatagramPacket packet, CommandControl commandManager) {
-        this.server = server;
-        this.clientSocket = clientSocket;
-        this.receivePacket = packet;
-        this.commandManager = commandManager;
+    public RequestHandler(DatagramSocket serverSocket, DatagramPacket receivePacket, InetAddress clientAddress, int clientPort, CommandControl commandControl) {
+        this.serverSocket = serverSocket;
+        this.receivePacket = receivePacket;
+        this.clientAddress = clientAddress;
+        this.clientPort = clientPort;
+        this.commandControl = commandControl;
     }
 
     /**

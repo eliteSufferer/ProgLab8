@@ -44,7 +44,7 @@ public class RemoveElementByID extends AbstractCommand {
             ResponseOutputer.appendln("Работник ликвидирован успешно!");
 
 
-
+            return true;
         } catch (NumberFormatException e) {
             ResponseOutputer.appendln("Неправильный формат ID");
         } catch (WrongArgumentsException e) {

@@ -31,6 +31,7 @@ public class Exit extends AbstractCommand {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             ResponseOutputer.appendln("terminating the program");
             System.exit(0);
+            return true;
         } catch (WrongArgumentsException e){
             ResponseOutputer.appendln("exceeded number of arguments");
         }

@@ -83,8 +83,10 @@ public class DatabaseUser {
             ResultSet resultSet = preparedSelectUserByUsernameStatement.executeQuery();
             RunServer.logger.info("Выполнен запрос SELECT_USER_BY_USERNAME.");
             if (resultSet.next()) {
-                userId = resultSet.getLong(DatabaseHandler.USER_TABLE_ID_COLUMN);
+                userId = resultSet.getInt(DatabaseHandler.USER_TABLE_ID_COLUMN);
+                RunServer.logger.info("Выполнен запрос SELECT_USER_BY_USERNAME.");
             } else userId = -1;
+            RunServer.logger.info("User ID " + userId);
             return userId;
         } catch (SQLException exception) {
             RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_USER_BY_USERNAME!");

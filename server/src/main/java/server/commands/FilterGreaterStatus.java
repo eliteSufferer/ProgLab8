@@ -37,6 +37,7 @@ public class FilterGreaterStatus extends AbstractCommand {
             for (Worker worker : collectionControl.filterGreaterThanStatus(line)) {
                 ResponseOutputer.appendln(worker.toString());
             }
+            return true;
         } catch (IllegalArgumentException e) {
             ResponseOutputer.appendln("Не является элементом Status");
         } catch (WrongArgumentsException e) {

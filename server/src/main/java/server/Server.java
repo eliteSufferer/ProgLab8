@@ -24,12 +24,11 @@ import org.apache.logging.log4j.Logger;
 
 public class Server {
     private int port;
-    private DatagramSocket datagramSocket;
     private CommandControl commandManager;
-    private boolean isStopped;
     private int maxClients;
     private ExecutorService fixedThreadPool;
     private Semaphore semaphore;
+    private DatagramSocket serverSocket;
 
     public Server(int port, int maxClients, CommandControl commandManager) {
         this.port = port;

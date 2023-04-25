@@ -41,6 +41,7 @@ public class ExecuteScript extends AbstractCommand {
         try {
             if (argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             ResponseOutputer.appendln("Скрипт выполняется");
+            return true;
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln("неверные аргументы");
         }

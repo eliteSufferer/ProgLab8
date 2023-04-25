@@ -32,6 +32,7 @@ public class Sort extends AbstractCommand {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             collectionControl.sort();
+            return true;
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
         }

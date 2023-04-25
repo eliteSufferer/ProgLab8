@@ -25,6 +25,7 @@ public class Show extends AbstractCommand {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             this.collectionControl.show();
+            return true;
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
         }

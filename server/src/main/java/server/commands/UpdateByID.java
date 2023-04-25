@@ -5,6 +5,7 @@ import common.data.*;
 import common.exceptions.*;
 import common.functional.User;
 import common.functional.WorkerPacket;
+import server.RunServer;
 import server.utils.*;
 
 import java.time.ZonedDateTime;
@@ -43,6 +44,7 @@ public class UpdateByID extends AbstractCommand {
 
             WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
             databaseCollectionManager.updateWorkerById(id, workerPacket);
+            RunServer.logger.info("вышли из updateWorkerById");
             String name = workerPacket.getName() == null ? oldWorker.getName() : workerPacket.getName();
             Coordinates coordinates = workerPacket.getCoordinates() == null ? oldWorker.getCoordinates() : workerPacket.getCoordinates();
             ZonedDateTime creationDate = oldWorker.getCreationDate();
@@ -61,6 +63,7 @@ public class UpdateByID extends AbstractCommand {
                     person,
                     user));
             ResponseOutputer.appendln("Замена успешно завершена!");
+            return true;
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
         } catch (NumberFormatException e) {
@@ -70,11 +73,11 @@ public class UpdateByID extends AbstractCommand {
         } catch (PermissionsDeniedException e) {
             RunServer.logger.error("Доступ к объекту запрещен, он не ваш!");
         } catch (ManualDatabaseEditException e) {
-            throw new RuntimeException(e);
+            RunServer.logger.error("Прямое изменение базы!");
         } catch (WorkerNotFoundException e) {
-            throw new RuntimeException(e);
+            RunServer.logger.error("Рабочий не найден");
         } catch (DatabaseHandlingException e) {
-            throw new RuntimeException(e);
+            RunServer.logger.error("Ошибка при обращении к БД");
         }
         return false;
     }

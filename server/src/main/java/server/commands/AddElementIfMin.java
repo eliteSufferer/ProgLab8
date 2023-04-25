@@ -38,6 +38,7 @@ public class AddElementIfMin extends AbstractCommand {
             WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
             Worker newWorker = databaseCollectionManager.insertWorker(workerPacket, user);
             if (!collectionControl.addIfSmallerSalary(newWorker)) newWorker = null;
+            return true;
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln("Превышенно кол-во аргементов");
         } catch (DatabaseHandlingException e) {

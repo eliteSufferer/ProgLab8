@@ -30,6 +30,7 @@ public class Info extends AbstractCommand {
         try {
             if (!argument.isEmpty()) throw new WrongArgumentsException();
             collectionControl.getInfo();
+            return true;
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
         }

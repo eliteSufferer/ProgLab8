@@ -4,6 +4,7 @@ import common.functional.Request;
 import common.functional.Response;
 import common.functional.ServerResponseCode;
 import common.functional.User;
+import server.RunServer;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.RecursiveTask;
@@ -11,6 +12,12 @@ import java.util.concurrent.RecursiveTask;
 public class HandleRequestTask implements Callable<Response> {
     private Request request;
     private CommandControl commandControl;
+
+
+    public HandleRequestTask(Request request, CommandControl commandControl) {
+        this.request = request;
+        this.commandControl = commandControl;
+    }
 
     @Override
     public Response call() {
@@ -20,13 +27,11 @@ public class HandleRequestTask implements Callable<Response> {
         );
         ServerResponseCode responseCode = executeCommand(request.getCommandName(), request.getCommandStringArgument(),
                 request.getCommandObjectArgument(), hashedUser);
+        RunServer.logger.info("Response сформирован");
         return new Response(responseCode, ResponseOutputer.getAndClear());
     }
 
-    public HandleRequestTask(Request request, CommandControl commandControl) {
-        this.request = request;
-        this.commandControl = commandControl;
-    }
+
 
 
     private synchronized ServerResponseCode executeCommand(String command, String commandStringArgument,

@@ -3,8 +3,6 @@ package server;
 import server.utils.*;
 import server.commands.*;
 
-import java.io.IOException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,14 +16,14 @@ public class RunServer {
 
     public static void main(String[] args) {
         try {
-            ResponseOutputer.appendln("main запущен");
-            //String databaseHost = args[1];
-            String databaseAddress = "jdbc:postgresql://localhost:5432/Lab7";
-            String databasePassword = "228337";
+//            ResponseOutputer.appendln("main запущен");
+            String databaseAddress = "jdbc:postgresql://pg:5432/studs";
+            //String databaseAddress = "jdbc:postgresql://localhost:5432/Lab7";
+            String databasePassword = "opTdsSf29OhV65J8";
             DatabaseHandler databaseHandler = new DatabaseHandler(databaseAddress, databaseUsername, databasePassword);
             DatabaseUser databaseUserManager = new DatabaseUser(databaseHandler);
             DatabaseCollectionManager databaseCollectionManager = new DatabaseCollectionManager(databaseHandler, databaseUserManager);
-            CollectionControl collectionControl = new CollectionControl();
+            CollectionControl collectionControl = new CollectionControl(databaseCollectionManager);
             CommandControl commandControl = new CommandControl(new AddElement(collectionControl, databaseCollectionManager),
                     new AddElementIfMin(collectionControl, databaseCollectionManager),
                     new Clear(collectionControl, databaseCollectionManager),

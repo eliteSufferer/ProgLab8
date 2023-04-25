@@ -27,10 +27,8 @@ public class RunClient {
             UserHandler userHandler = new UserHandler(userScanner);
             AufHandler authHandler = new AufHandler(userScanner);
             Client client = new Client(host, Integer.parseInt(args[0]), userHandler, authHandler);
-            DatagramChannel datagramChannel = DatagramChannel.open();
-            InetSocketAddress address = new InetSocketAddress(host, Integer.parseInt(args[0]));
-            datagramChannel.connect(address);
             System.out.println("Соединение выполнено, хост = " + host);
+
             client.run();
             userScanner.close();
         } catch (Exception e){

@@ -36,17 +36,20 @@ public class Clear extends AbstractCommand {
         try {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             for (Worker worker : collectionControl.getCollection()) {
-                if (!worker.getOwner().equals(user)) throw new PermissionsDeniedException();
+                if (!worker.getOwner().equals(user)) {
+                    RunServer.logger.info("Нельзя удалить данного пользователя (Permission denied)");
+                    continue;
+                }
+                collectionControl.clear(worker);
+                databaseCollectionManager.clearCollection(worker);
                 if (!databaseCollectionManager.checkWorkerUserId(worker.getId(), user)) throw new ManualDatabaseEditException();
             }
-            databaseCollectionManager.clearCollection();
-            collectionControl.clear();
-            ResponseOutputer.appendln("Коллекция очищена!");
 
+
+            ResponseOutputer.appendln("Коллекция очищена!");
+            return true;
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln("Превышенно кол-во аргументов");
-        } catch (PermissionsDeniedException e) {
-            RunServer.logger.error("Недостаточно прав для выполнения данной команды!");
         } catch (ManualDatabaseEditException | DatabaseHandlingException e) {
             RunServer.logger.error("Произошло прямое изменение базы данных!");
         }

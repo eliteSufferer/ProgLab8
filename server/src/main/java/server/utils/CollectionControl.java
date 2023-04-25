@@ -2,6 +2,8 @@ package server.utils;
 
 import common.data.*;
 import common.exceptions.*;
+import common.functional.Printer;
+import server.RunServer;
 import server.commands.Command;
 
 import java.time.LocalDateTime;
@@ -17,16 +19,17 @@ import java.util.stream.Collectors;
  * as well as for displaying information about the collection.
  */
 public class CollectionControl {
-    private final ArrayList<Worker> workersCollection = new ArrayList<>();
+    private ArrayList<Worker> workersCollection = new ArrayList<>();
     HashMap<String, Command> BufferOfCommandMap;
     protected static LocalDateTime timeInitialization = null;
+    private DatabaseCollectionManager databaseCollectionManager;
 
 
-    /**
-     * Sets the BufferOfCommandMap to the specified HashMap.
-     *
-     * @param map the HashMap to set the BufferOfCommandMap to
-     */
+    public CollectionControl(DatabaseCollectionManager databaseCollectionManager){
+        this.databaseCollectionManager = databaseCollectionManager;
+        loadCollection();
+
+    }
 
     public void getMappingOfCommands(HashMap<String, Command> map) {
         this.BufferOfCommandMap = map;
@@ -49,8 +52,8 @@ public class CollectionControl {
      * Clears the workersCollection ArrayList.
      */
 
-    public void clear() {
-        workersCollection.clear();
+    public void clear(Worker worker) {
+        workersCollection.remove(worker);
         ResponseOutputer.appendln("Коллекция очистилась...");
 
     }
@@ -58,7 +61,17 @@ public class CollectionControl {
         return workersCollection.size();
     }
     public Worker getById(int id){
-        return workersCollection.get(id);
+        try {
+            for (Worker worker : workersCollection){
+                RunServer.logger.info(worker.getId());
+                if (worker.getId() == id){
+                    return workersCollection.get(workersCollection.indexOf(worker));
+                }
+            }
+        }catch (IndexOutOfBoundsException e){
+            RunServer.logger.info("ошибка с ID!!!!!");
+        }
+        return null;
     }
     public void removeFromCollection(Worker worker){
         workersCollection.remove(worker);
@@ -144,9 +157,15 @@ public class CollectionControl {
      */
     public void removeElementByID(int id) {
         try {
-            workersCollection.remove(id);
-        } catch (NoSuchElementException e) {
-            ResponseOutputer.appendln("Элемента с такии id нет в коллекции");
+            for (Worker worker : workersCollection){
+                RunServer.logger.info(worker.getId());
+                if (worker.getId() == id){
+                    workersCollection.remove(workersCollection.indexOf(worker));
+                    break;
+                }
+            }
+        }catch (IndexOutOfBoundsException e){
+            RunServer.logger.info("ошибка с ID!!!!!");
         }
     }
 
@@ -199,12 +218,15 @@ public class CollectionControl {
         }
     }
 
-    /**
-     * Clear all id of elements in collection
-     */
-    public void updateAllIDs() {
-        for (int i = 0; i < workersCollection.size(); i++) {
-            workersCollection.get(i).setID(i + 1);
+    private void loadCollection() {
+        try {
+            workersCollection = databaseCollectionManager.getCollection();
+            timeInitialization = LocalDateTime.now();
+            Printer.println("Коллекция загружена.");
+            RunServer.logger.info("Коллекция загружена.");
+        } catch (DatabaseHandlingException exception) {
+            Printer.printerror("Коллекция не может быть загружена!");
+            RunServer.logger.error("Коллекция не может быть загружена!");
         }
     }
 
