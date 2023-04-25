@@ -42,7 +42,25 @@ public class CommandControl {
                           Command executeScript, /*Command exit,*/ Command filterGreaterStatus,
                           Command groupByStatus, Command help, Command info, Command printFieldOfPerson,
                           Command removeElementByID, Command removeGreater,
-                          Command show, Command sort, Command updateByID, CollectionControl collectionControl) {
+                          Command show, Command sort, Command updateByID, Command login, Command register, CollectionControl collectionControl) {
+        this.addElement = addElement;
+        this.addElementIfMin = addElementIfMin;
+        this.clear = clear;
+        this.executeScript = executeScript;
+        this.filterGreaterStatus = filterGreaterStatus;
+        this.groupByStatus = groupByStatus;
+        this.help = help;
+        this.info = info;
+        this.printFieldOfPerson = printFieldOfPerson;
+        this.removeElementByID = removeElementByID;
+        this.removeGreater = removeGreater;
+        this.show = show;
+        this.sort = sort;
+        this.updateByID = updateByID;
+        this.login = login;
+        this.register = register;
+        this.collectionControl = collectionControl;
+
         commandMapping.put(addElement.getName(), addElement);
         commandMapping.put(addElementIfMin.getName(), addElementIfMin);
         commandMapping.put(clear.getName(), clear);
