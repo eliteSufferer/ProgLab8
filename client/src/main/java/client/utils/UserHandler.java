@@ -1,9 +1,6 @@
 package client.utils;
 
-import common.exceptions.InputException;
-import common.exceptions.ScriptRecursionException;
-import common.exceptions.IncorrectInputInScriptException;
-import common.exceptions.WrongCommandException;
+import common.exceptions.*;
 import common.functional.*;
 
 import java.io.File;
@@ -27,7 +24,7 @@ public class UserHandler {
         return !scannerStack.isEmpty();
     }
 
-    private CheckCode processCommand(String command, String commandArgument) {
+    private CheckCode processCommand(String command, String commandArgument, User user) {
         try {
             switch (command) {
                 case "":
@@ -61,7 +58,7 @@ public class UserHandler {
                     break;
                 case "remove_element_by_id":
                     if (commandArgument.isEmpty()) throw new WrongCommandException();
-                    return CheckCode.OBJECT;
+                    break;
                 case "remove_greater":
                     if (!commandArgument.isEmpty()) throw new WrongCommandException();
                     return CheckCode.OBJECT;
@@ -110,30 +107,31 @@ public class UserHandler {
             do {
                 try {
                     if (fileMode() && (responseCode == ServerResponseCode.ERROR)){
-                        throw new IncorrectInputInScriptException();}
+                        throw new IncorrectInputInScriptException();
+                    }
 
-                        while (fileMode() && !chosenScanner.hasNextLine()) {
-                            chosenScanner.close();
-                            chosenScanner = scannerStack.pop();
-                            Printer.println("Возвращаюсь к скрипту '" + scriptStack.pop().getName() + "'...");
-                        }
-                        if (!chosenScanner.hasNextLine()) {
-                            break; 
-                        }
-                        userInput = chosenScanner.nextLine();
-                        if (fileMode() && !userInput.isEmpty()) {
-                            Printer.println(userInput);
-                        }
+                    while (fileMode() && !chosenScanner.hasNextLine()) {
+                        chosenScanner.close();
+                        chosenScanner = scannerStack.pop();
+                        Printer.println("Возвращаюсь к скрипту '" + scriptStack.pop().getName() + "'...");
+                    }
+                    if (!chosenScanner.hasNextLine()) {
+                        break;
+                    }
+                    userInput = chosenScanner.nextLine();
+                    if (fileMode() && !userInput.isEmpty()) {
+                        Printer.println(userInput);
+                    }
 
-                        userCommand = (userInput.trim() + " ").split(" ", 2);
-                        userCommand[1] = userCommand[1].trim();
-                        System.out.println(userCommand[1]);
+                    userCommand = (userInput.trim() + " ").split(" ", 2);
+                    userCommand[1] = userCommand[1].trim();
+                    System.out.println(userCommand[1]);
                 } catch (NoSuchElementException | IllegalStateException e) {
                     Printer.printerror("Произошла ошибка при вводе команды!");
                     userCommand = new String[]{"", ""};
 
                 }
-                processingCode = processCommand(userCommand[0], userCommand[1]);
+                processingCode = processCommand(userCommand[0], userCommand[1], user);
 
             } while (processingCode == CheckCode.ERROR && !fileMode() || userCommand[0].isEmpty());
             try {
@@ -163,13 +161,13 @@ public class UserHandler {
                 throw new IncorrectInputInScriptException();
             }
         } catch (InputException | IncorrectInputInScriptException e) {
-            Printer.printerror("Выполнение скрипта прервано!");
+            Printer.printerror("Ошибка! Выполнение скрипта прервано!");
             while (!scannerStack.isEmpty()) {
                 chosenScanner.close();
                 chosenScanner = scannerStack.pop();
             }
             scriptStack.clear();
-            return new Request(user);
+            return new Request();
         }
         return new Request(userCommand[0], userCommand[1], user);
     }

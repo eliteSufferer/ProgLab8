@@ -8,7 +8,6 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class Client {
@@ -17,17 +16,18 @@ public class Client {
 
     private UserHandler userHandler;
     private DatagramChannel datagramChannel = DatagramChannel.open();
-
-    private AufHandler authHandler;
+    private AufHandler aufHandler;
     private User user;
 
-    public Client(String host, int port, UserHandler userHandler, AufHandler authHandler) throws IOException {
+    public Client(String host, int port, UserHandler userHandler, AufHandler aufHandler) throws IOException {
         this.host = host;
         this.port = port;
         this.userHandler = userHandler;
         datagramChannel.configureBlocking(false);
-        this.authHandler = authHandler;
+        this.aufHandler = aufHandler;
     }
+
+
 
     private boolean processRequestToServer() {
         Request requestToServer = null;
@@ -58,6 +58,8 @@ public class Client {
 
                     Thread.sleep(100);
                 }
+
+
                 if (System.currentTimeMillis() - start >= timeout) {
                     System.out.println("Превышено время ожидания ответа от сервера");
                     continue;
@@ -90,11 +92,10 @@ public class Client {
 
     public void run() {
         try {
-            boolean processingStatus = true;
-            while (processingStatus) {
+            while (true) {
                 try {
                     processAuthentication();
-                    processingStatus = processRequestToServer();
+                    processRequestToServer();
                 } catch (Exception exception) {
                     System.out.println("Фатальная ошибка при работе клиента");
                 }
@@ -111,31 +112,44 @@ public class Client {
     private void processAuthentication() {
         Request requestToServer = null;
         Response serverResponse = null;
+
+        ByteBuffer buffer = ByteBuffer.allocate(4096);
+        DatagramChannel datagramChannel;
+        InetSocketAddress serverAddress = new InetSocketAddress(host, port);
+
+        try {
+            datagramChannel = DatagramChannel.open();
+            datagramChannel.configureBlocking(true);
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка при создании DatagramChannel", e);
+        }
+
         do {
             try {
-                requestToServer = authHandler.handle();
+                requestToServer = aufHandler.handle();
                 if (requestToServer.isEmpty()) continue;
 
-                // Serialize request to byte array
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(bos);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos);
                 oos.writeObject(requestToServer);
-                byte[] requestData = bos.toByteArray();
+                byte[] dataToSend = baos.toByteArray();
 
-                // Send request to the server
-                ByteBuffer requestBuffer = ByteBuffer.wrap(requestData);
-                InetSocketAddress address = new InetSocketAddress(host, port);
-                datagramChannel.send(requestBuffer, address);
+                buffer.clear();
+                buffer.put(dataToSend);
+                buffer.flip();
+                datagramChannel.send(buffer, serverAddress);
 
-                // Receive response from the server
-                ByteBuffer responseBuffer = ByteBuffer.allocate(4096);
-                datagramChannel.receive(responseBuffer);
-                byte[] responseData = responseBuffer.array();
+                buffer.clear();
+                datagramChannel.receive(buffer);
+                buffer.flip();
 
-                // Deserialize response
-                ByteArrayInputStream bis = new ByteArrayInputStream(responseData);
-                ObjectInputStream ois = new ObjectInputStream(bis);
+                byte[] responseData = new byte[buffer.limit()];
+                buffer.get(responseData);
+
+                ByteArrayInputStream bais = new ByteArrayInputStream(responseData);
+                ObjectInputStream ois = new ObjectInputStream(bais);
                 serverResponse = (Response) ois.readObject();
+
                 Printer.print(serverResponse.getResponseBody(), serverResponse.getResponseCode());
 
             } catch (InvalidClassException | NotSerializableException exception) {
@@ -144,13 +158,10 @@ public class Client {
                 Printer.printerror("Произошла ошибка при чтении полученных данных!");
             } catch (IOException exception) {
                 Printer.printerror("Соединение с сервером разорвано!");
-                exception.printStackTrace();
             }
         } while (serverResponse == null || !serverResponse.getResponseCode().equals(ServerResponseCode.OK));
         user = requestToServer.getUser();
     }
-
-
 }
 
 

@@ -6,6 +6,8 @@ import common.exceptions.UniversalException;
 import common.functional.User;
 import common.functional.WorkerPacket;
 import server.RunServer;
+
+import javax.xml.crypto.Data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,10 +30,13 @@ public class DatabaseCollectionManager {
             DatabaseHandler.WORKER_TABLE_POSITION_COLUMN + ", " +
             DatabaseHandler.WORKER_TABLE_STATUS_COLUMN + ", " +
             DatabaseHandler.WORKER_TABLE_PERSON_ID_COLUMN + ", " +
-            DatabaseHandler.WORKER_TABLE_USER_ID_COLUMN + ") VALUES (?, ?, ?, ?::position," +
-            "?::status, ?::person, ?)";
+            DatabaseHandler.WORKER_TABLE_USER_ID_COLUMN + ") VALUES (?, ?, ?, ?::text," +
+            "?::text, ?::integer, ?)";
+
+
     private final String DELETE_WORKER_BY_ID = "DELETE FROM " + DatabaseHandler.WORKER_TABLE +
             " WHERE " + DatabaseHandler.WORKER_TABLE_ID_COLUMN + " = ?";
+
     private final String UPDATE_WORKER_NAME_BY_ID = "UPDATE " + DatabaseHandler.WORKER_TABLE + " SET " +
             DatabaseHandler.WORKER_TABLE_NAME_COLUMN + " = ?" + " WHERE " +
             DatabaseHandler.WORKER_TABLE_ID_COLUMN + " = ?";
@@ -39,14 +44,15 @@ public class DatabaseCollectionManager {
             DatabaseHandler.WORKER_TABLE_SALARY_COLUMN + " = ?" + " WHERE " +
             DatabaseHandler.WORKER_TABLE_ID_COLUMN + " = ?";
     private final String UPDATE_WORKER_POSITION_BY_ID = "UPDATE " + DatabaseHandler.WORKER_TABLE + " SET " +
-            DatabaseHandler.WORKER_TABLE_POSITION_COLUMN + " = ?::position" + " WHERE " +
+            DatabaseHandler.WORKER_TABLE_POSITION_COLUMN + " = ?::text" + " WHERE " +
             DatabaseHandler.WORKER_TABLE_ID_COLUMN + " = ?";
     private final String UPDATE_WORKER_STATUS_BY_ID = "UPDATE " + DatabaseHandler.WORKER_TABLE + " SET " +
             DatabaseHandler.WORKER_TABLE_STATUS_COLUMN + " = ?::status" + " WHERE " +
             DatabaseHandler.WORKER_TABLE_ID_COLUMN + " = ?";
-    private final String UPDATE_WORKER_PERSON_BY_ID = "UPDATE " + DatabaseHandler.WORKER_TABLE + " SET " +
-            DatabaseHandler.WORKER_TABLE_PERSON_ID_COLUMN + " = ?::person_id" + " WHERE " +
-            DatabaseHandler.WORKER_TABLE_ID_COLUMN + " = ?";
+
+//    private final String UPDATE_WORKER_PERSON_BY_ID = "UPDATE " + DatabaseHandler.WORKER_TABLE + " SET " +
+//            DatabaseHandler.WORKER_TABLE_PERSON_ID_COLUMN + " = ?::person_id" + " WHERE " +
+//            DatabaseHandler.WORKER_TABLE_ID_COLUMN + " = ?";
 
     // COORDINATES_TABLE
     private final String SELECT_ALL_COORDINATES = "SELECT * FROM " + DatabaseHandler.COORDINATES_TABLE;
@@ -153,12 +159,12 @@ public class DatabaseCollectionManager {
             preparedSelectWorkerByIdStatement = databaseHandler.getPreparedStatement(SELECT_WORKERS_BY_ID, false);
             preparedSelectWorkerByIdStatement.setLong(1, workerId);
             ResultSet resultSet = preparedSelectWorkerByIdStatement.executeQuery();
-            RunServer.logger.info("Выполнен запрос SELECT_MARINE_BY_ID.");
+            RunServer.logger.info("Выполнен запрос SELECT_WORKER_BY_ID.");
             if (resultSet.next()) {
                 personId = resultSet.getInt(DatabaseHandler.WORKER_TABLE_PERSON_ID_COLUMN);
             } else throw new SQLException();
         } catch (SQLException exception) {
-            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_MARINE_BY_ID!");
+            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_WORKER_BY_ID!");
             throw new SQLException(exception);
         } finally {
             databaseHandler.closePreparedStatement(preparedSelectWorkerByIdStatement);
@@ -183,7 +189,7 @@ public class DatabaseCollectionManager {
                 );
             } else throw new SQLException();
         } catch (SQLException exception) {
-            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_COORDINATES_BY_Worker_ID!");
+            RunServer.logger.error("Произошла ошибка при выполнении запроса SELECT_PERSON_BY_ID!");
             throw new SQLException(exception);
         } finally {
             databaseHandler.closePreparedStatement(preparedSelectPersonByWorkerIdStatement);
@@ -307,7 +313,6 @@ public class DatabaseCollectionManager {
         }
     }
     public void updateWorkerById(int workerId,  WorkerPacket workerPacket) throws DatabaseHandlingException {
-        // TODO: Если делаем орден уникальным, тут че-то много всего менять
         PreparedStatement preparedUpdateWorkerNameByIdStatement = null;
         PreparedStatement preparedUpdateWorkerHealthByIdStatement = null;
         PreparedStatement preparedUpdateWorkerSalaryByIdStatement = null;
@@ -315,6 +320,7 @@ public class DatabaseCollectionManager {
         PreparedStatement preparedUpdateWorkerStatusByIdStatement = null;
         PreparedStatement preparedUpdateCoordinatesByWorkerIdStatement = null;
         PreparedStatement preparedUpdatePersonByIdStatement = null;
+        PreparedStatement preparedUpdateLocationBYIDStatement = null;
         try {
             databaseHandler.setCommitMode();
             databaseHandler.setSavepoint();
@@ -325,7 +331,7 @@ public class DatabaseCollectionManager {
             preparedUpdateWorkerPositionByIdStatement = databaseHandler.getPreparedStatement(UPDATE_WORKER_POSITION_BY_ID, false);
             preparedUpdateWorkerStatusByIdStatement = databaseHandler.getPreparedStatement(UPDATE_WORKER_STATUS_BY_ID, false);
             preparedUpdatePersonByIdStatement = databaseHandler.getPreparedStatement(UPDATE_PERSON_BY_ID, false);
-
+            preparedUpdateLocationBYIDStatement = databaseHandler.getPreparedStatement(UPDATE_LOCATION_BY_ID, false);
             if (workerPacket.getName() != null) {
                 preparedUpdateWorkerNameByIdStatement.setString(1, workerPacket.getName());
                 preparedUpdateWorkerNameByIdStatement.setInt(2, workerId);
@@ -364,6 +370,15 @@ public class DatabaseCollectionManager {
                 if (preparedUpdatePersonByIdStatement.executeUpdate() == 0) throw new SQLException();
                 RunServer.logger.info("Выполнен запрос UPDATE_CHAPTER_BY_ID.");
             }
+            if (workerPacket.getPerson().getLocation() != null) {
+                preparedUpdateLocationBYIDStatement.setFloat(1, workerPacket.getPerson().getLocation().getX());
+                preparedUpdateLocationBYIDStatement.setLong(2, workerPacket.getPerson().getLocation().getY());
+                preparedUpdateLocationBYIDStatement.setInt(3, workerPacket.getPerson().getLocation().getZ());
+                preparedUpdateLocationBYIDStatement.setString(4, workerPacket.getPerson().getLocation().getName());
+                preparedUpdateLocationBYIDStatement.setLong(5, workerId);
+                if (preparedUpdateCoordinatesByWorkerIdStatement.executeUpdate() == 0) throw new SQLException();
+                RunServer.logger.info("Выполнен запрос UPDATE_COORDINATES_BY_Worker_ID.");
+            }
 
             databaseHandler.commit();
         } catch (SQLException exception) {
@@ -372,12 +387,12 @@ public class DatabaseCollectionManager {
             throw new DatabaseHandlingException();
         } finally {
             databaseHandler.closePreparedStatement(preparedUpdateWorkerNameByIdStatement);
-            databaseHandler.closePreparedStatement(preparedUpdateWorkerHealthByIdStatement);
             databaseHandler.closePreparedStatement(preparedUpdateWorkerSalaryByIdStatement);
             databaseHandler.closePreparedStatement(preparedUpdateWorkerPositionByIdStatement);
             databaseHandler.closePreparedStatement(preparedUpdateWorkerStatusByIdStatement);
             databaseHandler.closePreparedStatement(preparedUpdateCoordinatesByWorkerIdStatement);
             databaseHandler.closePreparedStatement(preparedUpdatePersonByIdStatement);
+            databaseHandler.closePreparedStatement(preparedUpdateLocationBYIDStatement);
             databaseHandler.setNormalMode();
         }
     }

@@ -192,7 +192,7 @@ public class CommandControl {
     public boolean show(String stringArgument, Object objectArgument, User user) {
         locker.lock();
         try {
-            return clear.execute(stringArgument, objectArgument, user);
+            return show.execute(stringArgument, objectArgument, user);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } finally {

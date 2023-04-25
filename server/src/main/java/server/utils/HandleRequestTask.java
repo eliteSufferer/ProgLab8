@@ -6,6 +6,7 @@ import common.functional.ServerResponseCode;
 import common.functional.User;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.RecursiveTask;
 
 public class HandleRequestTask implements Callable<Response> {
     private Request request;
@@ -43,7 +44,7 @@ public class HandleRequestTask implements Callable<Response> {
                 break;
             case "clear":
                 if (!commandControl.clear(commandStringArgument, commandObjectArgument, user))
-                    return ServerResponseCode.ERROR;
+                    return ServerResponseCode.AHTUNG;
                 break;
             case "execute_script":
                 if (!commandControl.executeScript(commandStringArgument, commandObjectArgument, user))

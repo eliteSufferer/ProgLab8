@@ -24,6 +24,7 @@ public class Location implements Serializable {
      */
     private String name;
 
+
     /**
      * Constructs a Location with the specified x, y, z coordinates and name
      *

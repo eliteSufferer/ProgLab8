@@ -2,6 +2,7 @@
 package client.utils;
 import common.exceptions.*;
 import common.data.*;
+import common.functional.WorkerPacket;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
@@ -354,6 +355,7 @@ public class CommunicationControl {
     public Location setLocation() throws InputException {
         String name;
         String line;
+        int id;
         float x;
         long y;
         int z;

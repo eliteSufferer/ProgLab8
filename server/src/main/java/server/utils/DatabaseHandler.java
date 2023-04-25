@@ -73,10 +73,8 @@ public class DatabaseHandler {
             RunServer.logger.info("Соединение с базой данных установлено.");
         } catch (SQLException e) {
             RunServer.logger.error("Произошла ошибка при подключении к базе данных!");
-            e.printStackTrace();
         } catch (ClassNotFoundException e) {
             RunServer.logger.error("Драйвер управления не найден!");
-            e.printStackTrace();
         }
     }
 

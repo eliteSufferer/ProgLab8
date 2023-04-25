@@ -39,9 +39,6 @@ public class AddElement extends AbstractCommand {
             ResponseOutputer.appendln("Рабочий успешно добавлен!");
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
-            e.printStackTrace();
-        } catch (DatabaseHandlingException e) {
-            ResponseOutputer.appendln(e.getMessage());
         }
         return false;
     }

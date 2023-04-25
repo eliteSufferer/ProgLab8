@@ -36,28 +36,29 @@ public class RemoveElementByID extends AbstractCommand {
             if (collectionControl.collectionSize() == 0) throw new CollectionIsEmptyException();
             int id = Integer.parseInt(argument.trim());
             Worker workerToRemove = collectionControl.getById(id);
-            if (workerToRemove == null) throw new WorkerNotFoundException();
+            if (workerToRemove == null) throw new UniversalException();
             if (!workerToRemove.getOwner().equals(user)) throw new PermissionsDeniedException();
             if (!databaseCollectionManager.checkWorkerUserId(workerToRemove.getId(), user)) throw new ManualDatabaseEditException();
             databaseCollectionManager.deleteWorkerById(id);
             collectionControl.removeElementByID(id);
-            ResponseOutputer.appendln("Солдат успешно удален!");
-            collectionControl.updateAllIDs();
+            ResponseOutputer.appendln("Работник ликвидирован успешно!");
 
 
 
         } catch (NumberFormatException e) {
-            ResponseOutputer.appendln("Incorrect ID format");
+            ResponseOutputer.appendln("Неправильный формат ID");
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
         } catch (CollectionIsEmptyException e) {
-            RunServer.logger.error("CollectionIsEmptyException");
+            RunServer.logger.error("Коллекция пуста!");
         } catch (PermissionsDeniedException e) {
             RunServer.logger.error("Недостаточно прав для выполнения данной команды!");
         } catch (ManualDatabaseEditException e) {
             RunServer.logger.error("ManualDatabaseEditException");
         } catch (DatabaseHandlingException e) {
             RunServer.logger.error("Произошла ошибка при обращении к базе данных!");
+        } catch (UniversalException e) {
+            RunServer.logger.error("Нет такого ID");
         }
 
         return false;

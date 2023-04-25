@@ -34,7 +34,6 @@ public class RunClient {
             client.run();
             userScanner.close();
         } catch (Exception e){
-            e.printStackTrace();
             System.out.println("Возникла ошибка");
         }
     }

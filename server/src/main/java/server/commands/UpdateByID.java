@@ -68,7 +68,7 @@ public class UpdateByID extends AbstractCommand {
         } catch (CollectionIsEmptyException e) {
             throw new RuntimeException(e);
         } catch (PermissionsDeniedException e) {
-            throw new RuntimeException(e);
+            RunServer.logger.error("Доступ к объекту запрещен, он не ваш!");
         } catch (ManualDatabaseEditException e) {
             throw new RuntimeException(e);
         } catch (WorkerNotFoundException e) {

@@ -13,7 +13,7 @@ public class RunServer {
 
     private static final int maxClients = 1000;
 
-    private static String databaseUsername = "postgres";
+    private static String databaseUsername = "s367423";
     private static int port;
 
     public static void main(String[] args) {
@@ -38,7 +38,6 @@ public class RunServer {
             server.run();
             databaseHandler.closeConnection();
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error("Произошла неожиданная ошибка");
         }
     }
