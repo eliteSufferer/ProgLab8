@@ -11,7 +11,7 @@ public class RunServer {
 
     private static final int maxClients = 1000;
 
-    private static String databaseUsername = "s367423";
+    private static String databaseUsername = "***";
     private static int port;
 
     public static void main(String[] args) {
@@ -19,7 +19,7 @@ public class RunServer {
 //            ResponseOutputer.appendln("main запущен");
             String databaseAddress = "jdbc:postgresql://pg:5432/studs";
             //String databaseAddress = "jdbc:postgresql://localhost:5432/Lab7";
-            String databasePassword = "opTdsSf29OhV65J8";
+            String databasePassword = "***";
             DatabaseHandler databaseHandler = new DatabaseHandler(databaseAddress, databaseUsername, databasePassword);
             DatabaseUser databaseUserManager = new DatabaseUser(databaseHandler);
             DatabaseCollectionManager databaseCollectionManager = new DatabaseCollectionManager(databaseHandler, databaseUserManager);
