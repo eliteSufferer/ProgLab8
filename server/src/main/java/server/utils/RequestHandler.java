@@ -28,6 +28,7 @@ public class RequestHandler implements Runnable {
     private CommandControl commandControl;
     private ExecutorService fixedThreadPool1 = Executors.newFixedThreadPool(4);
     private ExecutorService fixedThreadPool2 = Executors.newFixedThreadPool(4);
+    private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
 
     public RequestHandler(DatagramSocket serverSocket, DatagramPacket receivePacket, InetAddress clientAddress, int clientPort, CommandControl commandControl) {
         this.serverSocket = serverSocket;
@@ -48,22 +49,41 @@ public class RequestHandler implements Runnable {
             ByteArrayInputStream bis = new ByteArrayInputStream(receiveData);
             ObjectInputStream ois = new ObjectInputStream(bis);
             Request request = (Request) ois.readObject();
+            for (int i = 0; i < 4; i++) {
+                fixedThreadPool2.submit(() -> {
+                    while (true) {
+                        try {
+                            Runnable responseSender = queue.take();
+                            responseSender.run();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
 
             // Обработка запроса в отдельном потоке
             Future<Response> futureResponse = fixedThreadPool1.submit(new HandleRequestTask(request, commandControl));
 
-            // Получение ответа и отправка клиенту в отдельном потоке
-            fixedThreadPool2.submit(new ResponseSender(futureResponse.get(), receivePacket));
-        } catch (IOException | ClassNotFoundException | InterruptedException | ExecutionException e) {
+            // Добавление задачи отправки ответа в очередь
+            queue.put(() -> {
+                try {
+                    // Получение ответа и отправка клиенту
+                    new ResponseSender(futureResponse.get(), receivePacket).run();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (IOException | ClassNotFoundException | InterruptedException e) {
             RunServer.logger.error("Ошибка RequestHandler");
         } finally {
             // Завершение работы пулов потоков
             fixedThreadPool1.shutdown();
-            fixedThreadPool2.shutdown();
+//            fixedThreadPool2.shutdown();
             try {
                 // Дождаться завершения всех задач
                 fixedThreadPool1.awaitTermination(10, TimeUnit.SECONDS);
-                fixedThreadPool2.awaitTermination(10, TimeUnit.SECONDS);
+//                fixedThreadPool2.awaitTermination(10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 RunServer.logger.error("Ошибка c закрытием потоков");
             }

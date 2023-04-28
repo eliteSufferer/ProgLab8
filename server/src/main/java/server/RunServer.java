@@ -36,6 +36,7 @@ public class RunServer {
             server.run();
             databaseHandler.closeConnection();
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("Произошла неожиданная ошибка");
         }
     }
