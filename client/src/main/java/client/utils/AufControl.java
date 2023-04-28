@@ -51,6 +51,9 @@ public class AufControl {
         return password;
     }
 
+    public String hashPassword(String password){
+        return PasswordHasher.hashPassword(password);
+    }
     public boolean askQuestion(String question) {
         String finalQuestion = question + " (+/-):";
         String answer;

@@ -23,7 +23,7 @@ public class HandleRequestTask implements Callable<Response> {
     public Response call() {
         User hashedUser = new User(
                 request.getUser().getUsername(),
-                PasswordHasher.hashPassword(request.getUser().getPassword())
+                request.getUser().getPassword()
         );
         ServerResponseCode responseCode = executeCommand(request.getCommandName(), request.getCommandStringArgument(),
                 request.getCommandObjectArgument(), hashedUser);

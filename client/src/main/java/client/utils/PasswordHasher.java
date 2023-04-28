@@ -1,4 +1,4 @@
-package server.utils;
+package client.utils;
 
 import server.RunServer;
 

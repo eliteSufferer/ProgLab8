@@ -37,7 +37,7 @@ public class Clear extends AbstractCommand {
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             for (Worker worker : collectionControl.getCollection()) {
                 if (!worker.getOwner().equals(user)) {
-                    RunServer.logger.info("Нельзя удалить данного пользователя (Permission denied)");
+                    RunServer.logger.info("Нельзя удалить данного worker (Permission denied)");
                     continue;
                 }
                 collectionControl.clear(worker);

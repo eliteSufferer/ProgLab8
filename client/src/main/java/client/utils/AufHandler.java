@@ -23,7 +23,7 @@ public class AufHandler {
     public Request handle() {
         AufControl authAsker = new AufControl(userScanner);
         String command = authAsker.askQuestion("У вас уже есть учетная запись?") ? loginCommand : registerCommand;
-        User user = new User(authAsker.askLogin(), authAsker.askPassword());
+        User user = new User(authAsker.askLogin(), authAsker.hashPassword(authAsker.askPassword()));
         return new Request(command, "", user);
     }
 }
