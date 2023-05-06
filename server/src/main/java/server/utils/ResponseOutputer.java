@@ -1,10 +1,16 @@
 package server.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A class for generating responses to a client.
  */
 public class ResponseOutputer {
     private static StringBuilder stringBuilder = new StringBuilder();
+
+    private static List<String> argList = new ArrayList<>();
 
     /**
      * Append object to out to the end of string.
@@ -40,6 +46,10 @@ public class ResponseOutputer {
         stringBuilder.append("error: " + toOut + "\n");
     }
 
+    public static void appendargs(String... args) {
+        argList.addAll(Arrays.asList(args));
+    }
+
     /**
      * Append a table with two elements to the end of the line.
      *
@@ -68,6 +78,13 @@ public class ResponseOutputer {
         String toReturn = stringBuilder.toString();
         stringBuilder.delete(0, stringBuilder.length());
         return toReturn;
+    }
+
+    public static String[] getArgsAndClear() {
+        String[] argsAsArray = new String[argList.size()];
+        argsAsArray = argList.toArray(argsAsArray);
+        argList.clear();
+        return argsAsArray;
     }
 
     /**

@@ -1,39 +1,38 @@
 package client;
 
-import client.utils.AufHandler;
-import client.utils.UserHandler;
-import common.functional.Printer;
-import common.functional.Request;
+import client.GUI.LoginForm;
+import client.utils.CommunicationControl;
 
-import java.io.*;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
-import java.sql.SQLOutput;
+
+import javax.swing.*;
 import java.util.Scanner;
 
 public class RunClient {
     private static String host = "localhost";
     private static int port;
 
-
+    private Client client;
 
     public static void main(String[] args) {
         try {
-            Scanner userScanner = new Scanner(System.in);
-            UserHandler userHandler = new UserHandler(userScanner);
-            AufHandler authHandler = new AufHandler(userScanner);
-            Client client = new Client(host, Integer.parseInt(args[0]), userHandler, authHandler);
+            RunClient runClientInstance = new RunClient();
+            port = Integer.parseInt(args[0]);
+            runClientInstance.client = new Client(host, port);
             System.out.println("Соединение выполнено, хост = " + host);
-
-            client.run();
-            userScanner.close();
+            runClientInstance.startGUI();
         } catch (Exception e){
             System.out.println("Возникла ошибка");
         }
+    }
+
+    public void startGUI(){
+        CommunicationControl communicationControl = new CommunicationControl();
+        SwingUtilities.invokeLater(() -> {
+            LoginForm loginForm = new LoginForm(communicationControl);
+            loginForm.setRunClient(this);
+            loginForm.setClient(client);
+            loginForm.setVisible(true);
+        });
     }
 
 }

@@ -27,9 +27,16 @@ public class HandleRequestTask implements Callable<Response> {
         );
         ServerResponseCode responseCode = executeCommand(request.getCommandName(), request.getCommandStringArgument(),
                 request.getCommandObjectArgument(), hashedUser);
-        RunServer.logger.info("Response сформирован");
-        return new Response(responseCode, ResponseOutputer.getAndClear());
-    }
+
+        if (array.contains(request.getCommandName())){
+            RunServer.logger.info("Новый Response сформирован");
+            return new Response(newObject, ServerResponseCode.OK);
+        }else{
+            RunServer.logger.info("Старый Response сформирован");
+            System.out.println(responseCode);
+
+            return new Response(responseCode, ResponseOutputer.getAndClear(), ResponseOutputer.getArgsAndClear());
+        }
 
 
 

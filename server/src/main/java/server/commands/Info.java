@@ -29,6 +29,7 @@ public class Info extends AbstractCommand {
     public boolean execute(String argument, Object commandObjectArgument, User user) {
         try {
             if (!argument.isEmpty()) throw new WrongArgumentsException();
+
             collectionControl.getInfo();
             return true;
         } catch (WrongArgumentsException e) {

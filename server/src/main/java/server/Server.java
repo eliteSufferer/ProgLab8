@@ -43,7 +43,7 @@ public class Server {
             serverSocket = new DatagramSocket(port);
             RunServer.logger.info("Server started on port " + port);
             while (true){
-                byte[] receiveData = new byte[4096];
+                byte[] receiveData = new byte[50000];
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 RunServer.logger.info("Ожидание пакета от клиента...");
                 serverSocket.receive(receivePacket);

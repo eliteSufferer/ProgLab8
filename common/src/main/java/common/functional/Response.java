@@ -5,9 +5,10 @@ public class Response implements Serializable{
     private String responseBody;
     private ServerResponseCode responseCode;
 
-    public Response(ServerResponseCode responseCode, String responseBody) {
+    public Response(ServerResponseCode responseCode, String responseBody, String[] responseBodyArgs) {
         this.responseCode = responseCode;
         this.responseBody = responseBody;
+        this.responseBodyArgs = responseBodyArgs;
     }
 
     /**
@@ -15,6 +16,10 @@ public class Response implements Serializable{
      */
     public String getResponseBody() {
         return responseBody;
+    }
+
+    public String[] getResponseBodyArgs() {
+        return responseBodyArgs;
     }
 
     @Override
