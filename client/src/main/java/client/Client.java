@@ -11,18 +11,17 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Arrays;
 
-public class Client {
+public class Client{
     private String host;
     private int port;
 
-    private UserHandler userHandler;
     private DatagramChannel datagramChannel = DatagramChannel.open();
     private User user;
 
     public Client(String host, int port) throws IOException {
         this.host = host;
         this.port = port;
-        this.userHandler = userHandler;
+
         datagramChannel.configureBlocking(false);
     }
 

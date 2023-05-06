@@ -17,15 +17,10 @@ import java.util.Scanner;
 
 
 public class CommunicationControl {
-    public Scanner scanner;
-    private boolean loop = true;
-    public static boolean flagForScr;
 
 
 
-    public CommunicationControl(Scanner scanner) {
-        this.scanner = scanner;
-        flagForScr = false;
+    public CommunicationControl() {
     }
 
 
@@ -64,8 +59,7 @@ public class CommunicationControl {
     }
 
 
-    private String setPassportID() throws InputException {
-        while (true) {
+    public String setPassportID(String passportId)  {
             try {
                 if (passportId.isEmpty()) {
                     throw new EmptyInputException("Номер паспорта не может быть пустым");
@@ -80,11 +74,11 @@ public class CommunicationControl {
     }
 
 
-    private LocalDateTime setBirthday() throws InputException {
-        while (true) {
+    public LocalDateTime setBirthday(String birthdayStr) {
             try {
                 if (birthdayStr.isEmpty()) throw new IllegalArgumentException();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", new Locale("ru", "Ru"));
+                birthdayStr = birthdayStr.trim();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDateTime bd = LocalDate.parse(birthdayStr, formatter).atStartOfDay();
                 if (bd.isAfter(LocalDate.now().atStartOfDay())) throw new WrongArgumentsException();
                 return bd;
@@ -107,7 +101,8 @@ public class CommunicationControl {
             String passportID = setPassportID(passport);
             return new Person(bDay, height, passportID, location);
         } catch (Exception e) {
-            throw new InputException();
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Неверные данные Person");
         }
         return null;
     }
@@ -174,49 +169,31 @@ public class CommunicationControl {
     }
 
 
-    public Location setLocation() throws InputException {
-        String name;
-        String line;
-        int id;
+    public Location setLocation(String xx, String yy, String zz, String name){
         float x;
         long y;
         int z;
+        try {
+            if (xx.equals("")) throw new Exception();
+            x = Float.parseFloat(xx);
 
-        while (true) {
-            try {
 
-                System.out.println("Введите координаты x (Float)");
-                line = scanner.nextLine().trim();
-                if (line.equals("")) throw new EmptyInputException();
-                x = Float.parseFloat(line);
+            if (yy.equals("")) throw new EmptyInputException();
+            y = Long.parseLong(yy);
 
-                System.out.println("Введите координаты y (Long)");
-                line = scanner.nextLine().trim();
-                if (line.equals("")) throw new EmptyInputException();
-                y = Long.parseLong(line);
 
-                System.out.println("Введите координаты z (Integer)");
-                line = scanner.nextLine().trim();
-                if (line.equals("")) throw new EmptyInputException();
-                z = Integer.parseInt(line);
+            if (zz.equals("")) throw new EmptyInputException();
+            z = Integer.parseInt(zz);
 
-                System.out.println("Название локации: ");
-                name = scanner.nextLine().trim();
-                if (name.equals("")) throw new EmptyInputException();
-                flagForScr = true;
-                return new Location(x, y, z, name);
-            } catch (EmptyInputException e) {
-                //err - ввели пустоту
-            } catch (NumberFormatException e) {
-                //Console.err должно быть числом !!1
-            } finally {
-                if ((!loop) && (!flagForScr)) {
-                    throw new InputException();
 
-                }
-                flagForScr = false;
-            }
+            if (name.equals("")) throw new EmptyInputException();
+
+            return new Location(x, y, z, name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Неверный формат локации");
         }
+        return null;
     }
 
 

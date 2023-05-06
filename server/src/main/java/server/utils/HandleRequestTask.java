@@ -5,13 +5,17 @@ import common.functional.Response;
 import common.functional.ServerResponseCode;
 import common.functional.User;
 import server.RunServer;
+import server.commands.SendNewList;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.RecursiveTask;
 
 public class HandleRequestTask implements Callable<Response> {
     private Request request;
     private CommandControl commandControl;
+    private Object newObject;
 
 
     public HandleRequestTask(Request request, CommandControl commandControl) {
@@ -21,10 +25,12 @@ public class HandleRequestTask implements Callable<Response> {
 
     @Override
     public Response call() {
+        ArrayList<String> array = commandControl.getNewCommands();
         User hashedUser = new User(
                 request.getUser().getUsername(),
                 request.getUser().getPassword()
         );
+        System.out.println(request.getUser().getUsername() + request.getUser().getPassword());
         ServerResponseCode responseCode = executeCommand(request.getCommandName(), request.getCommandStringArgument(),
                 request.getCommandObjectArgument(), hashedUser);
 
@@ -37,6 +43,13 @@ public class HandleRequestTask implements Callable<Response> {
 
             return new Response(responseCode, ResponseOutputer.getAndClear(), ResponseOutputer.getArgsAndClear());
         }
+
+
+    }
+    public Object newCommands(Object object){
+        return object;
+    }
+
 
 
 
@@ -109,6 +122,14 @@ public class HandleRequestTask implements Callable<Response> {
             case "register":
                 if (!commandControl.register(commandStringArgument, commandObjectArgument, user))
                     return ServerResponseCode.ERROR;
+                break;
+            case "sendNewList":
+                if (!commandControl.sendNewListt(commandStringArgument, commandObjectArgument, user))
+//
+                    return ServerResponseCode.ERROR;
+                else{
+                    newObject = commandControl.getSendNewList().execute2();
+                }
                 break;
             default:
                 ResponseOutputer.appendln("Команда '" + command + "' не найдена. Наберите 'help' для справки.");

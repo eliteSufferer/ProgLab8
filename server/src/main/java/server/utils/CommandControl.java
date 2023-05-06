@@ -5,11 +5,14 @@ import common.functional.User;
 import server.commands.*;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class CommandControl {
     private final HashMap<String, Command> commandMapping = new HashMap<>();
+    private final ArrayList<String> newCommands = new ArrayList<>();
 
     private ReentrantLock locker = new ReentrantLock();
 
@@ -31,6 +34,7 @@ public class CommandControl {
     private Command show;
     private Command sort;
     private Command updateByID;
+    private SendNewList sendNewList;
     CollectionControl collectionControl;
 
     private Command login;
@@ -42,7 +46,7 @@ public class CommandControl {
                           Command executeScript, /*Command exit,*/ Command filterGreaterStatus,
                           Command groupByStatus, Command help, Command info, Command printFieldOfPerson,
                           Command removeElementByID, Command removeGreater,
-                          Command show, Command sort, Command updateByID, Command login, Command register, CollectionControl collectionControl) {
+                          Command show, Command sort, Command updateByID, Command login, Command register, CollectionControl collectionControl, SendNewList sendNewList ) {
         this.addElement = addElement;
         this.addElementIfMin = addElementIfMin;
         this.clear = clear;
@@ -60,6 +64,11 @@ public class CommandControl {
         this.login = login;
         this.register = register;
         this.collectionControl = collectionControl;
+        this.sendNewList = sendNewList;
+
+
+        newCommands.add(sendNewList.getName());
+
 
         commandMapping.put(addElement.getName(), addElement);
         commandMapping.put(addElementIfMin.getName(), addElementIfMin);
@@ -76,12 +85,17 @@ public class CommandControl {
         commandMapping.put(show.getName(), show);
         commandMapping.put(sort.getName(), sort);
         commandMapping.put(updateByID.getName(), updateByID);
+        commandMapping.put(sendNewList.getName(), sendNewList);
         collectionControl.getMappingOfCommands(commandMapping);
     }
 
 
     public HashMap<String, Command> getMapping() {
         return commandMapping;
+    }
+
+    public ArrayList<String> getNewCommands(){
+        return newCommands;
     }
 
 
@@ -216,6 +230,17 @@ public class CommandControl {
         } finally {
             locker.unlock();
         }
+    }
+    public boolean sendNewListt(String stringArgument, Object objectArgument, User user){
+        locker.lock();
+        try {
+            return sendNewList.execute(stringArgument, objectArgument, user);
+        } finally {
+            locker.unlock();
+        }
+    }
+    public SendNewList getSendNewList(){
+        return sendNewList;
     }
 
     public boolean sort(String stringArgument, Object objectArgument, User user) {

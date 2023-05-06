@@ -27,6 +27,7 @@ public class ResponseSender implements Runnable {
             oos.writeObject(response);
             oos.flush();
             byte[] sendData = bos.toByteArray();
+            System.out.println("sala5");
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, packet.getAddress(), packet.getPort());
             socket.send(sendPacket);
             RunServer.logger.info("Пакет был отправлен клиенту!");

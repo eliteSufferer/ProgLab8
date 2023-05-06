@@ -36,12 +36,12 @@ public class UpdateByID extends AbstractCommand {
             if (collectionControl.collectionSize() == 0) throw new CollectionIsEmptyException();
 
             int id = Integer.parseInt(argument);
+            System.out.println(id);
             if (id <= 0) throw new NumberFormatException();
             Worker oldWorker = collectionControl.getById(id);
             if (oldWorker == null) throw new WorkerNotFoundException();
             if (!oldWorker.getOwner().equals(user)) throw new PermissionsDeniedException();
             if (!databaseCollectionManager.checkWorkerUserId(oldWorker.getId(), user)) throw new ManualDatabaseEditException();
-
             WorkerPacket workerPacket = (WorkerPacket) commandObjectArgument;
             databaseCollectionManager.updateWorkerById(id, workerPacket);
             RunServer.logger.info("вышли из updateWorkerById");

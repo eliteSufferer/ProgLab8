@@ -136,6 +136,7 @@ public class CollectionControl {
      */
     public void getInfo() {
         ResponseOutputer.appendln("Тип: Worker" + "\n" + "Время инициализации: " + timeInitialization + "\n" + "количество элементов: " + workersCollection.size());
+        System.out.println("GGGGGGGGGGGGGGGGG  "  + ResponseOutputer.getString() );
 
     }
 

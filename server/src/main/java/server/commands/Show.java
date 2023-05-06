@@ -23,6 +23,7 @@ public class Show extends AbstractCommand {
     @Override
     public boolean execute(String argument, Object commandObjectArgument, User user) {
         try {
+            System.out.println("USER " + user.getUsername());
             if (!argument.isEmpty() || commandObjectArgument != null) throw new WrongArgumentsException();
             this.collectionControl.show();
             return true;

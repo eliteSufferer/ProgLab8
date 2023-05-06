@@ -47,6 +47,7 @@ public class Server {
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 RunServer.logger.info("Ожидание пакета от клиента...");
                 serverSocket.receive(receivePacket);
+
                 RunServer.logger.info("Пакет был принят от клиента...");
                 InetAddress clientAddress = receivePacket.getAddress();
                 int clientPort = receivePacket.getPort();
