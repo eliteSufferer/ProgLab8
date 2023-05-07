@@ -448,7 +448,9 @@ public class DatabaseCollectionManager {
             ResultSet resultSet = preparedSelectAllStatement.executeQuery();
             RunServer.logger.info(resultSet.toString());
             while (resultSet.next()) {
-                workersList.add(createWorker(resultSet));
+                Worker worker = createWorker(resultSet);
+                System.out.println(worker);
+                workersList.add(worker);
             }
         } catch (SQLException exception) {
             throw new DatabaseHandlingException();

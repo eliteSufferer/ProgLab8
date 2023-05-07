@@ -68,15 +68,22 @@ public class UpdateByID extends AbstractCommand {
             ResponseOutputer.appendln(e.getMessage());
         } catch (NumberFormatException e) {
             ResponseOutputer.appendln("неправильный тип данных. Должен быть целочисленным");
+            e.printStackTrace();
         } catch (CollectionIsEmptyException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
+
         } catch (PermissionsDeniedException e) {
             RunServer.logger.error("Доступ к объекту запрещен, он не ваш!");
+            e.printStackTrace();
         } catch (ManualDatabaseEditException e) {
             RunServer.logger.error("Прямое изменение базы!");
+            e.printStackTrace();
         } catch (WorkerNotFoundException e) {
             RunServer.logger.error("Рабочий не найден");
+            e.printStackTrace();
         } catch (DatabaseHandlingException e) {
+            e.printStackTrace();
             RunServer.logger.error("Ошибка при обращении к БД");
         }
         return false;
