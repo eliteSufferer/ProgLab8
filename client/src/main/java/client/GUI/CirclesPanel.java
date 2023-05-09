@@ -30,12 +30,12 @@ class CirclesPanel extends JPanel {
             for (AnimatedCircle circle : circles.keySet()) {
                 if (circle.growing) {
                     circle.radius += 2;
-                    if (circle.radius >= 70) {
+                    if (circle.radius >= 50) {
                         circle.growing = false;
                     }
                 } else {
                     circle.radius -= 2;
-                    if (circle.radius <= 50) {
+                    if (circle.radius <= 30) {
                         circle.growing = true;
                     }
                 }

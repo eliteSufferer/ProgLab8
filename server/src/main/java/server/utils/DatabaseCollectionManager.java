@@ -383,9 +383,9 @@ public class DatabaseCollectionManager {
                 preparedUpdateLocationBYIDStatement.setLong(2, workerPacket.getPerson().getLocation().getY());
                 preparedUpdateLocationBYIDStatement.setInt(3, workerPacket.getPerson().getLocation().getZ());
                 preparedUpdateLocationBYIDStatement.setString(4, workerPacket.getPerson().getLocation().getName());
-                preparedUpdateLocationBYIDStatement.setLong(5, workerId);
-                if (preparedUpdateCoordinatesByWorkerIdStatement.executeUpdate() == 0) throw new SQLException();
-                RunServer.logger.info("Выполнен запрос UPDATE_COORDINATES_BY_Worker_ID.");
+                preparedUpdateLocationBYIDStatement.setInt(5, workerId);
+                if (preparedUpdateLocationBYIDStatement.executeUpdate() == 0) throw new SQLException();
+                RunServer.logger.info("Выполнен запрос UPDATE_LOCATION_BY_Worker_ID.");
             }
 
             databaseHandler.commit();
@@ -461,6 +461,7 @@ public class DatabaseCollectionManager {
         }
         return workersList;
     }
+
 
     public void clearCollection(Worker worker) throws DatabaseHandlingException {
         deleteWorkerById(worker.getId());

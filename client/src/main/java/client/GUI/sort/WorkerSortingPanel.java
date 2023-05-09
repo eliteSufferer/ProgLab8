@@ -50,7 +50,7 @@ public class WorkerSortingPanel extends JPanel {
         sortButton = new JButton("OK");
 
         filterByComboBox = new JComboBox<>(columnNames);
-        filterOperationComboBox = new JComboBox<>(new String[] {"", ">", "<", "="});
+        filterOperationComboBox = new JComboBox<>(new String[] {"", ">", ">=", "<", "<=" ,"="});
         filterValueTextField = new JTextField(10);
         filterButton = new JButton("OK");
 
