@@ -41,8 +41,6 @@ public class HandleRequestTask implements Callable<Response> {
 
         }else{
             RunServer.logger.info("Старый Response сформирован");
-            System.out.println(responseCode + " " + ResponseOutputer.getAndClear());
-            System.out.println(responseCode);
 
             return new Response(responseCode, ResponseOutputer.getAndClear(), ResponseOutputer.getArgsAndClear());
         }

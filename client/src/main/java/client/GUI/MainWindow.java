@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
@@ -121,11 +122,29 @@ public class MainWindow extends JFrame {
                 messages.getString("creationDate"), messages.getString("salary"), messages.getString("position"),
                 messages.getString("status"), messages.getString("birthday"), messages.getString("height"),
                 messages.getString("passport"), messages.getString("locX"), messages.getString("locY"),
-                messages.getString("locZ"), messages.getString("locName")};
+                messages.getString("locZ"), messages.getString("locName"), "editable"};
         System.out.println(columnNames.length);
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
-        table = new JTable(tableModel);
+        table = new JTable(tableModel) {
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component comp = super.prepareRenderer(renderer, row, column);
+
+                if (column == this.getColumnCount() - 1) { // Последняя ячейка в строке
+                    Worker worker = rowToObjectMap.get(row);
+                    if (worker.getOwner().equals(client.getCurrentUser())) {
+                        comp.setBackground(Color.GREEN);
+                    } else {
+                        comp.setBackground(Color.RED);
+                    }
+                } else {
+                    comp.setBackground(Color.WHITE);
+                }
+
+                return comp;
+            }
+        };
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 actionBool = false;
@@ -163,6 +182,9 @@ public class MainWindow extends JFrame {
             }
         });
 
+        ///////
+
+
         Timer timer = new Timer(2000, e -> {
             try {
                 if (actionBool) {
@@ -174,11 +196,8 @@ public class MainWindow extends JFrame {
                     int count = (Integer) response.getResponseObject();
                     for (int i = 0; i < count; i ++){
                         Response tempResponse = client.receiveResponse();
-                        this.workersss.add((ArrayList<Worker>) tempResponse.getResponseObject());
+                        workersss.add((ArrayList<Worker>) tempResponse.getResponseObject());
                     }
-
-
-
 
                     clearData(tableModel);
                     // Очистка модели данных таблицы
@@ -195,7 +214,8 @@ public class MainWindow extends JFrame {
                                     String.valueOf(worker.getPerson().getHeight()), String.valueOf(worker.getPerson().getPassportID()),
                                     String.valueOf(worker.getPerson().getLocation().getX()),
                                     String.valueOf(worker.getPerson().getLocation().getY()), String.valueOf(worker.getPerson().getLocation().getZ()),
-                                    String.valueOf(worker.getPerson().getLocation().getName())};
+                                    String.valueOf(worker.getPerson().getLocation().getName()), ""};
+
                             rowToObjectMap.put(tableModel.getRowCount(), worker);
                             tableModel.addRow(rowData);
                         }
@@ -404,6 +424,9 @@ public class MainWindow extends JFrame {
         });
 
         panel3.add(commandButton, BorderLayout.SOUTH);
+        JPanel idPanel = new JPanel(new BorderLayout());
+
+
 
 
         //добавление панелей
@@ -426,103 +449,11 @@ public class MainWindow extends JFrame {
         model.setRowCount(0);
 
     }
-    public List<Worker> parseWorkersFromXML(String xmlString) {
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder;
-
-        try {
-            dBuilder = dbFactory.newDocumentBuilder();
-            InputSource inputSource = new InputSource(new StringReader(xmlString));
-            Document doc = dBuilder.parse(inputSource);
-            doc.getDocumentElement().normalize();
-            NodeList nodeList = doc.getElementsByTagName("worker");
-            List<Worker> workerList = new ArrayList<>();
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                workerList.add(getWorker(nodeList.item(i)));
-            }
-            return workerList;
-        } catch (Exception e) {
-            System.err.println("Неверные данные в xml строке!");
-            return null;
-        }
-
-    }
 
 
-    private Worker getWorker(Node node) throws Exception {
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
-            Element element = (Element) node;
-            int workerid = Integer.parseInt(getTagValue("id", element));
-            String name = getTagValue("name", element);
-            Coordinates coordinates = getCoordinates(element);
-            Double salary = Double.parseDouble(getTagValue("salary", element));
-            if (salary <= 0) throw new InputException();
-            Position position = Position.valueOf(getTagValue("position", element).toUpperCase());
-            Status status = Status.valueOf(getTagValue("status", element).toUpperCase());
-            Person person = getPerson(element);
-            User owner = getUser(element);
-            return new Worker(workerid, name, coordinates, ZonedDateTime.now(), salary, position, status, person, owner);
-        }
-        return null;
 
 
-    }
 
-
-    private Coordinates getCoordinates(Element element) throws InputException {
-        Element coordinatesElement = (Element) element.getElementsByTagName("coordinates").item(0);
-        int x = Integer.parseInt(getTagValue("x", coordinatesElement));
-        if (x > 468) throw new InputException();
-        int y = Integer.parseInt(getTagValue("y", coordinatesElement));
-        if (y <= -922) throw new InputException();
-        return new Coordinates(x, y);
-    }
-
-
-    private Person getPerson(Element element) throws Exception {
-
-        Element personElement = (Element) element.getElementsByTagName("person").item(0);
-        LocalDateTime birthday = getLocalDateTime(getTagValue("birthday", personElement));
-        long height = Long.parseLong(getTagValue("height", personElement));
-        if (height > 350) throw new InputException();
-        String passportID = getTagValue("passportID", personElement);
-        if (passportID.length() != 6) throw new InputException();
-        Location location = getLocation(personElement);
-        return new Person(birthday, height, passportID, location);
-    }
-
-
-    private Location getLocation(Element element) {
-        Element locationElement = (Element) element.getElementsByTagName("location").item(0);
-        String name = getTagValue("name", locationElement);
-        float x = Float.parseFloat(getTagValue("x", locationElement));
-        long y = Long.parseLong(getTagValue("y", locationElement));
-        int z = Integer.parseInt(getTagValue("z", locationElement));
-        return new Location(x, y, z, name);
-    }
-
-
-    private String getTagValue(String tag, Element element) {
-        NodeList nodeList = element.getElementsByTagName(tag).item(0).getChildNodes();
-        Node node = (Node) nodeList.item(0);
-        return node.getNodeValue();
-    }
-
-
-    public LocalDateTime getLocalDateTime(String dateStr) throws Exception {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", new Locale("ru", "Ru"));
-        LocalDateTime bd = LocalDate.parse(dateStr, formatter).atStartOfDay();
-        if (bd.isAfter(LocalDate.now().atStartOfDay())) throw new WrongArgumentsException();
-        return bd;
-
-    }
-    public User getUser(Element element){
-        Element ownerElement = (Element) element.getElementsByTagName("owner").item(0);
-        String username = getTagValue("username", ownerElement);
-        String password = getTagValue("password", ownerElement);
-        return new User(username, password);
-    }
 
 
 
