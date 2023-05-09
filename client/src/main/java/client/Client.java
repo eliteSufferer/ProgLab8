@@ -168,7 +168,7 @@ public class Client{
         } catch (IOException exception) {
             Printer.printerror("Соединение с сервером разорвано!");
         }
-        if (serverResponse != null && serverResponse.getResponseCode().equals(ServerResponseCode.OK)){
+        if (serverResponse != null && (serverResponse.getResponseCode().equals(ServerResponseCode.OK) || serverResponse.getResponseCode().equals(ServerResponseCode.PEAK_SIZE))){
             user = requestToServer.getUser();
             System.out.println(user);
             return true;

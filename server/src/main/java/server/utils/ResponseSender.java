@@ -1,7 +1,10 @@
 package server.utils;
 
+import common.data.Worker;
 import common.functional.Response;
+import common.functional.ServerResponseCode;
 import server.RunServer;
+import server.commands.SendNewList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

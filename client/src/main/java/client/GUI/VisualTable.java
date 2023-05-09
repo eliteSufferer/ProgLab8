@@ -21,7 +21,6 @@ public class VisualTable extends JFrame{
     private ResourceBundle messages = ResourceBundle.getBundle("client.GUI.Messages", UserSettings.getInstance().getSelectedLocale());
 
     public VisualTable(Client client, CommunicationControl communicationControl){
-
         circles = new HashMap<>();
         try {
             client.sendRequest(new Request("sendNewList", "", client.getCurrentUser()));
@@ -33,10 +32,12 @@ public class VisualTable extends JFrame{
 
         owners = new HashMap<>();
         int countOwners = 0;
-        for (Worker worker : workersCollection) {
-            if (!owners.containsValue(worker.getOwner().getUsername())){
-                owners.put(countOwners, worker.getOwner().getUsername());
-                countOwners ++;
+        for (ArrayList<Worker> workersCollection: workers){
+            for (Worker worker : workersCollection) {
+                if (!owners.containsValue(worker.getOwner().getUsername())){
+                    owners.put(countOwners, worker.getOwner().getUsername());
+                    countOwners ++;
+                }
             }
         }
 
@@ -64,25 +65,28 @@ public class VisualTable extends JFrame{
         }
 
         int i = 1;
-        for (Worker worker : workersCollection) {
-            int originalX = worker.getCoordinates().getX();
-            int originalY = worker.getCoordinates().getY();
+        for (ArrayList<Worker> workersCollection: workers){
+            for (Worker worker : workersCollection) {
+                int originalX = worker.getCoordinates().getX();
+                int originalY = worker.getCoordinates().getY();
 
-            int xOffset = 3 * i; // Небольшое смещение по оси X
-            int yOffset = 3 * i; // Небольшое смещение по оси Y
+                int xOffset = 3 * i;
+                int yOffset = 3 * i;
 
-            int x = (int) ((originalX * 0.3 - 200 + xOffset) + 1000 * Math.random());
-            int y = (int) (originalY * 0.4 - 50 + yOffset);
-            int radius = 50;
-            String username = worker.getOwner().getUsername();
-            int colorIndex = getKeyByUsername(owners, username);
-            circles.put(new AnimatedCircle(x, y, radius, colorIndex, worker.getName()), worker.getId());
-            i += 20;
+                int x = (int) ((originalX * 0.3 - 200 + xOffset) + 500 * Math.random());
+                int y = (int) (originalY * 0.4 - 50 + yOffset);
+                int radius = 50;
+                String username = worker.getOwner().getUsername();
+                int colorIndex = getKeyByUsername(owners, username);
+                circles.put(new AnimatedCircle(x, y, radius, colorIndex, worker.getName()), worker.getId());
+                i += 20;
+            }
         }
+
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 1200);
-        CirclesPanel circlesPanel = new CirclesPanel(circles, workersCollection, client, communicationControl);
+        CirclesPanel circlesPanel = new CirclesPanel(circles, workers, client, communicationControl);
         getContentPane().add(circlesPanel);
 
         JButton openMainFrameButton = new JButton(messages.getString("openDataTable"));

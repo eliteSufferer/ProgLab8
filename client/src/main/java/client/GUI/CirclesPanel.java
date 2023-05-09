@@ -19,10 +19,10 @@ import java.util.Map;
 
 class CirclesPanel extends JPanel {
     private HashMap<AnimatedCircle, Integer> circles;
-    private ArrayList<Worker> workersCollection;
+    private ArrayList<ArrayList<Worker>> workersCollection;
     private final Color[] colors = {Color.RED, Color.LIGHT_GRAY, Color.GREEN, Color.YELLOW};
 
-    public CirclesPanel(HashMap<AnimatedCircle, Integer> circles, ArrayList<Worker> workersCollection, Client client, CommunicationControl communicationControl) {
+    public CirclesPanel(HashMap<AnimatedCircle, Integer> circles, ArrayList<ArrayList<Worker>> workersCollection, Client client, CommunicationControl communicationControl) {
         this.circles = circles;
         this.workersCollection = workersCollection;
 
@@ -77,9 +77,11 @@ class CirclesPanel extends JPanel {
 }
 
     private Worker findWorkerByID(int id) {
-        for (Worker worker : workersCollection) {
-            if (worker.getId() == id) {
-                return worker;
+        for (ArrayList<Worker> workers : workersCollection){
+            for (Worker worker : workers) {
+                if (worker.getId() == id) {
+                    return worker;
+                }
             }
         }
         return null;

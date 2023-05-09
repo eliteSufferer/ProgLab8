@@ -4,5 +4,7 @@ public enum ServerResponseCode {
     OK,
     ERROR,
     CLIENT_EXIT,
-    AHTUNG
+    AHTUNG,
+
+    PEAK_SIZE
 }

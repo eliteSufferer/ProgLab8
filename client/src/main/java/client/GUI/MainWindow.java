@@ -86,8 +86,6 @@ public class MainWindow extends JFrame {
             }
         });
 
-        int a = 1;
-        String worker10 = "Привет{1}";
 
 
 
@@ -223,6 +221,7 @@ public class MainWindow extends JFrame {
                         break;
                     case "addElement":
                     case "add_if_min":
+                        actionBool = false;
 
                         EditWorker addWorker = new EditWorker(communicationControl);
                         saveButton = addWorker.getSaveButton();
@@ -241,6 +240,7 @@ public class MainWindow extends JFrame {
                             }
 
                         });
+                        actionBool = true;
                         break;
                     case "clear":
 
@@ -259,7 +259,7 @@ public class MainWindow extends JFrame {
                         JOptionPane.showMessageDialog(null, response444.getResponseCode());
                         break;
                     case "info":
-
+                        actionBool = false;
                         try {
                             client.sendRequest(new Request("info", "", null, client.getCurrentUser()));
                         } catch (IOException ex) {
@@ -275,7 +275,7 @@ public class MainWindow extends JFrame {
                         }
                         System.out.println(response228.getResponseBody());
                         JOptionPane.showMessageDialog(null, response228.getResponseBody());
-
+                        actionBool = true;
                         break;
                     case "print_field_ascending_person":
                         try {
@@ -293,6 +293,7 @@ public class MainWindow extends JFrame {
                         }
                         break;
                     case "remove_element_by_id":
+                        actionBool = false;
                         String inputRemId = JOptionPane.showInputDialog(null, messages.getString("insertArgument"));
 
                         try {
@@ -309,6 +310,7 @@ public class MainWindow extends JFrame {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
+                        actionBool = true;
                         break;
                     case "remove_greater":
                         EditWorker removeGreater = new EditWorker(communicationControl);
