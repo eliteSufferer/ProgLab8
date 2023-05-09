@@ -203,23 +203,27 @@ public class MainWindow extends JFrame {
                     // Очистка модели данных таблицы
 
                     rowCounter = 0;
+                    ArrayList<Worker> newJoinedArray = new ArrayList<>();
 
                     for (ArrayList<Worker> list: workersss){
-                        WorkerUtils.parameters = workerSortingPanel.getParamaters();
-                        list = WorkerUtils.sortAndFilterWorkers(list);
-                        for (Worker worker : list) {
-                            Object[] rowData = {String.valueOf(worker.getId()), String.valueOf(worker.getName()), String.valueOf(worker.getCoordinates().getX()),
-                                    String.valueOf(worker.getCoordinates().getY()), String.valueOf(worker.getCreationDate()), String.valueOf(worker.getSalary()),
-                                    String.valueOf(worker.getPosition()), String.valueOf(worker.getStatus()), String.valueOf(worker.getPerson().getBirthday()),
-                                    String.valueOf(worker.getPerson().getHeight()), String.valueOf(worker.getPerson().getPassportID()),
-                                    String.valueOf(worker.getPerson().getLocation().getX()),
-                                    String.valueOf(worker.getPerson().getLocation().getY()), String.valueOf(worker.getPerson().getLocation().getZ()),
-                                    String.valueOf(worker.getPerson().getLocation().getName()), ""};
-
-                            rowToObjectMap.put(tableModel.getRowCount(), worker);
-                            tableModel.addRow(rowData);
-                        }
+                        newJoinedArray.addAll(list);
                     }
+
+                    WorkerUtils.parameters = workerSortingPanel.getParamaters();
+                    newJoinedArray = WorkerUtils.sortAndFilterWorkers(newJoinedArray);
+                    for (Worker worker : newJoinedArray) {
+                        Object[] rowData = {String.valueOf(worker.getId()), String.valueOf(worker.getName()), String.valueOf(worker.getCoordinates().getX()),
+                                String.valueOf(worker.getCoordinates().getY()), String.valueOf(worker.getCreationDate()), String.valueOf(worker.getSalary()),
+                                String.valueOf(worker.getPosition()), String.valueOf(worker.getStatus()), String.valueOf(worker.getPerson().getBirthday()),
+                                String.valueOf(worker.getPerson().getHeight()), String.valueOf(worker.getPerson().getPassportID()),
+                                String.valueOf(worker.getPerson().getLocation().getX()),
+                                String.valueOf(worker.getPerson().getLocation().getY()), String.valueOf(worker.getPerson().getLocation().getZ()),
+                                String.valueOf(worker.getPerson().getLocation().getName()), ""};
+
+                        rowToObjectMap.put(tableModel.getRowCount(), worker);
+                        tableModel.addRow(rowData);
+                    }
+
 
                     // Уведомление таблицы об изменении данных
                     tableModel.fireTableDataChanged();
