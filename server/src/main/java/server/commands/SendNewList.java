@@ -15,9 +15,12 @@ import java.util.ArrayList;
 
 public class SendNewList extends AbstractCommand{
     private CollectionControl collectionControl;
-    public SendNewList(CollectionControl collectionControl) {
+    public static int workersCount;
+    private DatabaseCollectionManager databaseCollectionManager;
+    public SendNewList(CollectionControl collectionControl, DatabaseCollectionManager databaseCollectionManager) {
         super("sendNewList", "взять коллекцию");
         this.collectionControl = collectionControl;
+        this.databaseCollectionManager = databaseCollectionManager;
     }
     public boolean execute(String argument, Object objectArgument, User user){
         return true;
@@ -50,6 +53,7 @@ public class SendNewList extends AbstractCommand{
             ostatWorker.add(collection.get(k));
 
         }
+        arrayOfArray.add(ostatWorker);
 
         return arrayOfArray;
 

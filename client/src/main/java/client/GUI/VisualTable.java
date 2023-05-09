@@ -22,10 +22,17 @@ public class VisualTable extends JFrame{
 
     public VisualTable(Client client, CommunicationControl communicationControl){
         circles = new HashMap<>();
+        ArrayList<ArrayList<Worker>> workers = new ArrayList<>();
         try {
+            // Здесь происходит обновление данных в таблице
             client.sendRequest(new Request("sendNewList", "", client.getCurrentUser()));
             Response response = client.receiveResponse();
-            workersCollection = (ArrayList<Worker>) response.getResponseObject();
+
+            int count = (Integer) response.getResponseObject();
+            for (int i = 0; i < count; i ++){
+                Response tempResponse = client.receiveResponse();
+                workers.add((ArrayList<Worker>) tempResponse.getResponseObject());
+            }
         }catch (Exception e){
             throw new RuntimeException(e);
         }

@@ -30,7 +30,7 @@ public class RunServer {
                     new ExecuteScript(collectionControl), new FilterGreaterStatus(collectionControl),
                     new GroupByStatus(collectionControl), new Help(collectionControl), new Info(collectionControl), new PrintFieldOfPerson(collectionControl),
                     new RemoveElementByID(collectionControl, databaseCollectionManager), new RemoveGreater(collectionControl, databaseCollectionManager),
-                    new Show(collectionControl), new Sort(collectionControl), new UpdateByID(collectionControl, databaseCollectionManager), new LoginCommand(databaseUserManager), new RegisterCommand(databaseUserManager), collectionControl, new SendNewList(collectionControl));
+                    new Show(collectionControl), new Sort(collectionControl), new UpdateByID(collectionControl, databaseCollectionManager), new LoginCommand(databaseUserManager), new RegisterCommand(databaseUserManager), collectionControl, new SendNewList(collectionControl, databaseCollectionManager));
 
             Server server = new Server(Integer.parseInt(args[0]), maxClients, commandControl);
             server.run();

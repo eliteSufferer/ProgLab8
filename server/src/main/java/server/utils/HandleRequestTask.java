@@ -36,7 +36,9 @@ public class HandleRequestTask implements Callable<Response> {
 
         if (array.contains(request.getCommandName())){
             RunServer.logger.info("Новый Response сформирован");
-            return new Response(newObject, ServerResponseCode.OK);
+            System.out.println(newObject.toString());
+            return new Response(newObject, ServerResponseCode.PEAK_SIZE);
+
         }else{
             RunServer.logger.info("Старый Response сформирован");
             System.out.println(responseCode);

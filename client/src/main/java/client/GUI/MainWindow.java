@@ -1,5 +1,19 @@
 package client.GUI;
+import common.exceptions.InputException;
+import common.exceptions.WrongArgumentsException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import client.Client;
 import client.GUI.sort.SortingAndFilteringParameters;
 import client.GUI.sort.WorkerSortingPanel;
@@ -32,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 public class MainWindow extends JFrame {
     private final Map<Integer, Worker> rowToObjectMap = new HashMap<>();
     private static JTable table;
-    private ArrayList<Worker> workers;
+    private ArrayList<ArrayList<Worker>> workersss;
     public static int rowCounter = 0;
     public String selectedCommand;
     JButton saveButton;
@@ -49,7 +63,6 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setLocationRelativeTo(null);
-
 
 
 
@@ -115,6 +128,7 @@ public class MainWindow extends JFrame {
         table = new JTable(tableModel);
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
+                actionBool = false;
                 if (e.getClickCount() == 1) {
                     JTable target = (JTable) e.getSource();
                     int row = target.getSelectedRow();
@@ -129,7 +143,7 @@ public class MainWindow extends JFrame {
                             editWorker.setEditable();
                         }
                         saveButton = editWorker.getSaveButton();
-                        actionBool = false;
+
                         saveButton.addActionListener(e1 -> {
                             try {
                                 System.out.println(worker.getId());
@@ -152,12 +166,18 @@ public class MainWindow extends JFrame {
         Timer timer = new Timer(2000, e -> {
             try {
                 if (actionBool) {
-                    // Здесь происходит обновление данных в таблице
+                    this.workersss = new ArrayList<>();
+                            // Здесь происходит обновление данных в таблице
                     client.sendRequest(new Request("sendNewList", "", client.getCurrentUser()));
                     Response response = client.receiveResponse();
-                    workers = (ArrayList<Worker>) response.getResponseObject();
-                    WorkerUtils.parameters = workerSortingPanel.getParamaters();
-                    workers = WorkerUtils.sortAndFilterWorkers(workers);
+
+                    int count = (Integer) response.getResponseObject();
+                    for (int i = 0; i < count; i ++){
+                        Response tempResponse = client.receiveResponse();
+                        this.workersss.add((ArrayList<Worker>) tempResponse.getResponseObject());
+                    }
+
+
 
 
                     clearData(tableModel);
@@ -165,17 +185,20 @@ public class MainWindow extends JFrame {
 
                     rowCounter = 0;
 
-                    // Заполнение модели данных таблицы новыми данными
-                    for (Worker worker : workers) {
-                        Object[] rowData = {String.valueOf(worker.getId()), String.valueOf(worker.getName()), String.valueOf(worker.getCoordinates().getX()),
-                                String.valueOf(worker.getCoordinates().getY()), String.valueOf(worker.getCreationDate()), String.valueOf(worker.getSalary()),
-                                String.valueOf(worker.getPosition()), String.valueOf(worker.getStatus()), String.valueOf(worker.getPerson().getBirthday()),
-                                String.valueOf(worker.getPerson().getHeight()), String.valueOf(worker.getPerson().getPassportID()),
-                                String.valueOf(worker.getPerson().getLocation().getX()),
-                                String.valueOf(worker.getPerson().getLocation().getY()), String.valueOf(worker.getPerson().getLocation().getZ()),
-                                String.valueOf(worker.getPerson().getLocation().getName())};
-                        rowToObjectMap.put(tableModel.getRowCount(), worker);
-                        tableModel.addRow(rowData);
+                    for (ArrayList<Worker> list: workersss){
+                        WorkerUtils.parameters = workerSortingPanel.getParamaters();
+                        list = WorkerUtils.sortAndFilterWorkers(list);
+                        for (Worker worker : list) {
+                            Object[] rowData = {String.valueOf(worker.getId()), String.valueOf(worker.getName()), String.valueOf(worker.getCoordinates().getX()),
+                                    String.valueOf(worker.getCoordinates().getY()), String.valueOf(worker.getCreationDate()), String.valueOf(worker.getSalary()),
+                                    String.valueOf(worker.getPosition()), String.valueOf(worker.getStatus()), String.valueOf(worker.getPerson().getBirthday()),
+                                    String.valueOf(worker.getPerson().getHeight()), String.valueOf(worker.getPerson().getPassportID()),
+                                    String.valueOf(worker.getPerson().getLocation().getX()),
+                                    String.valueOf(worker.getPerson().getLocation().getY()), String.valueOf(worker.getPerson().getLocation().getZ()),
+                                    String.valueOf(worker.getPerson().getLocation().getName())};
+                            rowToObjectMap.put(tableModel.getRowCount(), worker);
+                            tableModel.addRow(rowData);
+                        }
                     }
 
                     // Уведомление таблицы об изменении данных
@@ -243,7 +266,7 @@ public class MainWindow extends JFrame {
                         actionBool = true;
                         break;
                     case "clear":
-
+                        actionBool = false;
                         try {
                             client.sendRequest(new Request("clear", "", null, client.getCurrentUser()));
                         } catch (IOException ex) {
@@ -257,6 +280,7 @@ public class MainWindow extends JFrame {
                         }
 
                         JOptionPane.showMessageDialog(null, response444.getResponseCode());
+                        actionBool = true;
                         break;
                     case "info":
                         actionBool = false;
@@ -278,6 +302,7 @@ public class MainWindow extends JFrame {
                         actionBool = true;
                         break;
                     case "print_field_ascending_person":
+                        actionBool = false;
                         try {
                             client.sendRequest(new Request("print_field_ascending_person", "", null, client.getCurrentUser()));
                             Response response1;
@@ -291,6 +316,7 @@ public class MainWindow extends JFrame {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
+                        actionBool = true;
                         break;
                     case "remove_element_by_id":
                         actionBool = false;
@@ -313,6 +339,7 @@ public class MainWindow extends JFrame {
                         actionBool = true;
                         break;
                     case "remove_greater":
+                        actionBool = false;
                         EditWorker removeGreater = new EditWorker(communicationControl);
                         saveButton = removeGreater.getSaveButton();
 
@@ -328,8 +355,10 @@ public class MainWindow extends JFrame {
                             JOptionPane.showMessageDialog(null, eshkere.getResponseBody());
 
                         });
+                        actionBool = true;
                         break;
                     case "update_by_id":
+                        actionBool = false;
                         String inputID = JOptionPane.showInputDialog(null, messages.getString("insertArgument"));
 
                         EditWorker update_by_id = new EditWorker(communicationControl);
@@ -346,14 +375,17 @@ public class MainWindow extends JFrame {
                             JOptionPane.showMessageDialog(null, resp.getResponseBody());
 
                         });
+                        actionBool = true;
                         break;
 
                     case "execute_script":
-                        Thread myThread = new Thread(() -> {
-                            String filePath = JOptionPane.showInputDialog(null, messages.getString("insertPath"));
-                            System.out.println(client.processScriptToServer(new File(filePath)));
-                        });
-                        myThread.start();
+                        actionBool = false;
+//                        Thread myThread = new Thread(() -> {
+                        String filePath = JOptionPane.showInputDialog(null, messages.getString("insertPath"));
+                        System.out.println(client.processScriptToServer(new File(filePath)));
+//                        });
+//                        myThread.start();
+                        actionBool = true;
                         break;
                     default:
                         System.out.println("gg");
@@ -393,6 +425,103 @@ public class MainWindow extends JFrame {
     public void clearData(DefaultTableModel model) {
         model.setRowCount(0);
 
+    }
+    public List<Worker> parseWorkersFromXML(String xmlString) {
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder;
+
+        try {
+            dBuilder = dbFactory.newDocumentBuilder();
+            InputSource inputSource = new InputSource(new StringReader(xmlString));
+            Document doc = dBuilder.parse(inputSource);
+            doc.getDocumentElement().normalize();
+            NodeList nodeList = doc.getElementsByTagName("worker");
+            List<Worker> workerList = new ArrayList<>();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                workerList.add(getWorker(nodeList.item(i)));
+            }
+            return workerList;
+        } catch (Exception e) {
+            System.err.println("Неверные данные в xml строке!");
+            return null;
+        }
+
+    }
+
+
+    private Worker getWorker(Node node) throws Exception {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            Element element = (Element) node;
+            int workerid = Integer.parseInt(getTagValue("id", element));
+            String name = getTagValue("name", element);
+            Coordinates coordinates = getCoordinates(element);
+            Double salary = Double.parseDouble(getTagValue("salary", element));
+            if (salary <= 0) throw new InputException();
+            Position position = Position.valueOf(getTagValue("position", element).toUpperCase());
+            Status status = Status.valueOf(getTagValue("status", element).toUpperCase());
+            Person person = getPerson(element);
+            User owner = getUser(element);
+            return new Worker(workerid, name, coordinates, ZonedDateTime.now(), salary, position, status, person, owner);
+        }
+        return null;
+
+
+    }
+
+
+    private Coordinates getCoordinates(Element element) throws InputException {
+        Element coordinatesElement = (Element) element.getElementsByTagName("coordinates").item(0);
+        int x = Integer.parseInt(getTagValue("x", coordinatesElement));
+        if (x > 468) throw new InputException();
+        int y = Integer.parseInt(getTagValue("y", coordinatesElement));
+        if (y <= -922) throw new InputException();
+        return new Coordinates(x, y);
+    }
+
+
+    private Person getPerson(Element element) throws Exception {
+
+        Element personElement = (Element) element.getElementsByTagName("person").item(0);
+        LocalDateTime birthday = getLocalDateTime(getTagValue("birthday", personElement));
+        long height = Long.parseLong(getTagValue("height", personElement));
+        if (height > 350) throw new InputException();
+        String passportID = getTagValue("passportID", personElement);
+        if (passportID.length() != 6) throw new InputException();
+        Location location = getLocation(personElement);
+        return new Person(birthday, height, passportID, location);
+    }
+
+
+    private Location getLocation(Element element) {
+        Element locationElement = (Element) element.getElementsByTagName("location").item(0);
+        String name = getTagValue("name", locationElement);
+        float x = Float.parseFloat(getTagValue("x", locationElement));
+        long y = Long.parseLong(getTagValue("y", locationElement));
+        int z = Integer.parseInt(getTagValue("z", locationElement));
+        return new Location(x, y, z, name);
+    }
+
+
+    private String getTagValue(String tag, Element element) {
+        NodeList nodeList = element.getElementsByTagName(tag).item(0).getChildNodes();
+        Node node = (Node) nodeList.item(0);
+        return node.getNodeValue();
+    }
+
+
+    public LocalDateTime getLocalDateTime(String dateStr) throws Exception {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", new Locale("ru", "Ru"));
+        LocalDateTime bd = LocalDate.parse(dateStr, formatter).atStartOfDay();
+        if (bd.isAfter(LocalDate.now().atStartOfDay())) throw new WrongArgumentsException();
+        return bd;
+
+    }
+    public User getUser(Element element){
+        Element ownerElement = (Element) element.getElementsByTagName("owner").item(0);
+        String username = getTagValue("username", ownerElement);
+        String password = getTagValue("password", ownerElement);
+        return new User(username, password);
     }
 
 
