@@ -299,7 +299,7 @@ public class MainWindow extends JFrame {
                         }
                         System.out.println(response228.getResponseBody());
                         JOptionPane.showMessageDialog(null, response228.getResponseBody());
-                        actionBool = true;
+                        actionBool = false;
                         break;
                     case "print_field_ascending_person":
                         actionBool = false;

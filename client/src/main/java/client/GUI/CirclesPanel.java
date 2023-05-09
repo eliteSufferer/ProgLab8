@@ -30,12 +30,12 @@ class CirclesPanel extends JPanel {
             for (AnimatedCircle circle : circles.keySet()) {
                 if (circle.growing) {
                     circle.radius += 2;
-                    if (circle.radius >= 50) {
+                    if (circle.radius >= 70) {
                         circle.growing = false;
                     }
                 } else {
                     circle.radius -= 2;
-                    if (circle.radius <= 30) {
+                    if (circle.radius <= 50) {
                         circle.growing = true;
                     }
                 }
@@ -58,22 +58,49 @@ class CirclesPanel extends JPanel {
                     Worker worker = findWorkerByID(circles.get(circle));
                     if (worker != null) {
                         EditWorker editWorker = new EditWorker(communicationControl);
+                        editWorker.setNonEditable();
                         editWorker.setInfo(worker);
-                        JButton saveButton;
-                        saveButton = editWorker.getSaveButton();
-                        saveButton.addActionListener(e1 -> {
-                            try {
-                                client.sendRequest(new Request("update_by_id", String.valueOf(worker.getId()), editWorker.update(), client.getCurrentUser()));
-                            } catch (IOException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        });
                     }
                     break;
                 }
             }
         }
     });
+
+        MouseAdapter ma = new MouseAdapter(){
+
+            private Point origin;
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                origin = new Point(e.getPoint());
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (origin != null) {
+                    JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, CirclesPanel.this);
+                    if (viewPort != null) {
+                        int deltaX = origin.x - e.getX();
+                        int deltaY = origin.y - e.getY();
+
+                        Rectangle view = viewPort.getViewRect();
+                        view.x += deltaX;
+                        view.y += deltaY;
+
+                        CirclesPanel.this.scrollRectToVisible(view);
+                    }
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                origin = null;
+            }
+        };
+
+        this.addMouseListener(ma);
+        this.addMouseMotionListener(ma);
 }
 
     private Worker findWorkerByID(int id) {
@@ -100,4 +127,5 @@ class CirclesPanel extends JPanel {
             TextInCircle.drawCenteredString(g2d, circles.get(circle) + " " + circle.worker + " " + circle.colorIndex, circle.x, circle.y, g.getFont());
         }
     }
+
 }

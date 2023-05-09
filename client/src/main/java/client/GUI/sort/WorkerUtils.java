@@ -199,6 +199,10 @@ public class WorkerUtils {
                 return value1 < value2;
             case ">":
                 return value1 > value2;
+            case ">=":
+                return value1 >= value2;
+            case "<=":
+                return value1 <= value2;
             default:
                 return false;
         }
@@ -212,6 +216,10 @@ public class WorkerUtils {
                 return comparisonResult < 0;
             case ">":
                 return comparisonResult > 0;
+            case ">=":
+                return comparisonResult >= 0;
+            case "<=":
+                return comparisonResult <= 0;
             default:
                 return false;
         }
