@@ -24,9 +24,6 @@ public class Response implements Serializable{
         return responseBody;
     }
 
-    public String[] getResponseBodyArgs() {
-        return responseBodyArgs;
-    }
 
     @Override
     public String toString() {

@@ -51,7 +51,6 @@ public class RequestHandler implements Runnable {
             Request request = (Request) ois.readObject();
 
 
-            System.out.println("salam");
 
             // Обработка запроса в отдельном потоке
             Future<Response> futureResponse = fixedThreadPool1.submit(new HandleRequestTask(request, commandControl));
@@ -59,7 +58,6 @@ public class RequestHandler implements Runnable {
             // Добавление задачи отправки ответа в очередь
             queue.put(() -> {
                 try {
-                    System.out.println("sala3");
                     // Получение ответа и отправка клиенту
                     new ResponseSender(futureResponse.get(), receivePacket).run();
                 } catch (InterruptedException | ExecutionException e) {
@@ -68,7 +66,6 @@ public class RequestHandler implements Runnable {
             });
 
             for (int i = 0; i < 4; i++) {
-                System.out.println("salam1");
                 fixedThreadPool2.submit(() -> {
                     while (true) {
                         try {

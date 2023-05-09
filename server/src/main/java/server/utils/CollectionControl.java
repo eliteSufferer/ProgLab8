@@ -1,5 +1,6 @@
 package server.utils;
 
+import client.GUI.UserSettings;
 import common.data.*;
 import common.exceptions.*;
 import common.functional.Printer;
@@ -65,7 +66,7 @@ public class CollectionControl {
             for (Worker worker : workersCollection){
                 RunServer.logger.info(worker.getId());
                 if (worker.getId() == id){
-                    return workersCollection.get(workersCollection.indexOf(worker));
+                    return worker;
                 }
             }
         }catch (IndexOutOfBoundsException e){
@@ -136,7 +137,6 @@ public class CollectionControl {
      */
     public void getInfo() {
         ResponseOutputer.appendln("Тип: Worker" + "\n" + "Время инициализации: " + timeInitialization + "\n" + "количество элементов: " + workersCollection.size());
-        System.out.println("GGGGGGGGGGGGGGGGG  "  + ResponseOutputer.getString() );
 
     }
 
@@ -226,6 +226,7 @@ public class CollectionControl {
             Printer.println("Коллекция загружена.");
             RunServer.logger.info("Коллекция загружена.");
         } catch (DatabaseHandlingException exception) {
+            exception.printStackTrace();
             Printer.printerror("Коллекция не может быть загружена!");
             RunServer.logger.error("Коллекция не может быть загружена!");
         }

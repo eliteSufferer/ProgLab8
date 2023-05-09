@@ -9,10 +9,13 @@ class AnimatedCircle {
     int colorIndex;
     boolean growing = true;
 
-    public AnimatedCircle(int x, int y, int radius, int colorIndex) {
+    String worker;
+
+    public AnimatedCircle(int x, int y, int radius, int colorIndex, String worker) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.colorIndex = colorIndex;
+        this.worker = worker;
     }
 }

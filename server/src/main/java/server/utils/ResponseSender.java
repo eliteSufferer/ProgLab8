@@ -13,6 +13,7 @@ public class ResponseSender implements Runnable {
     private final Response response;
     private final DatagramPacket packet;
 
+
     public ResponseSender(Response response, DatagramPacket packet) {
         this.response = response;
         this.packet = packet;
@@ -27,12 +28,12 @@ public class ResponseSender implements Runnable {
             oos.writeObject(response);
             oos.flush();
             byte[] sendData = bos.toByteArray();
-            System.out.println("sala5");
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, packet.getAddress(), packet.getPort());
             socket.send(sendPacket);
             RunServer.logger.info("Пакет был отправлен клиенту!");
         } catch (IOException e) {
             RunServer.logger.error("Неожиданная ошибка!");
+            e.printStackTrace();
         }
     }
 }

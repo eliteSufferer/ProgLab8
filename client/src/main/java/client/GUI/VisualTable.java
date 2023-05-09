@@ -7,6 +7,7 @@ import common.functional.Request;
 import common.functional.Response;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class VisualTable extends JFrame{
 
     private ArrayList<Worker> workersCollection;
     private HashMap<Integer, String> owners;
-    private HashMap<AnimatedCircle, String> circles;
+    private HashMap<AnimatedCircle, Integer> circles;
     private ResourceBundle messages = ResourceBundle.getBundle("client.GUI.Messages", UserSettings.getInstance().getSelectedLocale());
 
     public VisualTable(Client client, CommunicationControl communicationControl){
@@ -39,14 +40,27 @@ public class VisualTable extends JFrame{
             }
         }
 
-        JPanel labelsPanel = new JPanel();
-        labelsPanel.setLayout(new BoxLayout(labelsPanel, BoxLayout.Y_AXIS));
+        DefaultTableModel tableModel = new DefaultTableModel(new Object[][]{}, new String[]{messages.getString("ownerID"), messages.getString("ownerName")}){
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return false;
+            }
+        };
+
+        // Создаем таблицу и устанавливаем модель
+        JTable table = new JTable(tableModel);
+
+        // Создаем панель прокрутки и добавляем таблицу
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(200, 10));
+
+        // Размещаем панель прокрутки в правой части окна
+        getContentPane().add(scrollPane, BorderLayout.WEST);
 
         for (HashMap.Entry<Integer, String> entry : owners.entrySet()) {
             Integer id = entry.getKey();
             String owner = entry.getValue();
-            JLabel ownersLabel = new JLabel(id + " " + owner);
-            labelsPanel.add(ownersLabel);
+            tableModel.addRow(new Object[]{id, owner});
         }
 
         int i = 1;
@@ -57,12 +71,12 @@ public class VisualTable extends JFrame{
             int xOffset = 3 * i; // Небольшое смещение по оси X
             int yOffset = 3 * i; // Небольшое смещение по оси Y
 
-            int x = (int) ((((double) (originalX - 1) / (Integer.MAX_VALUE - 1)) * 500 + 50 + xOffset) + (Math.random()*100));
-            int y = (int) ((((double) (originalY - 1) / (Integer.MAX_VALUE - 1)) * 500 + 50 + yOffset) + (Math.random()*100));
+            int x = (int) ((originalX * 0.3 - 200 + xOffset) + 1000 * Math.random());
+            int y = (int) (originalY * 0.4 - 50 + yOffset);
             int radius = 50;
             String username = worker.getOwner().getUsername();
             int colorIndex = getKeyByUsername(owners, username);
-            circles.put(new AnimatedCircle(x, y, radius, colorIndex), worker.getName());
+            circles.put(new AnimatedCircle(x, y, radius, colorIndex, worker.getName()), worker.getId());
             i += 20;
         }
 
@@ -75,7 +89,7 @@ public class VisualTable extends JFrame{
 
         // Добавьте обработчик событий, который открывает окно MainFrame при нажатии на кнопку
         openMainFrameButton.addActionListener(e -> {
-            MainWindow mainFrame = new MainWindow(client, communicationControl); // Замените MainFrame на ваш класс окна
+            MainWindow mainFrame = new MainWindow(client, communicationControl);
             mainFrame.setVisible(true);
             dispose(); // Закройте текущее окно VisualTable
         });
@@ -84,11 +98,9 @@ public class VisualTable extends JFrame{
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
         buttonPanel.add(openMainFrameButton);
 
-        // Создайте панель для размещения кнопки и кругов
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(circlesPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.NORTH);
-        mainPanel.add(labelsPanel, BorderLayout.EAST);
 
         // Добавьте панель на основной контейнер
         getContentPane().add(mainPanel);

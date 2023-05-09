@@ -24,7 +24,7 @@ public class ScriptControl {
             scannerStack.add(userScanner);
             scriptStack.add(script);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            JOptionPane.showMessageDialog(null, "No file on such path found!");
         }
     }
 

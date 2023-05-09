@@ -18,11 +18,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 class CirclesPanel extends JPanel {
-    private HashMap<AnimatedCircle, String> circles;
+    private HashMap<AnimatedCircle, Integer> circles;
     private ArrayList<Worker> workersCollection;
     private final Color[] colors = {Color.RED, Color.LIGHT_GRAY, Color.GREEN, Color.YELLOW};
 
-    public CirclesPanel(HashMap<AnimatedCircle, String> circles, ArrayList<Worker> workersCollection, Client client, CommunicationControl communicationControl) {
+    public CirclesPanel(HashMap<AnimatedCircle, Integer> circles, ArrayList<Worker> workersCollection, Client client, CommunicationControl communicationControl) {
         this.circles = circles;
         this.workersCollection = workersCollection;
 
@@ -55,7 +55,7 @@ class CirclesPanel extends JPanel {
 
                 if (distance <= circle.radius) {
                     // Действие при клике на круг
-                    Worker worker = findWorkerByName(circles.get(circle));
+                    Worker worker = findWorkerByID(circles.get(circle));
                     if (worker != null) {
                         EditWorker editWorker = new EditWorker(communicationControl);
                         editWorker.setInfo(worker);
@@ -76,9 +76,9 @@ class CirclesPanel extends JPanel {
     });
 }
 
-    private Worker findWorkerByName(String name) {
+    private Worker findWorkerByID(int id) {
         for (Worker worker : workersCollection) {
-            if (worker.getName().equals(name)) {
+            if (worker.getId() == id) {
                 return worker;
             }
         }
@@ -95,7 +95,7 @@ class CirclesPanel extends JPanel {
             g2d.setColor(colors[circle.colorIndex]);
             g2d.fillOval(circle.x - circle.radius, circle.y - circle.radius, 2 * circle.radius, 2 * circle.radius);
             g2d.setColor(Color.BLACK);
-            TextInCircle.drawCenteredString(g2d, circles.get(circle) + " " + circle.colorIndex, circle.x, circle.y, g.getFont());
+            TextInCircle.drawCenteredString(g2d, circles.get(circle) + " " + circle.worker + " " + circle.colorIndex, circle.x, circle.y, g.getFont());
         }
     }
 }

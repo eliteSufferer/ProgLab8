@@ -2,9 +2,13 @@ package client;
 
 
 import client.utils.ScriptControl;
+import common.exceptions.UserAlreadyExists;
+import common.exceptions.UserIsNotFoundException;
 import common.functional.*;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -31,7 +35,7 @@ public class Client{
         objectOutputStream.writeObject(requestToServer);
         byte[] bytes;
         bytes = serverWriter.toByteArray();
-        ByteBuffer buffer = ByteBuffer.allocate(50000);
+        ByteBuffer buffer = ByteBuffer.allocate(100000);
         buffer.put(bytes);
         buffer.flip();
         InetSocketAddress address = new InetSocketAddress(host, port);
@@ -39,7 +43,7 @@ public class Client{
     }
 
     public Response receiveResponse() throws IOException, ClassNotFoundException, InterruptedException {
-        ByteBuffer receiveBuffer = ByteBuffer.allocate(50000);
+        ByteBuffer receiveBuffer = ByteBuffer.allocate(100000);
 
         long timeout = 5000;
         long start = System.currentTimeMillis();
@@ -73,7 +77,7 @@ public class Client{
                         scriptControl.handle(null, user);
                 if (requestToServer == null) return false;
                 if (requestToServer.isEmpty()) continue;
-                ByteBuffer buffer = ByteBuffer.allocate(50000);
+                ByteBuffer buffer = ByteBuffer.allocate(1000000);
                 DatagramChannel datagramChannel;
                 InetSocketAddress serverAddress = new InetSocketAddress(host, port);
                 try {
@@ -103,8 +107,6 @@ public class Client{
                 ByteArrayInputStream bais = new ByteArrayInputStream(responseData);
                 ObjectInputStream ois = new ObjectInputStream(bais);
                 serverResponse = (Response) ois.readObject();
-                if (!serverResponse.getResponseBody().isEmpty())
-                    JOptionPane.showMessageDialog(null, serverResponse.getResponseBody() + " " + Arrays.toString(serverResponse.getResponseBodyArgs()));
             } catch (InvalidClassException | NotSerializableException exception) {
                 JOptionPane.showMessageDialog(null, "DataSendingException");
             } catch (ClassNotFoundException exception) {
@@ -115,12 +117,12 @@ public class Client{
         } while (!requestToServer.getCommandName().equals("exit"));
         return true;
     }
-    public boolean processAuthentication(boolean registered, String username, String password) {
+    public boolean processAuthentication(boolean registered, String username, String password){
         Request requestToServer = null;
         Response serverResponse = null;
         String command;
 
-        ByteBuffer buffer = ByteBuffer.allocate(50000);
+        ByteBuffer buffer = ByteBuffer.allocate(1000000);
         DatagramChannel datagramChannel;
         InetSocketAddress serverAddress = new InetSocketAddress(host, port);
 

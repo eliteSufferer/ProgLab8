@@ -5,11 +5,15 @@ import client.Client;
 import client.RunClient;
 import client.utils.CommunicationControl;
 import client.utils.PasswordHasher;
+import common.exceptions.UserAlreadyExists;
+import common.exceptions.UserIsNotFoundException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -104,11 +108,17 @@ public class LoginForm extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (client.processAuthentication(accountExistsCheckBox.isSelected(), usernameField.getText(), PasswordHasher.hashPassword(String.valueOf(passwordField.getPassword())))) {
-                    MainWindow mainFrame = new MainWindow(client, communicationControl);
-                    mainFrame.setVisible(true);
-                    dispose();
-                }
+                    String password = new String(passwordField.getPassword());
+
+                    if (!usernameLabel.getText().trim().isEmpty() && !password.isEmpty() && client.processAuthentication(accountExistsCheckBox.isSelected(), usernameField.getText(), PasswordHasher.hashPassword(String.valueOf(passwordField.getPassword())))) {
+                        MainWindow mainFrame = new MainWindow(client, communicationControl);
+                        mainFrame.setVisible(true);
+                        dispose();
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "Ошибка при входе, проверьте правильность данных и повторите попытку!");
+                    }
+
             }
         });
         buttonPanel.add(loginButton);
