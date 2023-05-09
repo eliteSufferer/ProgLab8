@@ -148,7 +148,7 @@ public class MainWindow extends JFrame {
                             try {
                                 System.out.println(worker.getId());
                                 client.sendRequest(new Request("update_by_id", String.valueOf(worker.getId()), editWorker.update(), client.getCurrentUser()));
-                                Response res  = client.receiveResponse();
+                                Response res = client.receiveResponse();
                                 System.out.println(res.getResponseBody() + " " + res.getResponseCode() );
                                 editWorker.dispose();
                             } catch (IOException | ClassNotFoundException | InterruptedException ex) {

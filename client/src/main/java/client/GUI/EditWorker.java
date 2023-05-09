@@ -146,7 +146,6 @@ public class EditWorker extends JFrame {
 
         Status status = communicationControl.chooseStatus(fields.get(6).getText());
 
-        System.out.println(fields.get(7).getText());
         Location location = communicationControl.setLocation(fields.get(10).getText(), fields.get(11).getText(), fields.get(12).getText(), fields.get(13).getText());
 
         Person person = communicationControl.setPerson(fields.get(7).getText(),
