@@ -52,6 +52,7 @@ public class RemoveElementByID extends AbstractCommand {
         } catch (CollectionIsEmptyException e) {
             RunServer.logger.error("Коллекция пуста!");
         } catch (PermissionsDeniedException e) {
+            ResponseOutputer.appendln("Недостаточно прав для выполнения данной команды!");
             RunServer.logger.error("Недостаточно прав для выполнения данной команды!");
         } catch (ManualDatabaseEditException e) {
             RunServer.logger.error("ManualDatabaseEditException");

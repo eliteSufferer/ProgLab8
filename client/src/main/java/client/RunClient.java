@@ -5,7 +5,11 @@ import client.utils.CommunicationControl;
 
 
 import javax.swing.*;
-import java.util.Scanner;
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RunClient {
     private static String host = "localhost";

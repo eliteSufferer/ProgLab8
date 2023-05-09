@@ -95,7 +95,9 @@ public class CommandControl {
     }
 
     public ArrayList<String> getNewCommands(){
+
         return newCommands;
+
     }
 
 
@@ -235,12 +237,17 @@ public class CommandControl {
         locker.lock();
         try {
             return sendNewList.execute(stringArgument, objectArgument, user);
-        } finally {
+        }finally {
             locker.unlock();
         }
     }
     public SendNewList getSendNewList(){
-        return sendNewList;
+        locker.lock();
+        try {
+            return sendNewList;
+        } finally {
+            locker.unlock();
+        }
     }
 
     public boolean sort(String stringArgument, Object objectArgument, User user) {

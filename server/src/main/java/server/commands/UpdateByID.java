@@ -52,7 +52,10 @@ public class UpdateByID extends AbstractCommand {
             Position position = workerPacket.getPosition() == null ? oldWorker.getPosition() : workerPacket.getPosition();
             Status status = workerPacket.getStatus() == null ? oldWorker.getStatus() : workerPacket.getStatus();
             Person person = workerPacket.getPerson() == null ? oldWorker.getPerson() : workerPacket.getPerson();
+            System.out.println(collectionControl.getCollection());
             collectionControl.removeFromCollection(oldWorker);
+//            if (!collectionControl.getCollection().contains(oldWorker)) {
+            System.out.println(collectionControl.getCollection());
             collectionControl.addToCollection(new Worker(id,
                     name,
                     coordinates,
@@ -63,7 +66,10 @@ public class UpdateByID extends AbstractCommand {
                     person,
                     user));
             ResponseOutputer.appendln("Замена успешно завершена!");
+            System.out.println(collectionControl.getCollection());
             return true;
+//            }
+//            return false;
         } catch (WrongArgumentsException e) {
             ResponseOutputer.appendln(e.getMessage());
         } catch (NumberFormatException e) {

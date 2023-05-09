@@ -26,8 +26,8 @@ public class RequestHandler implements Runnable {
     private InetAddress clientAddress;
     private int clientPort;
     private CommandControl commandControl;
-    private ExecutorService fixedThreadPool1 = Executors.newFixedThreadPool(4);
-    private ExecutorService fixedThreadPool2 = Executors.newFixedThreadPool(4);
+    private ExecutorService fixedThreadPool1 = Executors.newFixedThreadPool(10);
+    private ExecutorService fixedThreadPool2 = Executors.newFixedThreadPool(10);
     private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
 
     public RequestHandler(DatagramSocket serverSocket, DatagramPacket receivePacket, InetAddress clientAddress, int clientPort, CommandControl commandControl) {

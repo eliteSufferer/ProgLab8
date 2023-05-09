@@ -46,9 +46,6 @@ public class HandleRequestTask implements Callable<Response> {
 
 
     }
-    public Object newCommands(Object object){
-        return object;
-    }
 
 
 

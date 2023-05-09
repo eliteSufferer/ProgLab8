@@ -55,7 +55,6 @@ public class CollectionControl {
 
     public void clear(Worker worker) {
         workersCollection.remove(worker);
-        ResponseOutputer.appendln("Коллекция очистилась...");
 
     }
     public int collectionSize(){
@@ -76,6 +75,7 @@ public class CollectionControl {
     }
     public void removeFromCollection(Worker worker){
         workersCollection.remove(worker);
+        System.out.println(workersCollection);
     }
 
     /**

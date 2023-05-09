@@ -413,6 +413,7 @@ public class DatabaseCollectionManager {
             RunServer.logger.info("Выполнен запрос DELETE_WORKER_BY_ID.");
 
         } catch (SQLException exception) {
+            exception.printStackTrace();
             RunServer.logger.error("Произошла ошибка при выполнении запроса DELETE_WORKER_BY_ID!");
             throw new DatabaseHandlingException();
         } finally {
@@ -453,6 +454,7 @@ public class DatabaseCollectionManager {
                 workersList.add(worker);
             }
         } catch (SQLException exception) {
+            exception.printStackTrace();
             throw new DatabaseHandlingException();
         } finally {
             databaseHandler.closePreparedStatement(preparedSelectAllStatement);
@@ -463,6 +465,5 @@ public class DatabaseCollectionManager {
     public void clearCollection(Worker worker) throws DatabaseHandlingException {
         deleteWorkerById(worker.getId());
     }
-
 
 }

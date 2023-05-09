@@ -35,7 +35,7 @@ public class Server {
         this.commandManager = commandManager;
         this.maxClients = maxClients;
         this.semaphore = new Semaphore(maxClients);
-        this.fixedThreadPool = Executors.newFixedThreadPool(maxClients);
+        this.fixedThreadPool = Executors.newFixedThreadPool(10);
     }
 
     public void run() {
