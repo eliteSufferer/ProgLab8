@@ -58,8 +58,21 @@ class CirclesPanel extends JPanel {
                     Worker worker = findWorkerByID(circles.get(circle));
                     if (worker != null) {
                         EditWorker editWorker = new EditWorker(communicationControl);
-                        editWorker.setNonEditable();
                         editWorker.setInfo(worker);
+                        if (client.getCurrentUser().equals(worker.getOwner())){
+                            JButton saveButton;
+                            saveButton = editWorker.getSaveButton();
+                            saveButton.addActionListener(e1 -> {
+                                try {
+                                    client.sendRequest(new Request("update_by_id", String.valueOf(worker.getId()), editWorker.update(), client.getCurrentUser()));
+                                } catch (IOException ex) {
+                                    throw new RuntimeException(ex);
+                                }
+                            });
+                        } else{
+                            editWorker.setNonEditable();
+                        }
+
                     }
                     break;
                 }

@@ -7,7 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
@@ -27,9 +27,6 @@ import common.functional.*;
 import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.border.Border;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -82,7 +79,7 @@ public class MainWindow extends JFrame {
         goToVisualisationTableButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                VisualTable visualTable = new VisualTable(client, communicationControl);
+                VisualTable visualTable = new VisualTable(client, communicationControl, workersss);
                 visualTable.setVisible(true);
                 dispose();
             }
@@ -170,7 +167,7 @@ public class MainWindow extends JFrame {
                                 Response res = client.receiveResponse();
                                 System.out.println(res.getResponseBody() + " " + res.getResponseCode() );
                                 editWorker.dispose();
-                            } catch (IOException | ClassNotFoundException | InterruptedException ex) {
+                            } catch (IOException ex) {
                                 throw new RuntimeException(ex);
                             }
                         });
@@ -182,22 +179,26 @@ public class MainWindow extends JFrame {
             }
         });
 
-        ///////
 
-
+        /////
+//        Executors.newSingleThreadExecutor()
         Timer timer = new Timer(2000, e -> {
             try {
                 if (actionBool) {
                     this.workersss = new ArrayList<>();
-                            // Здесь происходит обновление данных в таблице
+
+                    // Здесь происходит обновление данных в таблице
                     client.sendRequest(new Request("sendNewList", "", client.getCurrentUser()));
                     Response response = client.receiveResponse();
-
-                    int count = (Integer) response.getResponseObject();
-                    for (int i = 0; i < count; i ++){
-                        Response tempResponse = client.receiveResponse();
-                        workersss.add((ArrayList<Worker>) tempResponse.getResponseObject());
+                    try{
+                        int count = (Integer) response.getResponseObject();
+                        for (int i = 0; i < count; i ++){
+                            Response tempResponse = client.receiveResponse();
+                            workersss.add((ArrayList<Worker>) tempResponse.getResponseObject());
+                        }
+                    } catch (Exception ex) {
                     }
+
 
                     clearData(tableModel);
                     // Очистка модели данных таблицы
@@ -208,6 +209,8 @@ public class MainWindow extends JFrame {
                     for (ArrayList<Worker> list: workersss){
                         newJoinedArray.addAll(list);
                     }
+                    setWorkersss(newJoinedArray);
+
 
                     WorkerUtils.parameters = workerSortingPanel.getParamaters();
                     newJoinedArray = WorkerUtils.sortAndFilterWorkers(newJoinedArray);
@@ -236,6 +239,8 @@ public class MainWindow extends JFrame {
 
 // Запуск таймера
         timer.start();
+
+
 
 
 
@@ -297,11 +302,7 @@ public class MainWindow extends JFrame {
                             throw new RuntimeException(ex);
                         }
                         Response response444;
-                        try{
-                            response444 = client.receiveResponse();
-                        } catch (IOException | ClassNotFoundException | InterruptedException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        response444 = client.receiveResponse();
 
                         JOptionPane.showMessageDialog(null, response444.getResponseCode());
                         actionBool = true;
@@ -349,13 +350,8 @@ public class MainWindow extends JFrame {
                         try {
                             client.sendRequest(new Request("remove_element_by_id", inputRemId, null, client.getCurrentUser()));
                             Response response2;
-                            try {
-                                response2 = client.receiveResponse();
-                                System.out.println(response2);
-                            } catch (IOException | ClassNotFoundException | InterruptedException ex) {
-                                ex.printStackTrace();
-                                throw new RuntimeException(ex);
-                            }
+                            response2 = client.receiveResponse();
+                            System.out.println(response2);
                             JOptionPane.showMessageDialog(null, response2.getResponseBody());
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
@@ -373,7 +369,7 @@ public class MainWindow extends JFrame {
 
                                 client.sendRequest(new Request("remove_greater", "", removeGreater.update(), client.getCurrentUser()));
                                 eshkere = client.receiveResponse();
-                            } catch (IOException | ClassNotFoundException | InterruptedException ex) {
+                            } catch (IOException ex) {
                                 throw new RuntimeException(ex);
                             }
                             JOptionPane.showMessageDialog(null, eshkere.getResponseBody());
@@ -393,7 +389,7 @@ public class MainWindow extends JFrame {
 
                                 client.sendRequest(new Request("update_by_id", inputID, update_by_id.update(), client.getCurrentUser()));
                                 resp = client.receiveResponse();
-                            } catch (IOException | ClassNotFoundException | InterruptedException ex) {
+                            } catch (IOException ex) {
                                 throw new RuntimeException(ex);
                             }
                             JOptionPane.showMessageDialog(null, resp.getResponseBody());
@@ -454,13 +450,12 @@ public class MainWindow extends JFrame {
 
     }
 
+    public static  ArrayList<Worker> getWorkersss(){
+        return takeArray;
+    }
 
-
-
-
-
-
-
-
+    public static void setWorkersss(ArrayList<Worker> aWorkers){
+        takeArray = aWorkers;
+    }
 }
 

@@ -30,11 +30,7 @@ public class RunClient {
             // Создаем новый поток для выполнения действия
             Thread actionThread = new Thread(() -> {
                 while (!timerFinished.get()) {
-                    try {
-                        runClientInstance.client.receiveResponse();
-                    } catch (IOException | ClassNotFoundException | InterruptedException e) {
-                        System.out.println();
-                    }
+                    runClientInstance.client.receiveResponse();
                 }
             });
 

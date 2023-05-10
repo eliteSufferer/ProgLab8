@@ -17,19 +17,21 @@ import java.util.ResourceBundle;
 
 public class VisualTable extends JFrame{
 
-    private ArrayList<Worker> workersCollection;
     private HashMap<Integer, String> owners;
     private HashMap<AnimatedCircle, Integer> circles;
     private ResourceBundle messages = ResourceBundle.getBundle("client.GUI.Messages", UserSettings.getInstance().getSelectedLocale());
+    private Client client;
+    private CommunicationControl communicationControl;
+    private DefaultTableModel tableModel;
+    private JTable table;
 
-    public VisualTable(Client client, CommunicationControl communicationControl) {
+    public VisualTable(Client client, CommunicationControl communicationControl, ArrayList<ArrayList<Worker>> workersCollection){
+        this.client = client;
+        this.communicationControl = communicationControl;
         circles = new HashMap<>();
+
         owners = new HashMap<>();
-        workersCollection = new ArrayList<>();
-        ArrayList<ArrayList<Worker>> workers = new ArrayList<>();
-
-
-        DefaultTableModel tableModel = new DefaultTableModel(new Object[][]{}, new String[]{messages.getString("ownerID"), messages.getString("ownerName")}) {
+        tableModel = new DefaultTableModel(new Object[][]{}, new String[]{messages.getString("ownerID"), messages.getString("ownerName")}){
             @Override
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return false;
@@ -37,19 +39,21 @@ public class VisualTable extends JFrame{
         };
 
         // Создаем таблицу и устанавливаем модель
-        JTable table = new JTable(tableModel);
+        table = new JTable(tableModel);
 
         // Создаем панель прокрутки и добавляем таблицу
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setPreferredSize(new Dimension(200, 10));
+
+        CirclesPanel circlesPanel = new CirclesPanel(circles, workersCollection, client, communicationControl);
+        getContentPane().add(circlesPanel);
 
         // Размещаем панель прокрутки в правой части окна
         getContentPane().add(scrollPane, BorderLayout.WEST);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 1200);
-        CirclesPanel circlesPanel = new CirclesPanel(circles, workers, client, communicationControl);
-        getContentPane().add(circlesPanel);
+
 
         JButton openMainFrameButton = new JButton(messages.getString("openDataTable"));
 
@@ -71,73 +75,58 @@ public class VisualTable extends JFrame{
         // Добавьте панель на основной контейнер
         getContentPane().add(mainPanel);
 
+        // Создаем таймер для обновления данных каждые 2 секунды
+
+
         Timer timer = new Timer(2000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                try {
-                    // Здесь происходит обновление данных в таблице
-                    client.sendRequest(new Request("sendNewList", "", client.getCurrentUser()));
-                    Response response = client.receiveResponse();
-
-                    int count = (Integer) response.getResponseObject();
-                    for (int i = 0; i < count; i++) {
-                        Response tempResponse = client.receiveResponse();
-                        workers.add((ArrayList<Worker>) tempResponse.getResponseObject());
-                    }
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-
-
-                int countOwners = 0;
-                for (ArrayList<Worker> workersCollection : workers) {
-                    for (Worker worker : workersCollection) {
-                        if (!owners.containsValue(worker.getOwner().getUsername())) {
-                            owners.put(countOwners, worker.getOwner().getUsername());
-                            countOwners++;
-                        }
-                    }
-                }
-
-                circles.clear();
-
-
-                int i = 1;
-                for (ArrayList<Worker> workersCollection : workers) {
-                    for (Worker worker : workersCollection) {
-                        int originalX = worker.getCoordinates().getX();
-                        int originalY = worker.getCoordinates().getY();
-
-                        int xOffset = 3 * i;
-                        int yOffset = 3 * i;
-
-                        int x = (int) ((originalX * 0.3 - 200 + xOffset) + 500 * Math.random());
-                        int y = (int) (originalY * 0.4 - 50 + yOffset);
-                        int radius = 50;
-                        String username = worker.getOwner().getUsername();
-                        int colorIndex = getKeyByUsername(owners, username);
-                        circles.put(new AnimatedCircle(x, y, radius, colorIndex, worker.getName()), worker.getId());
-                        i += 20;
-                    }
-                }
-
-
-                tableModel.setRowCount(0);
-                for (HashMap.Entry<Integer, String> entry : owners.entrySet()) {
-                    Integer id = entry.getKey();
-                    String owner = entry.getValue();
-                    tableModel.addRow(new Object[]{id, owner});
-                }
-
-                circlesPanel.repaint();
-
-
+                updateData(MainWindow.getWorkersss());
             }
         });
-
         timer.start();
     }
+
+    public void updateData(ArrayList<Worker> workersCollection) {
+        // Очищаем коллекции
+        owners.clear();
+        circles.clear();
+
+        int countOwners = 0;
+            for (Worker worker : workersCollection) {
+                if (!owners.containsValue(worker.getOwner().getUsername())){
+                    owners.put(countOwners, worker.getOwner().getUsername());
+                    countOwners ++;
+                }
+            }
+
+        // Очищаем модель таблицы и заполняем новыми данными
+        tableModel.setRowCount(0);
+        for (HashMap.Entry<Integer, String> entry : owners.entrySet()) {
+            Integer id = entry.getKey();
+            String owner = entry.getValue();
+            tableModel.addRow(new Object[]{id, owner});
+        }
+
+            for (Worker worker : workersCollection) {
+                int originalX = worker.getCoordinates().getX();
+                int originalY = worker.getCoordinates().getY();
+
+                int x = originalX + 400;
+                int y = originalY + 400;
+                int radius = 50;
+                String username = worker.getOwner().getUsername();
+                int colorIndex = getKeyByUsername(owners, username);
+                circles.put(new AnimatedCircle(x, y, radius, colorIndex, worker.getName()), worker.getId());
+            }
+
+        // После обновления данных в таблице и списка кругов, нужно вызвать repaint для обновления GUI
+        repaint();
+
+
+    }
+
+
 
     public static Integer getKeyByUsername(HashMap<Integer, String> map, String username) {
         for (HashMap.Entry<Integer, String> entry : map.entrySet()) {
