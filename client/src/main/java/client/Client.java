@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Arrays;
@@ -42,29 +43,26 @@ public class Client{
         datagramChannel.send(buffer, address);
     }
 
-    public Response receiveResponse() throws IOException, ClassNotFoundException, InterruptedException {
-        ByteBuffer receiveBuffer = ByteBuffer.allocate(100000);
+    public Response receiveResponse() {
+        Object deserializedObject = null;
+        try {
+            ByteBuffer receiveBuffer = ByteBuffer.allocate(100000);
+            SocketAddress clientAddress = datagramChannel.receive(receiveBuffer);
 
-        long timeout = 5000;
-        long start = System.currentTimeMillis();
-        while (datagramChannel.receive(receiveBuffer) == null && System.currentTimeMillis() - start < timeout) {
-            Thread.sleep(100);
+
+            receiveBuffer.flip();
+            byte[] data = new byte[receiveBuffer.limit()];
+            receiveBuffer.get(data);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+
+            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+            deserializedObject = objectInputStream.readObject();
+        }catch (Exception e){
+            System.out.println();
         }
-
-        if (System.currentTimeMillis() - start >= timeout) {
-            System.out.println("Превышено время ожидания ответа от сервера");
-            return null;
-        }
-
-        receiveBuffer.flip();
-        byte[] data = new byte[receiveBuffer.limit()];
-        receiveBuffer.get(data);
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-
-        ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-        Object deserializedObject = objectInputStream.readObject();
         return (Response) deserializedObject;
     }
+
 
 
     public boolean processScriptToServer(File scriptFile) {

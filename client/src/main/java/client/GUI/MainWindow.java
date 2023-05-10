@@ -49,10 +49,12 @@ public class MainWindow extends JFrame {
     public String selectedCommand;
     JButton saveButton;
     boolean actionBool = true;
+    private static ArrayList<Worker> takeArray;
     CommunicationControl communicationControl;
     private ResourceBundle messages = ResourceBundle.getBundle("client.GUI.Messages", UserSettings.getInstance().getSelectedLocale());
 
     private ArrayList<Integer> workersID = new ArrayList<>();
+
 
 
     public MainWindow(Client client, CommunicationControl communicationControl) {
@@ -173,7 +175,7 @@ public class MainWindow extends JFrame {
                         });
                         actionBool = true;
                     }else{
-                        System.out.println(-1);
+                        System.out.println();
                     }
                 }
             }
@@ -287,7 +289,7 @@ public class MainWindow extends JFrame {
                                 }
                                 Response response777;
                                 response777 = client.receiveResponse();
-                            } catch (IOException | ClassNotFoundException | InterruptedException ex) {
+                            } catch (IOException ex) {
                                 throw new RuntimeException(ex);
                             }
 
@@ -316,12 +318,8 @@ public class MainWindow extends JFrame {
                             throw new RuntimeException(ex);
                         }
                         Response response228;
-                        try {
-                            response228 = client.receiveResponse();
-                            System.out.println(response228.getResponseBody() + " " + response228.getResponseCode());
-                        } catch (IOException | ClassNotFoundException | InterruptedException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        response228 = client.receiveResponse();
+                        System.out.println(response228.getResponseBody() + " " + response228.getResponseCode());
                         System.out.println(response228.getResponseBody());
                         JOptionPane.showMessageDialog(null, response228.getResponseBody());
                         actionBool = false;
@@ -331,11 +329,7 @@ public class MainWindow extends JFrame {
                         try {
                             client.sendRequest(new Request("print_field_ascending_person", "", null, client.getCurrentUser()));
                             Response response1;
-                            try {
-                                response1 = client.receiveResponse();
-                            } catch (IOException | ClassNotFoundException | InterruptedException ex) {
-                                throw new RuntimeException(ex);
-                            }
+                            response1 = client.receiveResponse();
                             System.out.println(response1.getResponseBody());
                             JOptionPane.showMessageDialog(null, response1.getResponseBody());
                         } catch (IOException ex) {
