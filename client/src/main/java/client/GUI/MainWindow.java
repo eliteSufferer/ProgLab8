@@ -178,63 +178,119 @@ public class MainWindow extends JFrame {
 
         /////
 //        Executors.newSingleThreadExecutor()
-        Timer timer = new Timer(2000, e -> {
-            try {
-                if (actionBool) {
-                    this.workersss = new ArrayList<>();
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
-                    // Здесь происходит обновление данных в таблице
-                    client.sendRequest(new Request("sendNewList", "", client.getCurrentUser()));
-                    Response response = client.receiveResponse();
-                    try{
-                        int count = (Integer) response.getResponseObject();
-                        for (int i = 0; i < count; i ++){
-                            Response tempResponse = client.receiveResponse();
-                            workersss.add((ArrayList<Worker>) tempResponse.getResponseObject());
+        executorService.scheduleAtFixedRate(() -> {
+            if (actionBool) {
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        // ваш код
+
+                        this.workersss = new ArrayList<>();
+
+                        // Здесь происходит обновление данных в таблице
+                        client.sendRequest(new Request("sendNewList", "", client.getCurrentUser()));
+                        Response response = client.receiveResponse();
+                        try{
+                            int count = (Integer) response.getResponseObject();
+                            for (int i = 0; i < count; i ++){
+                                Response tempResponse = client.receiveResponse();
+                                workersss.add((ArrayList<Worker>) tempResponse.getResponseObject());
+                            }
+                        } catch (Exception ex) {
                         }
+
+                        clearData(tableModel);
+                        // Очистка модели данных таблицы
+
+                        rowCounter = 0;
+                        ArrayList<Worker> newJoinedArray = new ArrayList<>();
+
+                        for (ArrayList<Worker> list: workersss){
+                            newJoinedArray.addAll(list);
+                        }
+                        setWorkersss(newJoinedArray);
+
+                        WorkerUtils.parameters = workerSortingPanel.getParamaters();
+                        newJoinedArray = WorkerUtils.sortAndFilterWorkers(newJoinedArray);
+                        for (Worker worker : newJoinedArray) {
+                            Object[] rowData = {String.valueOf(worker.getId()), String.valueOf(worker.getName()), String.valueOf(worker.getCoordinates().getX()),
+                                    String.valueOf(worker.getCoordinates().getY()), String.valueOf(worker.getCreationDate()), String.valueOf(worker.getSalary()),
+                                    String.valueOf(worker.getPosition()), String.valueOf(worker.getStatus()), String.valueOf(worker.getPerson().getBirthday()),
+                                    String.valueOf(worker.getPerson().getHeight()), String.valueOf(worker.getPerson().getPassportID()),
+                                    String.valueOf(worker.getPerson().getLocation().getX()),
+                                    String.valueOf(worker.getPerson().getLocation().getY()), String.valueOf(worker.getPerson().getLocation().getZ()),
+                                    String.valueOf(worker.getPerson().getLocation().getName()), ""};
+
+                            rowToObjectMap.put(tableModel.getRowCount(), worker);
+                            tableModel.addRow(rowData);
+                        }
+
+                        // Уведомление таблицы об изменении данных
+                        tableModel.fireTableDataChanged();
                     } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-
-
-                    clearData(tableModel);
-                    // Очистка модели данных таблицы
-
-                    rowCounter = 0;
-                    ArrayList<Worker> newJoinedArray = new ArrayList<>();
-
-                    for (ArrayList<Worker> list: workersss){
-                        newJoinedArray.addAll(list);
-                    }
-                    setWorkersss(newJoinedArray);
-
-
-                    WorkerUtils.parameters = workerSortingPanel.getParamaters();
-                    newJoinedArray = WorkerUtils.sortAndFilterWorkers(newJoinedArray);
-                    for (Worker worker : newJoinedArray) {
-                        Object[] rowData = {String.valueOf(worker.getId()), String.valueOf(worker.getName()), String.valueOf(worker.getCoordinates().getX()),
-                                String.valueOf(worker.getCoordinates().getY()), String.valueOf(worker.getCreationDate()), String.valueOf(worker.getSalary()),
-                                String.valueOf(worker.getPosition()), String.valueOf(worker.getStatus()), String.valueOf(worker.getPerson().getBirthday()),
-                                String.valueOf(worker.getPerson().getHeight()), String.valueOf(worker.getPerson().getPassportID()),
-                                String.valueOf(worker.getPerson().getLocation().getX()),
-                                String.valueOf(worker.getPerson().getLocation().getY()), String.valueOf(worker.getPerson().getLocation().getZ()),
-                                String.valueOf(worker.getPerson().getLocation().getName()), ""};
-
-                        rowToObjectMap.put(tableModel.getRowCount(), worker);
-                        tableModel.addRow(rowData);
-                    }
-
-
-                    // Уведомление таблицы об изменении данных
-                    tableModel.fireTableDataChanged();
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                System.out.println("");
+                });
             }
-        });
-
-// Запуск таймера
-        timer.start();
+        }, 0, 2, TimeUnit.SECONDS);
+//        Timer timer = new Timer(2000, e -> {
+//            try {
+//                if (actionBool) {
+//                    this.workersss = new ArrayList<>();
+//
+//                    // Здесь происходит обновление данных в таблице
+//                    client.sendRequest(new Request("sendNewList", "", client.getCurrentUser()));
+//                    Response response = client.receiveResponse();
+//                    try{
+//                        int count = (Integer) response.getResponseObject();
+//                        for (int i = 0; i < count; i ++){
+//                            Response tempResponse = client.receiveResponse();
+//                            workersss.add((ArrayList<Worker>) tempResponse.getResponseObject());
+//                        }
+//                    } catch (Exception ex) {
+//                    }
+//
+//
+//                    clearData(tableModel);
+//                    // Очистка модели данных таблицы
+//
+//                    rowCounter = 0;
+//                    ArrayList<Worker> newJoinedArray = new ArrayList<>();
+//
+//                    for (ArrayList<Worker> list: workersss){
+//                        newJoinedArray.addAll(list);
+//                    }
+//                    setWorkersss(newJoinedArray);
+//
+//
+//                    WorkerUtils.parameters = workerSortingPanel.getParamaters();
+//                    newJoinedArray = WorkerUtils.sortAndFilterWorkers(newJoinedArray);
+//                    for (Worker worker : newJoinedArray) {
+//                        Object[] rowData = {String.valueOf(worker.getId()), String.valueOf(worker.getName()), String.valueOf(worker.getCoordinates().getX()),
+//                                String.valueOf(worker.getCoordinates().getY()), String.valueOf(worker.getCreationDate()), String.valueOf(worker.getSalary()),
+//                                String.valueOf(worker.getPosition()), String.valueOf(worker.getStatus()), String.valueOf(worker.getPerson().getBirthday()),
+//                                String.valueOf(worker.getPerson().getHeight()), String.valueOf(worker.getPerson().getPassportID()),
+//                                String.valueOf(worker.getPerson().getLocation().getX()),
+//                                String.valueOf(worker.getPerson().getLocation().getY()), String.valueOf(worker.getPerson().getLocation().getZ()),
+//                                String.valueOf(worker.getPerson().getLocation().getName()), ""};
+//
+//                        rowToObjectMap.put(tableModel.getRowCount(), worker);
+//                        tableModel.addRow(rowData);
+//                    }
+//
+//
+//                    // Уведомление таблицы об изменении данных
+//                    tableModel.fireTableDataChanged();
+//                }
+//            } catch (Exception ex) {
+//                ex.printStackTrace();
+//                System.out.println("");
+//            }
+//        });
+//
+//// Запуск таймера
+//        timer.start();
 
 
 

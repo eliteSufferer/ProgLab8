@@ -43,23 +43,27 @@ public class Client{
         datagramChannel.send(buffer, address);
     }
 
-    public Response receiveResponse() {
-        Object deserializedObject = null;
-        try {
-            ByteBuffer receiveBuffer = ByteBuffer.allocate(100000);
-            SocketAddress clientAddress = datagramChannel.receive(receiveBuffer);
+    public Response receiveResponse() throws IOException, ClassNotFoundException, InterruptedException {
+        ByteBuffer receiveBuffer = ByteBuffer.allocate(100000);
 
-
-            receiveBuffer.flip();
-            byte[] data = new byte[receiveBuffer.limit()];
-            receiveBuffer.get(data);
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-
-            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-            deserializedObject = objectInputStream.readObject();
-        }catch (Exception e){
-            System.out.println();
+        long timeout = 5000;
+        long start = System.currentTimeMillis();
+        while (datagramChannel.receive(receiveBuffer) == null && System.currentTimeMillis() - start < timeout) {
+            Thread.sleep(100);
         }
+
+        if (System.currentTimeMillis() - start >= timeout) {
+            System.out.println("Превышено время ожидания ответа от сервера");
+            return null;
+        }
+
+        receiveBuffer.flip();
+        byte[] data = new byte[receiveBuffer.limit()];
+        receiveBuffer.get(data);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+
+        ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+        Object deserializedObject = objectInputStream.readObject();
         return (Response) deserializedObject;
     }
 
