@@ -16,8 +16,8 @@ public class RunServer {
     public static void main(String[] args) {
         try {
 //            ResponseOutputer.appendln("main запущен");
+            //String databaseAddress = "jdbc:postgresql://localhost:5432/studs";
             String databaseAddress = "jdbc:postgresql://localhost:5432/Lab7";
-            //String databaseAddress = "jdbc:postgresql://localhost:5432/Lab7";
             String databaseUsername = args[1];
             String databasePassword = args[2];
             DatabaseHandler databaseHandler = new DatabaseHandler(databaseAddress, databaseUsername, databasePassword);

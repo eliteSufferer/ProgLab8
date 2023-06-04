@@ -108,12 +108,6 @@ public class MainWindow extends JFrame {
 
 
 
-
-
-
-
-
-
         JPanel panel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panel2.setBackground(Color.LIGHT_GRAY);
         panel2.setBorder(BorderFactory.createTitledBorder("Workers table"));
@@ -169,7 +163,7 @@ public class MainWindow extends JFrame {
                                 Response res = client.receiveResponse();
                                 System.out.println(res.getResponseBody() + " " + res.getResponseCode() );
                                 editWorker.dispose();
-                            } catch (IOException ex) {
+                            } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                                 throw new RuntimeException(ex);
                             }
                         });
@@ -291,6 +285,10 @@ public class MainWindow extends JFrame {
                                 response777 = client.receiveResponse();
                             } catch (IOException ex) {
                                 throw new RuntimeException(ex);
+                            } catch (ClassNotFoundException ex) {
+                                throw new RuntimeException(ex);
+                            } catch (InterruptedException ex) {
+                                throw new RuntimeException(ex);
                             }
 
                         });
@@ -304,7 +302,15 @@ public class MainWindow extends JFrame {
                             throw new RuntimeException(ex);
                         }
                         Response response444;
-                        response444 = client.receiveResponse();
+                        try {
+                            response444 = client.receiveResponse();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        } catch (ClassNotFoundException ex) {
+                            throw new RuntimeException(ex);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
 
                         JOptionPane.showMessageDialog(null, response444.getResponseCode());
                         actionBool = true;
@@ -318,7 +324,15 @@ public class MainWindow extends JFrame {
                             throw new RuntimeException(ex);
                         }
                         Response response228;
-                        response228 = client.receiveResponse();
+                        try {
+                            response228 = client.receiveResponse();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        } catch (ClassNotFoundException ex) {
+                            throw new RuntimeException(ex);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         System.out.println(response228.getResponseBody() + " " + response228.getResponseCode());
                         System.out.println(response228.getResponseBody());
                         JOptionPane.showMessageDialog(null, response228.getResponseBody());
@@ -332,7 +346,7 @@ public class MainWindow extends JFrame {
                             response1 = client.receiveResponse();
                             System.out.println(response1.getResponseBody());
                             JOptionPane.showMessageDialog(null, response1.getResponseBody());
-                        } catch (IOException ex) {
+                        } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                             throw new RuntimeException(ex);
                         }
                         actionBool = true;
@@ -347,7 +361,7 @@ public class MainWindow extends JFrame {
                             response2 = client.receiveResponse();
                             System.out.println(response2);
                             JOptionPane.showMessageDialog(null, response2.getResponseBody());
-                        } catch (IOException ex) {
+                        } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                             throw new RuntimeException(ex);
                         }
                         actionBool = true;
@@ -363,7 +377,7 @@ public class MainWindow extends JFrame {
 
                                 client.sendRequest(new Request("remove_greater", "", removeGreater.update(), client.getCurrentUser()));
                                 eshkere = client.receiveResponse();
-                            } catch (IOException ex) {
+                            } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                                 throw new RuntimeException(ex);
                             }
                             JOptionPane.showMessageDialog(null, eshkere.getResponseBody());
@@ -383,7 +397,7 @@ public class MainWindow extends JFrame {
 
                                 client.sendRequest(new Request("update_by_id", inputID, update_by_id.update(), client.getCurrentUser()));
                                 resp = client.receiveResponse();
-                            } catch (IOException ex) {
+                            } catch (IOException | ClassNotFoundException | InterruptedException ex) {
                                 throw new RuntimeException(ex);
                             }
                             JOptionPane.showMessageDialog(null, resp.getResponseBody());
